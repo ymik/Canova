@@ -1,8 +1,8 @@
-package org.canova.api.formats.input;
+package org.nd4j.api.formats.input;
 
-import org.canova.api.records.reader.RecordReader;
-import org.canova.api.split.InputSplit;
-import org.canova.api.writable.Writable;
+import org.nd4j.api.records.reader.RecordReader;
+import org.nd4j.api.split.InputSplit;
+import org.nd4j.api.writable.Writable;
 
 import java.io.IOException;
 

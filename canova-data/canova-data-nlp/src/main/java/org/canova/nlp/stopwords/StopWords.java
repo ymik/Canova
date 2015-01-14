@@ -1,4 +1,4 @@
-package org.canova.nlp.stopwords;
+package org.nd4j.nlp.stopwords;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ClassPathResource;

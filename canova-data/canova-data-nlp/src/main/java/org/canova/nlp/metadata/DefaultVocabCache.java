@@ -1,10 +1,10 @@
-package org.canova.nlp.metadata;
+package org.nd4j.nlp.metadata;
 
-import org.canova.api.berkeley.Counter;
-import org.canova.api.conf.Configuration;
-import org.canova.api.util.Index;
-import org.canova.api.util.MathUtils;
-import org.canova.nlp.vectorizer.TextVectorizer;
+import org.nd4j.api.berkeley.Counter;
+import org.nd4j.api.conf.Configuration;
+import org.nd4j.api.util.Index;
+import org.nd4j.api.util.MathUtils;
+import org.nd4j.nlp.vectorizer.TextVectorizer;
 
 /**
  * Created by agibsonccc on 11/21/14.

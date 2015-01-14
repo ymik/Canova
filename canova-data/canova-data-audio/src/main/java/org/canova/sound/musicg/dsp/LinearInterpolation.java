@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.canova.sound.musicg.dsp;
+package org.nd4j.sound.musicg.dsp;
 
 /**
  * Construct new data points within the range of a discrete set of known data points by linear equation

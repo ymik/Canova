@@ -1,10 +1,10 @@
-package org.canova.api.formats.output.impl;
+package org.nd4j.api.formats.output.impl;
 
-import org.canova.api.conf.Configuration;
-import org.canova.api.exceptions.CanovaException;
-import org.canova.api.formats.output.OutputFormat;
-import org.canova.api.records.writer.RecordWriter;
-import org.canova.api.records.writer.impl.CSVRecordWriter;
+import org.nd4j.api.conf.Configuration;
+import org.nd4j.api.exceptions.CanovaException;
+import org.nd4j.api.formats.output.OutputFormat;
+import org.nd4j.api.records.writer.RecordWriter;
+import org.nd4j.api.records.writer.impl.CSVRecordWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;

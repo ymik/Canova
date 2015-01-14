@@ -1,4 +1,4 @@
-package org.canova.nlp.annotator;
+package org.nd4j.nlp.annotator;
 
 /** 
  * Copyright (c) 2012, Regents of the University of Colorado 
@@ -47,7 +47,7 @@ import org.apache.uima.resource.ResourceAccessException;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
-import org.canova.nlp.movingwindow.Util;
+import org.nd4j.nlp.movingwindow.Util;
 import org.cleartk.token.type.Sentence;
 import org.cleartk.token.type.Token;
 

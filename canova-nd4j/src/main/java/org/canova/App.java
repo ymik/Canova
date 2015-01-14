@@ -1,4 +1,4 @@
-package org.canova;
+package org.nd4j;
 
 /**
  * Hello world!

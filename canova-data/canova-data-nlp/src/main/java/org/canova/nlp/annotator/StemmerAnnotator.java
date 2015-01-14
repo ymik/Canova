@@ -1,4 +1,4 @@
-package org.canova.nlp.annotator;
+package org.nd4j.nlp.annotator;
 
 /**
  * Copyright (c) 2009, Regents of the University of Colorado

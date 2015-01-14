@@ -1,6 +1,6 @@
-package org.canova.api.writable;
+package org.nd4j.api.writable;
 
-import org.canova.api.io.data.Text;
+import org.nd4j.api.io.data.Text;
 
 import java.util.ArrayList;
 import java.util.Arrays;

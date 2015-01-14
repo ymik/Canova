@@ -1,4 +1,4 @@
-package org.canova.sound.musicg.fingerprint;
+package org.nd4j.sound.musicg.fingerprint;
 public class QuickSortIndexPreserved {
 	
 	private QuickSort quickSort;

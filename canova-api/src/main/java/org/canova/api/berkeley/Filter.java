@@ -1,4 +1,4 @@
-package org.canova.api.berkeley;
+package org.nd4j.api.berkeley;
 
 /**
  * Filters are boolean functions which accept or reject items.

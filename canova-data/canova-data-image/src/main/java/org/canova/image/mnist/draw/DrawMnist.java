@@ -1,4 +1,4 @@
-package org.canova.image.mnist.draw;
+package org.nd4j.image.mnist.draw;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.nd4j.linalg.api.ndarray.INDArray;

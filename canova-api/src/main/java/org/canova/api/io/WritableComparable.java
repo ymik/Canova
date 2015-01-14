@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package org.canova.api.io;
+package org.nd4j.api.io;
 
-import org.canova.api.writable.Writable;
+import org.nd4j.api.writable.Writable;
 
 /**
  * A {@link Writable} which is also {@link Comparable}. 

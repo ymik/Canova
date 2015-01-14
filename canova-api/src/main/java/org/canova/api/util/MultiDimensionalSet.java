@@ -1,7 +1,7 @@
-package org.canova.api.util;
+package org.nd4j.api.util;
 
 
-import org.canova.api.berkeley.Pair;
+import org.nd4j.api.berkeley.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentSkipListSet;

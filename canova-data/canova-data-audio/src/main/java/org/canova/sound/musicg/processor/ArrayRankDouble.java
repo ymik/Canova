@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.canova.sound.musicg.processor;
+package org.nd4j.sound.musicg.processor;
 
 public class ArrayRankDouble {
 

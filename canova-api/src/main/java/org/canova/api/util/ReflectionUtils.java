@@ -16,16 +16,16 @@
  * limitations under the License.
  */
 
-package org.canova.api.util;
+package org.nd4j.api.util;
 
-import org.canova.api.conf.Configurable;
-import org.canova.api.conf.Configuration;
-import org.canova.api.io.DataInputBuffer;
-import org.canova.api.io.DataOutputBuffer;
-import org.canova.api.io.serializers.Deserializer;
-import org.canova.api.io.serializers.SerializationFactory;
-import org.canova.api.io.serializers.Serializer;
-import org.canova.api.writable.Writable;
+import org.nd4j.api.conf.Configurable;
+import org.nd4j.api.conf.Configuration;
+import org.nd4j.api.io.DataInputBuffer;
+import org.nd4j.api.io.DataOutputBuffer;
+import org.nd4j.api.io.serializers.Deserializer;
+import org.nd4j.api.io.serializers.SerializationFactory;
+import org.nd4j.api.io.serializers.Serializer;
+import org.nd4j.api.writable.Writable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;

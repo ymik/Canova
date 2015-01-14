@@ -1,4 +1,4 @@
-package org.canova.api.util;
+package org.nd4j.api.util;
 
 
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ import org.apache.commons.math3.linear.NonSquareMatrixException;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
-import org.canova.api.berkeley.Counter;
+import org.nd4j.api.berkeley.Counter;
 
 
 /**

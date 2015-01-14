@@ -1,9 +1,9 @@
-package org.canova.nlp.movingwindow;
+package org.nd4j.nlp.movingwindow;
 
 
 
-import org.canova.api.berkeley.Counter;
-import org.canova.api.berkeley.MapFactory;
+import org.nd4j.api.berkeley.Counter;
+import org.nd4j.api.berkeley.MapFactory;
 
 import java.util.List;
 import java.util.Map;

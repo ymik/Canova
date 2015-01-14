@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package org.canova.sound.musicg.extension;
+package org.nd4j.sound.musicg.extension;
 
 
-import org.canova.sound.musicg.dsp.FastFourierTransform;
-import org.canova.sound.musicg.dsp.WindowFunction;
-import org.canova.sound.musicg.Wave;
+import org.nd4j.sound.musicg.dsp.FastFourierTransform;
+import org.nd4j.sound.musicg.dsp.WindowFunction;
+import org.nd4j.sound.musicg.Wave;
 
 /**
  * Handles the wave data in frequency-time domain.

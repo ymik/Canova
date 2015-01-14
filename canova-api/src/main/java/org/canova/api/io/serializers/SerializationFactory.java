@@ -1,9 +1,9 @@
-package org.canova.api.io.serializers;
+package org.nd4j.api.io.serializers;
 
-import org.canova.api.conf.Configuration;
-import org.canova.api.conf.Configured;
-import org.canova.api.util.ReflectionUtils;
-import org.canova.api.util.StringUtils;
+import org.nd4j.api.conf.Configuration;
+import org.nd4j.api.conf.Configured;
+import org.nd4j.api.util.ReflectionUtils;
+import org.nd4j.api.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

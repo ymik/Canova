@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.canova.api.conf;
+package org.nd4j.api.conf;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -60,10 +60,10 @@ import javax.xml.transform.stream.StreamResult;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.canova.api.io.WritableUtils;
-import org.canova.api.util.ReflectionUtils;
-import org.canova.api.util.StringUtils;
-import org.canova.api.writable.Writable;
+import org.nd4j.api.io.WritableUtils;
+import org.nd4j.api.util.ReflectionUtils;
+import org.nd4j.api.util.StringUtils;
+import org.nd4j.api.writable.Writable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.DOMException;
@@ -1450,8 +1450,8 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
         clear();
         int size = WritableUtils.readVInt(in);
         for(int i=0; i < size; ++i) {
-            set(org.canova.api.io.data.Text.readString(in),
-                    org.canova.api.io.data.Text.readString(in));
+            set(org.nd4j.api.io.data.Text.readString(in),
+                    org.nd4j.api.io.data.Text.readString(in));
         }
     }
 
@@ -1460,8 +1460,8 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
         Properties props = getProps();
         WritableUtils.writeVInt(out, props.size());
         for(Map.Entry<Object, Object> item: props.entrySet()) {
-            org.canova.api.io.data.Text.writeString(out, (String) item.getKey());
-            org.canova.api.io.data.Text.writeString(out, (String) item.getValue());
+            org.nd4j.api.io.data.Text.writeString(out, (String) item.getKey());
+            org.nd4j.api.io.data.Text.writeString(out, (String) item.getValue());
         }
     }
 

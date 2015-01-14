@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package org.canova.sound.musicg.fingerprint;
+package org.nd4j.sound.musicg.fingerprint;
 
 
-import org.canova.sound.musicg.properties.FingerprintProperties;
+import org.nd4j.sound.musicg.properties.FingerprintProperties;
 
 import java.util.HashMap;
 import java.util.Iterator;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.canova.sound.musicg.dsp;
+package org.nd4j.sound.musicg.dsp;
 
 import com.sun.media.sound.FFT;
 

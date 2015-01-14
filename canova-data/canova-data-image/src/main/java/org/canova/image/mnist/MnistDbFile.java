@@ -1,4 +1,4 @@
-package org.canova.image.mnist;
+package org.nd4j.image.mnist;
 
 
 import java.io.IOException;

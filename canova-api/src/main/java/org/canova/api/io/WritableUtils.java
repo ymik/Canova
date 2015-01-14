@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-package org.canova.api.io;
+package org.nd4j.api.io;
 
 import java.io.*;
 
 
-import org.canova.api.conf.Configuration;
-import org.canova.api.io.data.*;
-import org.canova.api.util.ReflectionUtils;
-import org.canova.api.writable.Writable;
+import org.nd4j.api.conf.Configuration;
+import org.nd4j.api.io.data.*;
+import org.nd4j.api.util.ReflectionUtils;
+import org.nd4j.api.writable.Writable;
 
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;

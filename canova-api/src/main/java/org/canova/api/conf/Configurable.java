@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.canova.api.conf;
+package org.nd4j.api.conf;
 
 
 /** Something that may be configured with a {@link Configuration}. */

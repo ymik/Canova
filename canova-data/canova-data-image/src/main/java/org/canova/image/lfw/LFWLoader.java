@@ -1,4 +1,4 @@
-package org.canova.image.lfw;
+package org.nd4j.image.lfw;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;

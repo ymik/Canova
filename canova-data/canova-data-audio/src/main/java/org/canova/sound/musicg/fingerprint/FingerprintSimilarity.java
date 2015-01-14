@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.canova.sound.musicg.fingerprint;
+package org.nd4j.sound.musicg.fingerprint;
 
 
-import org.canova.sound.musicg.properties.FingerprintProperties;
+import org.nd4j.sound.musicg.properties.FingerprintProperties;
 
 /**
  * A class for fingerprint's similarity

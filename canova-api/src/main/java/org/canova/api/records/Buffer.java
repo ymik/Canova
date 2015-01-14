@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.canova.api.records;
+package org.nd4j.api.records;
 
 import java.io.UnsupportedEncodingException;
 

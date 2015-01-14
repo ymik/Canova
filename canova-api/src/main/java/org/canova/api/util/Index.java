@@ -1,4 +1,4 @@
-package org.canova.api.util;
+package org.nd4j.api.util;
 
 
 import java.io.*;

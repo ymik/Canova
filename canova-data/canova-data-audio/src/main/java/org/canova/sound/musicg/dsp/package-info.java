@@ -5,4 +5,4 @@
  *
  *
  */
-package org.canova.sound.musicg.dsp;
+package org.nd4j.sound.musicg.dsp;

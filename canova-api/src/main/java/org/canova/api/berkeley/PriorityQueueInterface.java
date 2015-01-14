@@ -1,4 +1,4 @@
-package org.canova.api.berkeley;
+package org.nd4j.api.berkeley;
 
 public interface PriorityQueueInterface<E>
 {

@@ -1,4 +1,4 @@
-package org.canova;
+package org.nd4j;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

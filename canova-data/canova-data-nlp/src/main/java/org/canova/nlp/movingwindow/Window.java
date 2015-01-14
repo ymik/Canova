@@ -1,4 +1,4 @@
-package org.canova.nlp.movingwindow;
+package org.nd4j.nlp.movingwindow;
 
 import org.apache.commons.lang3.StringUtils;
 

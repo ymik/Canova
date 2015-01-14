@@ -1,4 +1,4 @@
-package org.canova.sound.musicg.processor;
+package org.nd4j.sound.musicg.processor;
 
 public interface IntensityProcessor{
 	public void execute();

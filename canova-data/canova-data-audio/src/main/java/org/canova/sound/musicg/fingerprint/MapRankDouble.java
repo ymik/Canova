@@ -1,4 +1,4 @@
-package org.canova.sound.musicg.fingerprint;
+package org.nd4j.sound.musicg.fingerprint;
 
 import java.util.*;
 import java.util.Map.Entry;

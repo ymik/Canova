@@ -1,15 +1,15 @@
-package org.canova.nlp.vectorizer;
+package org.nd4j.nlp.vectorizer;
 
-import org.canova.api.berkeley.Counter;
-import org.canova.api.conf.Configuration;
-import org.canova.api.records.reader.RecordReader;
-import org.canova.api.vector.Vectorizer;
-import org.canova.api.writable.Writable;
-import org.canova.nlp.metadata.DefaultVocabCache;
-import org.canova.nlp.metadata.VocabCache;
-import org.canova.nlp.stopwords.StopWords;
-import org.canova.nlp.tokenization.tokenizer.Tokenizer;
-import org.canova.nlp.tokenization.tokenizerfactory.TokenizerFactory;
+import org.nd4j.api.berkeley.Counter;
+import org.nd4j.api.conf.Configuration;
+import org.nd4j.api.records.reader.RecordReader;
+import org.nd4j.api.vector.Vectorizer;
+import org.nd4j.api.writable.Writable;
+import org.nd4j.nlp.metadata.DefaultVocabCache;
+import org.nd4j.nlp.metadata.VocabCache;
+import org.nd4j.nlp.stopwords.StopWords;
+import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
+import org.nd4j.nlp.tokenization.tokenizerfactory.TokenizerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -27,8 +27,8 @@ public abstract class TextVectorizer<VECTOR_TYPE> implements Vectorizer<VECTOR_T
 
     protected TokenizerFactory tokenizerFactory;
     protected int minWordFrequency = 0;
-    public final static String MIN_WORD_FREQUENCY = "org.canova.nlp.minwordfrequency";
-    public final static String STOP_WORDS = "org.canova.nlp.stopwords";
+    public final static String MIN_WORD_FREQUENCY = "org.nd4j.nlp.minwordfrequency";
+    public final static String STOP_WORDS = "org.nd4j.nlp.stopwords";
     protected Collection<String> stopWords;
     protected VocabCache cache = new DefaultVocabCache();
 

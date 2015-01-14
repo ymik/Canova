@@ -1,8 +1,8 @@
-package org.canova.nlp.tokenization.tokenizer;
+package org.nd4j.nlp.tokenization.tokenizer;
 
 import org.apache.uima.cas.CAS;
 import org.apache.uima.fit.util.JCasUtil;
-import org.canova.nlp.uima.UimaResource;
+import org.nd4j.nlp.uima.UimaResource;
 import org.cleartk.token.type.Token;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

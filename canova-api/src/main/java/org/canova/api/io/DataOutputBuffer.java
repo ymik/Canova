@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.canova.api.io;
+package org.nd4j.api.io;
 
 import java.io.*;
 

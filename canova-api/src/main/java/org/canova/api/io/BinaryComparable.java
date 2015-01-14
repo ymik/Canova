@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.canova.api.io;
+package org.nd4j.api.io;
 
 /**
  * Interface supported by {@link org.apache.hadoop.io.WritableComparable}

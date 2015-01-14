@@ -1,7 +1,7 @@
-package org.canova.nlp.tokenization.tokenizer.preprocessor;
+package org.nd4j.nlp.tokenization.tokenizer.preprocessor;
 
 
-import org.canova.nlp.tokenization.tokenizer.TokenPreProcess;
+import org.nd4j.nlp.tokenization.tokenizer.TokenPreProcess;
 
 /**
  * Gets rid of endings:

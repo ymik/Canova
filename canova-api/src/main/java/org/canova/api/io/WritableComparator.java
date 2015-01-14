@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package org.canova.api.io;
+package org.nd4j.api.io;
 
-import org.canova.api.util.ReflectionUtils;
+import org.nd4j.api.util.ReflectionUtils;
 
 import java.io.*;
 import java.util.*;

@@ -1,8 +1,8 @@
 package org.canova.api.vector;
 
-import org.nd4j.api.conf.Configuration;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.writable.Writable;
+import org.canova.api.conf.Configuration;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.writable.Writable;
 
 import java.util.Collection;
 

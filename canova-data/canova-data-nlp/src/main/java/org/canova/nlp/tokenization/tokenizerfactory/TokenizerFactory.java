@@ -1,8 +1,9 @@
 package org.canova.nlp.tokenization.tokenizerfactory;
 
 
-import org.nd4j.nlp.tokenization.tokenizer.TokenPreProcess;
-import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
+
+import org.canova.nlp.tokenization.tokenizer.TokenPreProcess;
+import org.canova.nlp.tokenization.tokenizer.Tokenizer;
 
 import java.io.InputStream;
 

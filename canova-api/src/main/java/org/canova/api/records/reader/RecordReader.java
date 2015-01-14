@@ -1,7 +1,7 @@
 package org.canova.api.records.reader;
 
-import org.nd4j.api.split.InputSplit;
-import org.nd4j.api.writable.Writable;
+import org.canova.api.split.InputSplit;
+import org.canova.api.writable.Writable;
 
 import java.io.Closeable;
 import java.io.IOException;

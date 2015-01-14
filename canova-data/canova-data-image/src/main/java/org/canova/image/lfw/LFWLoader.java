@@ -1,6 +1,8 @@
 package org.canova.image.lfw;
 
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.canova.image.loader.ImageLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

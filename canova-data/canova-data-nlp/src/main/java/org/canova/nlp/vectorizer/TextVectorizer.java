@@ -1,21 +1,21 @@
 package org.canova.nlp.vectorizer;
 
-import org.nd4j.api.berkeley.Counter;
-import org.nd4j.api.conf.Configuration;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.vector.Vectorizer;
-import org.nd4j.api.writable.Writable;
-import org.nd4j.nlp.metadata.DefaultVocabCache;
-import org.nd4j.nlp.metadata.VocabCache;
-import org.nd4j.nlp.stopwords.StopWords;
-import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
-import org.nd4j.nlp.tokenization.tokenizerfactory.TokenizerFactory;
+
+import org.canova.api.berkeley.Counter;
+import org.canova.api.conf.Configuration;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.vector.Vectorizer;
+import org.canova.api.writable.Writable;
+import org.canova.nlp.metadata.DefaultVocabCache;
+import org.canova.nlp.metadata.VocabCache;
+import org.canova.nlp.stopwords.StopWords;
+import org.canova.nlp.tokenization.tokenizer.Tokenizer;
+import org.canova.nlp.tokenization.tokenizerfactory.TokenizerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Baseline text vectorizer that includes some common elements

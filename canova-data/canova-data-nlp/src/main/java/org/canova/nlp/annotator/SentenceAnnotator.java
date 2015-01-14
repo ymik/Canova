@@ -1,4 +1,4 @@
-package org.nd4j.nlp.annotator;
+package org.canova.nlp.annotator;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;

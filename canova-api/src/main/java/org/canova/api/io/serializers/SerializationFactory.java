@@ -1,4 +1,4 @@
-package org.nd4j.api.io.serializers;
+package org.canova.api.io.serializers;
 
 import org.nd4j.api.conf.Configuration;
 import org.nd4j.api.conf.Configured;

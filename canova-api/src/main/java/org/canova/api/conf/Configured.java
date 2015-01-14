@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.conf;
+package org.canova.api.conf;
 
 /** Base class for things that may be configured with a {@link Configuration}. */
 public class Configured implements Configurable {

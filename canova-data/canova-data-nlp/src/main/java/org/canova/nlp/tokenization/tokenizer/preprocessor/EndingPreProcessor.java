@@ -1,4 +1,4 @@
-package org.nd4j.nlp.tokenization.tokenizer.preprocessor;
+package org.canova.nlp.tokenization.tokenizer.preprocessor;
 
 
 import org.nd4j.nlp.tokenization.tokenizer.TokenPreProcess;

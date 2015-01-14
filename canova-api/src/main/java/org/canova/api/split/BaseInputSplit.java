@@ -1,4 +1,4 @@
-package org.nd4j.api.split;
+package org.canova.api.split;
 
 import java.net.URI;
 

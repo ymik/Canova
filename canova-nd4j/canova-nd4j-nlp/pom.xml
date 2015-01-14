@@ -12,9 +12,6 @@
 
     <name>canova-nd4j-nlp</name>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 
 
 

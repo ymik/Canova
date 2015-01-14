@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.sound.musicg.properties;
+package org.canova.sound.musicg.properties;
 
 public class FingerprintProperties {
 	

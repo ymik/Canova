@@ -1,4 +1,4 @@
-package org.nd4j.api.berkeley;
+package org.canova.api.berkeley;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;

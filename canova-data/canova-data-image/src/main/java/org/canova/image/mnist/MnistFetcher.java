@@ -1,4 +1,4 @@
-package org.nd4j.image.mnist;
+package org.canova.image.mnist;
 
 import org.apache.commons.io.FileUtils;
 import org.deeplearning4j.util.ArchiveUtils;

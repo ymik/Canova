@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.conf;
+package org.canova.api.conf;
 
 import java.io.DataInput;
 import java.io.DataOutput;

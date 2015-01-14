@@ -1,4 +1,4 @@
-package org.nd4j.nlp.uima;
+package org.canova.nlp.uima;
 
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;

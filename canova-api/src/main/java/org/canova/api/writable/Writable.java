@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.writable;
+package org.canova.api.writable;
 
 import java.io.DataOutput;
 import java.io.DataInput;

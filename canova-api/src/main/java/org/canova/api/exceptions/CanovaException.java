@@ -1,4 +1,4 @@
-package org.nd4j.api.exceptions;
+package org.canova.api.exceptions;
 
 /**
  * Canova exception

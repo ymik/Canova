@@ -1,4 +1,4 @@
-package org.nd4j.nlp.vectorizer;
+package org.canova.nlp.vectorizer;
 
 import org.nd4j.api.conf.Configuration;
 import org.nd4j.api.records.reader.RecordReader;

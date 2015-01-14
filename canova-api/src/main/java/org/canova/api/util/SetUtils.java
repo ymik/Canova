@@ -1,4 +1,4 @@
-package org.nd4j.api.util;
+package org.canova.api.util;
 
 import java.util.Collection;
 import java.util.HashSet;

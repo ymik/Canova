@@ -1,4 +1,4 @@
-package org.nd4j.api.util;
+package org.canova.api.util;
 
 
 import org.nd4j.api.berkeley.Pair;

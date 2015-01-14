@@ -1,4 +1,4 @@
-package org.nd4j.nlp.annotator;
+package org.canova.nlp.annotator;
 
 
 import opennlp.uima.tokenize.TokenizerModelResourceImpl;

@@ -1,14 +1,7 @@
-package org.nd4j.image.lfw;
+package org.canova.image.lfw;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.deeplearning4j.util.ArchiveUtils;
-import org.deeplearning4j.util.ImageLoader;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.util.ArrayUtil;
-import org.nd4j.linalg.util.FeatureUtil;
+
+import org.canova.image.loader.ImageLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

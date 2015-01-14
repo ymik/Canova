@@ -1,4 +1,4 @@
-package org.nd4j.nd4j.nlp.vectorizer;
+package org.canova.nd4j.nlp.vectorizer;
 
 import static org.junit.Assert.*;
 

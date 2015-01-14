@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.io;
+package org.canova.api.io;
 
 import java.util.Comparator;
 

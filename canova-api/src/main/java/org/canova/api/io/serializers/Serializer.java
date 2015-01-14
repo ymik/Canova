@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.io.serializers;
+package org.canova.api.io.serializers;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -1,4 +1,4 @@
-package org.nd4j.api.berkeley;
+package org.canova.api.berkeley;
 public class Triple<S,T,U> {
 	S first;
 	T second;

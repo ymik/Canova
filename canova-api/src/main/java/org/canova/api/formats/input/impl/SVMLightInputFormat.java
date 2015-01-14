@@ -1,4 +1,4 @@
-package org.nd4j.api.formats.input.impl;
+package org.canova.api.formats.input.impl;
 
 import org.nd4j.api.formats.input.InputFormat;
 import org.nd4j.api.records.reader.RecordReader;

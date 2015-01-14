@@ -1,4 +1,4 @@
-package org.nd4j.nlp.metadata;
+package org.canova.nlp.metadata;
 
 import org.nd4j.api.berkeley.Counter;
 import org.nd4j.api.conf.Configuration;

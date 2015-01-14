@@ -1,4 +1,4 @@
-package org.nd4j.sound.musicg.fingerprint;
+package org.canova.sound.musicg.fingerprint;
 public class QuickSortInteger extends QuickSort{
 	
 	private int[] indexes;

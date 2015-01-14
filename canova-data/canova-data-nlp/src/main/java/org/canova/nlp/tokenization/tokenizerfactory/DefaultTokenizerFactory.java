@@ -1,4 +1,4 @@
-package org.nd4j.nlp.tokenization.tokenizerfactory;
+package org.canova.nlp.tokenization.tokenizerfactory;
 
 
 

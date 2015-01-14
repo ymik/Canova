@@ -1,4 +1,4 @@
-package org.nd4j.sound.musicg.processor;
+package org.canova.sound.musicg.processor;
 
 import java.util.Iterator;
 import java.util.LinkedList;

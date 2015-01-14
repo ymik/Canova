@@ -1,4 +1,4 @@
-package org.nd4j.api.vector;
+package org.canova.api.vector;
 
 import org.nd4j.api.conf.Configuration;
 import org.nd4j.api.records.reader.RecordReader;

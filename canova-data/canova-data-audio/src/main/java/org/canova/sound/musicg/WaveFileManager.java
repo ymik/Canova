@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.sound.musicg;
+package org.canova.sound.musicg;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

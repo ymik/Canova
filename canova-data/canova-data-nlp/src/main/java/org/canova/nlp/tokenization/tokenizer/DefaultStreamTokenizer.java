@@ -1,4 +1,4 @@
-package org.nd4j.nlp.tokenization.tokenizer;
+package org.canova.nlp.tokenization.tokenizer;
 
 
 import java.io.*;

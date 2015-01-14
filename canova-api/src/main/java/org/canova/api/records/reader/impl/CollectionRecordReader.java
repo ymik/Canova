@@ -1,4 +1,4 @@
-package org.nd4j.api.records.reader.impl;
+package org.canova.api.records.reader.impl;
 
 import org.nd4j.api.records.reader.RecordReader;
 import org.nd4j.api.split.InputSplit;

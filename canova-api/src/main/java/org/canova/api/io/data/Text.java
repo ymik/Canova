@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.io.data;
+package org.canova.api.io.data;
 
 import org.nd4j.api.io.BinaryComparable;
 import org.nd4j.api.io.WritableComparable;

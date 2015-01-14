@@ -36,19 +36,7 @@
     </distributionManagement>
 
 
-    <repositories>
 
-        <repository>
-            <id>org.apache.hadoop</id>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-        </repository>
-
-        <repository>
-            <id>org.apache.mahout</id>
-            <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-        </repository>
-
-    </repositories>
 
 
 

@@ -1,4 +1,4 @@
-package org.nd4j.api.formats.output.impl;
+package org.canova.api.formats.output.impl;
 
 import org.nd4j.api.conf.Configuration;
 import org.nd4j.api.exceptions.CanovaException;

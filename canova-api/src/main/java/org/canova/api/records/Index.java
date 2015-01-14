@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.records;
+package org.canova.api.records;
 
 /**
  * Interface that acts as an iterator for deserializing maps.

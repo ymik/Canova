@@ -1,4 +1,4 @@
-package org.nd4j.image.mnist.draw;
+package org.canova.image.mnist.draw;
 
 import org.apache.commons.math3.random.MersenneTwister;
 import org.deeplearning4j.datasets.iterator.impl.MnistDataSetIterator;

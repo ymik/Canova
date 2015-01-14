@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.api.io.serializers;
+package org.canova.api.io.serializers;
 
 import java.util.ArrayList;
 import java.util.List;

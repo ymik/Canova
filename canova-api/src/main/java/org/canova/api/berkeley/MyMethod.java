@@ -1,4 +1,4 @@
-package org.nd4j.api.berkeley;
+package org.canova.api.berkeley;
 /**
  * A function wrapping interface.
  * @author John DeNero

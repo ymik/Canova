@@ -1,4 +1,4 @@
-package org.nd4j.api.formats.input;
+package org.canova.api.formats.input;
 
 import org.nd4j.api.records.reader.RecordReader;
 import org.nd4j.api.split.InputSplit;

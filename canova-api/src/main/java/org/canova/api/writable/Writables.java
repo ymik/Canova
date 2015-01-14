@@ -1,4 +1,4 @@
-package org.nd4j.api.writable;
+package org.canova.api.writable;
 
 import org.nd4j.api.io.data.Text;
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.nd4j.sound.musicg.extension;
+package org.canova.sound.musicg.extension;
 
 
 import org.nd4j.sound.musicg.Wave;

@@ -1,6 +1,7 @@
 package org.canova.api.split;
 
-import org.nd4j.api.writable.Writable;
+
+import org.canova.api.writable.Writable;
 
 import java.net.URI;
 

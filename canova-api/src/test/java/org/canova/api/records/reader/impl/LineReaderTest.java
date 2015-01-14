@@ -3,9 +3,9 @@ package org.canova.api.records.reader.impl;
 import static org.junit.Assert.*;
 
 import org.apache.commons.io.FileUtils;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.split.FileSplit;
-import org.nd4j.api.split.InputSplit;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.split.FileSplit;
+import org.canova.api.split.InputSplit;
 import org.junit.Test;
 
 import org.slf4j.Logger;

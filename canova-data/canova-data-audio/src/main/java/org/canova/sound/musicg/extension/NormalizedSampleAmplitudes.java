@@ -17,7 +17,7 @@
 package org.canova.sound.musicg.extension;
 
 
-import org.nd4j.sound.musicg.Wave;
+import org.canova.sound.musicg.Wave;
 
 /**
  * Handles the wave data in amplitude-time domain.

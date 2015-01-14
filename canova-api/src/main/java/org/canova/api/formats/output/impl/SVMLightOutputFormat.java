@@ -1,10 +1,12 @@
 package org.canova.api.formats.output.impl;
 
-import org.nd4j.api.conf.Configuration;
-import org.nd4j.api.exceptions.CanovaException;
-import org.nd4j.api.formats.output.OutputFormat;
-import org.nd4j.api.records.writer.RecordWriter;
-import org.nd4j.api.records.writer.impl.LineRecordWriter;
+
+
+import org.canova.api.conf.Configuration;
+import org.canova.api.exceptions.CanovaException;
+import org.canova.api.formats.output.OutputFormat;
+import org.canova.api.records.writer.RecordWriter;
+import org.canova.api.records.writer.impl.LineRecordWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +20,7 @@ public class SVMLightOutputFormat implements OutputFormat {
         String outputPath = conf.get(OutputFormat.OUTPUT_PATH,".");
         try {
             return new LineRecordWriter(new File(outputPath));
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             throw new CanovaException(e);
         }
     }

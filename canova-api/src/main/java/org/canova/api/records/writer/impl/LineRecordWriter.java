@@ -1,7 +1,9 @@
 package org.canova.api.records.writer.impl;
 
-import org.nd4j.api.io.data.Text;
-import org.nd4j.api.writable.Writable;
+
+
+import org.canova.api.io.data.Text;
+import org.canova.api.writable.Writable;
 
 import java.io.File;
 import java.io.FileNotFoundException;

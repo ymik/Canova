@@ -2,10 +2,11 @@ package org.canova.api.records.reader.impl;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.nd4j.api.io.data.Text;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.split.InputSplit;
-import org.nd4j.api.writable.Writable;
+import org.canova.api.io.data.Text;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.split.InputSplit;
+import org.canova.api.writable.Writable;
+
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class FileRecordReader implements RecordReader {
     public Collection<Writable> next() {
         List<Writable> ret = new ArrayList<>();
         try {
-            ret.add(new Text(FileUtils.readFileToString(iter.next())));
+            ret.add((Writable) new Text(FileUtils.readFileToString(iter.next())));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,7 +57,7 @@ public class FileRecordReader implements RecordReader {
 
             if(iter.hasNext()) {
                 try {
-                    ret.add(new Text(FileUtils.readFileToString(iter.next())));
+                    ret.add((Writable) new Text(FileUtils.readFileToString(iter.next())));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

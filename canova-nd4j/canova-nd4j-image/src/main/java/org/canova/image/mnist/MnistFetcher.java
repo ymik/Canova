@@ -1,7 +1,7 @@
 package org.canova.image.mnist;
 
 import org.apache.commons.io.FileUtils;
-import org.deeplearning4j.util.ArchiveUtils;
+import org.canova.api.util.ArchiveUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +61,7 @@ public class MnistFetcher {
             FileUtils.copyURLToFile(new URL(trainingFileLabelsURL), labels);
         }
 
-        ArchiveUtils.unzipFileTo(labels.getAbsolutePath(),baseDir.getAbsolutePath());
+        ArchiveUtils.unzipFileTo(labels.getAbsolutePath(), baseDir.getAbsolutePath());
 
 
 

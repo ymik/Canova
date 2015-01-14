@@ -1,6 +1,8 @@
 package org.canova.nlp.metadata;
 
-import org.nd4j.api.conf.Configuration;
+
+import org.canova.api.conf.Configuration;
+import org.canova.api.util.Index;
 
 import java.util.List;
 
@@ -58,7 +60,7 @@ public interface VocabCache {
      * note that these are not all the possible tokens
      * @return the list of vocab words
      */
-    org.nd4j.api.util.Index vocabWords();
+   Index vocabWords();
 
 
     /**

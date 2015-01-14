@@ -16,7 +16,7 @@
 package musicg.fingerprint;
 
 
-import org.nd4j.sound.musicg.properties.FingerprintProperties;
+import musicg.properties.FingerprintProperties;
 
 /**
  * A class for fingerprint's similarity

@@ -18,8 +18,10 @@
 
 package org.canova.api.io.data;
 
-import org.nd4j.api.io.WritableComparable;
-import org.nd4j.api.io.WritableComparator;
+
+
+import org.canova.api.io.WritableComparable;
+import org.canova.api.io.WritableComparator;
 
 import java.io.*;
 

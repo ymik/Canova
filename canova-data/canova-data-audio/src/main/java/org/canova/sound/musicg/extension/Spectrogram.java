@@ -17,9 +17,9 @@
 package org.canova.sound.musicg.extension;
 
 
-import org.nd4j.sound.musicg.dsp.FastFourierTransform;
-import org.nd4j.sound.musicg.dsp.WindowFunction;
-import org.nd4j.sound.musicg.Wave;
+import org.canova.sound.musicg.Wave;
+import org.canova.sound.musicg.dsp.FastFourierTransform;
+import org.canova.sound.musicg.dsp.WindowFunction;
 
 /**
  * Handles the wave data in frequency-time domain.

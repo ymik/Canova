@@ -1,7 +1,8 @@
 package org.canova.api.records.reader.impl;
 
-import org.nd4j.api.io.data.DoubleWritable;
-import org.nd4j.api.writable.Writable;
+
+import org.canova.api.io.data.DoubleWritable;
+import org.canova.api.writable.Writable;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -57,7 +58,7 @@ public class MatlabRecordReader extends FileRecordReader {
                 if ((chr == '\n') || (chr == '\r')) {
                     isComment = false;
                     if (fileContent.length() > 0)
-                        currRecord.add(new DoubleWritable(new Double(fileContent.toString())));
+                        currRecord.add((Writable) new DoubleWritable(new Double(fileContent.toString())));
 
                     if (currRecord.size() > 0) {
                         currRecord = new ArrayList<>();
@@ -74,7 +75,7 @@ public class MatlabRecordReader extends FileRecordReader {
                 // separator found?
                 if ((chr == '\t') || (chr == ' ')) {
                     if (fileContent.length() > 0) {
-                        currRecord.add(new DoubleWritable(new Double(fileContent.toString())));
+                        currRecord.add((Writable) new DoubleWritable(new Double(fileContent.toString())));
                         fileContent = new StringBuffer();
                     }
                 }
@@ -85,7 +86,7 @@ public class MatlabRecordReader extends FileRecordReader {
 
             // last number?
             if (fileContent.length() > 0)
-                currRecord.add(new DoubleWritable(new Double(fileContent.toString())));
+                currRecord.add((Writable) new DoubleWritable(new Double(fileContent.toString())));
 
 
              currIter = records.iterator();

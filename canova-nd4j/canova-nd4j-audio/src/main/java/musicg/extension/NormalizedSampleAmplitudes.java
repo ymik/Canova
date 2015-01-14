@@ -17,7 +17,7 @@
 package musicg.extension;
 
 
-import org.nd4j.sound.musicg.Wave;
+import musicg.Wave;
 
 /**
  * Handles the wave data in amplitude-time domain.

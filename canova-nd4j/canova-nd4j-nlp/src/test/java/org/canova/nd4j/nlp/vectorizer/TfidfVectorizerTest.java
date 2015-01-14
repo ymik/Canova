@@ -2,10 +2,10 @@ package org.canova.nd4j.nlp.vectorizer;
 
 import static org.junit.Assert.*;
 
-import org.nd4j.api.conf.Configuration;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.records.reader.impl.CollectionRecordReader;
-import org.nd4j.api.writable.Writables;
+import org.canova.api.conf.Configuration;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.records.reader.impl.CollectionRecordReader;
+import org.canova.api.writable.Writables;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

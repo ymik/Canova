@@ -1,9 +1,10 @@
 package org.canova.api.io.serializers;
 
-import org.nd4j.api.conf.Configuration;
-import org.nd4j.api.conf.Configured;
-import org.nd4j.api.util.ReflectionUtils;
-import org.nd4j.api.util.StringUtils;
+
+import org.canova.api.conf.Configuration;
+import org.canova.api.conf.Configured;
+import org.canova.api.util.ReflectionUtils;
+import org.canova.api.util.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class SerializationFactory extends Configured {
     private static final Logger LOG =
             LoggerFactory.getLogger(SerializationFactory.class.getName());
 
-    private List<Serialization<?>> serializations = new ArrayList<Serialization<?>>();
+    private List<Serialization<?>> serializations = new ArrayList<>();
 
     /**
      * <p>

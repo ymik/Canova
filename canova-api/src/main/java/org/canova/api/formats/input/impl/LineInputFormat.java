@@ -1,9 +1,10 @@
 package org.canova.api.formats.input.impl;
 
-import org.nd4j.api.formats.input.InputFormat;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.records.reader.impl.LineRecordReader;
-import org.nd4j.api.split.InputSplit;
+
+import org.canova.api.formats.input.InputFormat;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.records.reader.impl.LineRecordReader;
+import org.canova.api.split.InputSplit;
 
 import java.io.DataInput;
 import java.io.DataOutput;

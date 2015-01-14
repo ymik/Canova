@@ -6,8 +6,9 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.ExternalResourceFactory;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.nd4j.nlp.movingwindow.Util;
-import org.nd4j.nlp.tokenization.tokenizer.ConcurrentTokenizer;
+
+import org.canova.nlp.movingwindow.Util;
+import org.canova.nlp.tokenization.tokenizer.ConcurrentTokenizer;
 import org.cleartk.opennlp.tools.Tokenizer;
 import org.cleartk.token.type.Sentence;
 import org.cleartk.token.type.Token;

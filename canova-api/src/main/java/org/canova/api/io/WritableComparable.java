@@ -18,7 +18,8 @@
 
 package org.canova.api.io;
 
-import org.nd4j.api.writable.Writable;
+
+import org.canova.api.writable.Writable;
 
 /**
  * A {@link Writable} which is also {@link Comparable}. 

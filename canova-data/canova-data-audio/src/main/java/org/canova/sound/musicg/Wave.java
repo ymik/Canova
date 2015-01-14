@@ -18,11 +18,12 @@ package org.canova.sound.musicg;
 
 
 
-import org.nd4j.sound.musicg.extension.NormalizedSampleAmplitudes;
-import org.nd4j.sound.musicg.extension.Spectrogram;
-import org.nd4j.sound.musicg.fingerprint.FingerprintManager;
-import org.nd4j.sound.musicg.fingerprint.FingerprintSimilarity;
-import org.nd4j.sound.musicg.fingerprint.FingerprintSimilarityComputer;
+
+import org.canova.sound.musicg.extension.NormalizedSampleAmplitudes;
+import org.canova.sound.musicg.extension.Spectrogram;
+import org.canova.sound.musicg.fingerprint.FingerprintManager;
+import org.canova.sound.musicg.fingerprint.FingerprintSimilarity;
+import org.canova.sound.musicg.fingerprint.FingerprintSimilarityComputer;
 
 import java.io.*;
 

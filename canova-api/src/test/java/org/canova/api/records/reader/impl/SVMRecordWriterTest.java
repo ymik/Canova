@@ -4,12 +4,13 @@ import static org.junit.Assume.*;
 import static org.junit.Assert.*;
 
 import org.apache.commons.io.IOUtils;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.records.writer.RecordWriter;
-import org.nd4j.api.records.writer.impl.SVMLightRecordWriter;
-import org.nd4j.api.split.FileSplit;
-import org.nd4j.api.split.InputSplit;
-import org.nd4j.api.writable.Writable;
+
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.records.writer.RecordWriter;
+import org.canova.api.records.writer.impl.SVMLightRecordWriter;
+import org.canova.api.split.FileSplit;
+import org.canova.api.split.InputSplit;
+import org.canova.api.writable.Writable;
 import org.junit.Test;
 import org.springframework.core.io.ClassPathResource;
 

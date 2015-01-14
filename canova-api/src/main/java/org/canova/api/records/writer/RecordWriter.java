@@ -1,7 +1,8 @@
 package org.canova.api.records.writer;
 
 
-import org.nd4j.api.writable.Writable;
+
+import org.canova.api.writable.Writable;
 
 import java.io.Closeable;
 import java.io.IOException;

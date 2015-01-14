@@ -3,7 +3,13 @@ package org.canova.image.lfw;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.canova.api.util.ArchiveUtils;
 import org.canova.image.loader.ImageLoader;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.DataSet;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.util.ArrayUtil;
+import org.nd4j.linalg.util.FeatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +188,7 @@ public class LFWLoader {
 
         log.info("Untaring File: " + tarFile.toString());
 
-        ArchiveUtils.unzipFileTo(tarFile.getAbsolutePath(),baseDir.getAbsolutePath());
+        ArchiveUtils.unzipFileTo(tarFile.getAbsolutePath(), baseDir.getAbsolutePath());
 
     }
 

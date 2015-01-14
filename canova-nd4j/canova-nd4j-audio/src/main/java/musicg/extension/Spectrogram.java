@@ -17,9 +17,9 @@
 package musicg.extension;
 
 
-import org.nd4j.sound.musicg.Wave;
-import org.nd4j.sound.musicg.dsp.FastFourierTransform;
-import org.nd4j.sound.musicg.dsp.WindowFunction;
+import musicg.Wave;
+import musicg.dsp.FastFourierTransform;
+import musicg.dsp.WindowFunction;
 
 /**
  * Handles the wave data in frequency-time domain.

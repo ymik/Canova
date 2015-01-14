@@ -1,7 +1,8 @@
 package org.canova.api.util;
 
 
-import org.nd4j.api.berkeley.Pair;
+
+import org.canova.api.berkeley.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

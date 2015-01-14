@@ -1,8 +1,9 @@
 package org.canova.api.records.reader.impl;
 
-import org.nd4j.api.io.data.DoubleWritable;
-import org.nd4j.api.io.data.Text;
-import org.nd4j.api.writable.Writable;
+
+import org.canova.api.io.data.DoubleWritable;
+import org.canova.api.io.data.Text;
+import org.canova.api.writable.Writable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,10 +66,10 @@ public class SVMLightRecordReader extends LineRecordReader {
                 // actual value
                 index = Integer.parseInt(col.substring(0, col.indexOf(":")));
                 value = Double.parseDouble(col.substring(col.indexOf(":") + 1));
-                ret.add(new DoubleWritable(value));
+                ret.add((Writable) new DoubleWritable(value));
             }
 
-            ret.add(new DoubleWritable(classVal));
+            ret.add((Writable) new DoubleWritable(classVal));
         }
         catch (Exception e) {
             System.err.println("Error parsing line '" + val + "': " + e);

@@ -2,9 +2,10 @@ package org.canova.nlp.movingwindow;
 
 
 import org.apache.commons.lang3.StringUtils;
-import org.nd4j.nlp.tokenization.tokenizer.DefaultStreamTokenizer;
-import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
-import org.nd4j.nlp.tokenization.tokenizerfactory.TokenizerFactory;
+import org.canova.nlp.tokenization.tokenizer.DefaultStreamTokenizer;
+import org.canova.nlp.tokenization.tokenizer.Tokenizer;
+import org.canova.nlp.tokenization.tokenizerfactory.TokenizerFactory;
+
 
 import java.io.InputStream;
 import java.util.ArrayList;

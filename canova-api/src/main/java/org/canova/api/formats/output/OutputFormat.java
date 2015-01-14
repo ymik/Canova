@@ -1,8 +1,9 @@
 package org.canova.api.formats.output;
 
-import org.nd4j.api.conf.Configuration;
-import org.nd4j.api.exceptions.CanovaException;
-import org.nd4j.api.records.writer.RecordWriter;
+
+import org.canova.api.conf.Configuration;
+import org.canova.api.exceptions.CanovaException;
+import org.canova.api.records.writer.RecordWriter;
 
 /**
  * Create a record writer

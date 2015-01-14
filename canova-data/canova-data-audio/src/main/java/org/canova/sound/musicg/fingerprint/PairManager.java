@@ -17,7 +17,8 @@
 package org.canova.sound.musicg.fingerprint;
 
 
-import org.nd4j.sound.musicg.properties.FingerprintProperties;
+
+import org.canova.sound.musicg.properties.FingerprintProperties;
 
 import java.util.HashMap;
 import java.util.Iterator;

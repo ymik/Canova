@@ -5,7 +5,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.nd4j.nlp.movingwindow.Util;
+import org.canova.nlp.movingwindow.Util;
 import org.cleartk.util.ParamUtil;
 
 public class SentenceAnnotator extends org.cleartk.opennlp.tools.SentenceAnnotator {

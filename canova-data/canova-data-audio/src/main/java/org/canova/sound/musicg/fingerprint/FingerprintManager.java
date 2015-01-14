@@ -17,12 +17,13 @@
 package org.canova.sound.musicg.fingerprint;
 
 
-import org.nd4j.sound.musicg.dsp.Resampler;
-import org.nd4j.sound.musicg.Wave;
-import org.nd4j.sound.musicg.WaveHeader;
-import org.nd4j.sound.musicg.extension.Spectrogram;
-import org.nd4j.sound.musicg.processor.TopManyPointsProcessorChain;
-import org.nd4j.sound.musicg.properties.FingerprintProperties;
+
+import org.canova.sound.musicg.Wave;
+import org.canova.sound.musicg.WaveHeader;
+import org.canova.sound.musicg.dsp.Resampler;
+import org.canova.sound.musicg.extension.Spectrogram;
+import org.canova.sound.musicg.processor.TopManyPointsProcessorChain;
+import org.canova.sound.musicg.properties.FingerprintProperties;
 
 import java.io.*;
 import java.util.Iterator;

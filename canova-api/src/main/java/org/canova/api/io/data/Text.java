@@ -18,10 +18,11 @@
 
 package org.canova.api.io.data;
 
-import org.nd4j.api.io.BinaryComparable;
-import org.nd4j.api.io.WritableComparable;
-import org.nd4j.api.io.WritableComparator;
-import org.nd4j.api.io.WritableUtils;
+
+import org.canova.api.io.BinaryComparable;
+import org.canova.api.io.WritableComparable;
+import org.canova.api.io.WritableComparator;
+import org.canova.api.io.WritableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -281,7 +282,7 @@ public class Text extends BinaryComparable
     /** serialize
      * write this object to out
      * length uses zero-compressed encoding
-     * @see org.nd4j.api.writable.Writable#write(DataOutput)
+     * @see org.canova.api.writable.Writable#write(DataOutput)
      */
     public void write(DataOutput out) throws IOException {
         WritableUtils.writeVInt(out, length);

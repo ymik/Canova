@@ -17,12 +17,13 @@
 package musicg.fingerprint;
 
 
-import org.nd4j.sound.musicg.Wave;
-import org.nd4j.sound.musicg.WaveHeader;
-import org.nd4j.sound.musicg.dsp.Resampler;
-import org.nd4j.sound.musicg.extension.Spectrogram;
-import org.nd4j.sound.musicg.processor.TopManyPointsProcessorChain;
-import org.nd4j.sound.musicg.properties.FingerprintProperties;
+
+import musicg.Wave;
+import musicg.WaveHeader;
+import musicg.dsp.Resampler;
+import musicg.extension.Spectrogram;
+import musicg.processor.TopManyPointsProcessorChain;
+import musicg.properties.FingerprintProperties;
 
 import java.io.*;
 import java.util.Iterator;

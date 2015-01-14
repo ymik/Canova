@@ -3,12 +3,13 @@ package org.canova.nlp.tokenization.tokenizerfactory;
 import org.apache.uima.analysis_engine.AnalysisEngine;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.nd4j.nlp.annotator.SentenceAnnotator;
-import org.nd4j.nlp.annotator.TokenizerAnnotator;
-import org.nd4j.nlp.tokenization.tokenizer.TokenPreProcess;
-import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
-import org.nd4j.nlp.tokenization.tokenizer.UimaTokenizer;
-import org.nd4j.nlp.uima.UimaResource;
+import org.canova.nlp.annotator.SentenceAnnotator;
+import org.canova.nlp.annotator.TokenizerAnnotator;
+import org.canova.nlp.tokenization.tokenizer.TokenPreProcess;
+import org.canova.nlp.tokenization.tokenizer.Tokenizer;
+import org.canova.nlp.tokenization.tokenizer.UimaTokenizer;
+import org.canova.nlp.uima.UimaResource;
+
 
 import java.io.InputStream;
 

@@ -2,11 +2,12 @@ package org.canova.nlp.movingwindow;
 
 
 
-import org.nd4j.api.berkeley.Pair;
-import org.nd4j.api.berkeley.StringUtils;
-import org.nd4j.api.util.MultiDimensionalMap;
-import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
-import org.nd4j.nlp.tokenization.tokenizerfactory.TokenizerFactory;
+
+import org.canova.api.berkeley.Pair;
+import org.canova.api.berkeley.StringUtils;
+import org.canova.api.util.MultiDimensionalMap;
+import org.canova.nlp.tokenization.tokenizer.Tokenizer;
+import org.canova.nlp.tokenization.tokenizerfactory.TokenizerFactory;
 
 import java.util.ArrayList;
 import java.util.List;

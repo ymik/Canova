@@ -2,10 +2,10 @@ package org.canova.api.records.reader.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
-import org.nd4j.api.io.data.Text;
-import org.nd4j.api.records.reader.RecordReader;
-import org.nd4j.api.split.InputSplit;
-import org.nd4j.api.writable.Writable;
+import org.canova.api.io.data.Text;
+import org.canova.api.records.reader.RecordReader;
+import org.canova.api.split.InputSplit;
+import org.canova.api.writable.Writable;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -40,8 +40,9 @@ public class LineRecordReader implements RecordReader {
     @Override
     public Collection<Writable> next() {
         List<Writable> ret = new ArrayList<>();
+
         if(iter.hasNext()) {
-            ret.add(new Text(iter.nextLine()));
+            ret.add((Writable) new Text(iter.nextLine()));
             return ret;
         }
         else {
@@ -54,7 +55,7 @@ public class LineRecordReader implements RecordReader {
             }
 
             if(iter.hasNext()) {
-                ret.add(new Text(iter.nextLine()));
+                ret.add((Writable) new Text(iter.nextLine()));
                 return ret;
             }
 

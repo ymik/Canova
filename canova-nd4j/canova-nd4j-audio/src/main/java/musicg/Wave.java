@@ -18,11 +18,13 @@ package musicg;
 
 
 
-import org.nd4j.sound.musicg.extension.NormalizedSampleAmplitudes;
-import org.nd4j.sound.musicg.extension.Spectrogram;
-import org.nd4j.sound.musicg.fingerprint.FingerprintManager;
-import org.nd4j.sound.musicg.fingerprint.FingerprintSimilarity;
-import org.nd4j.sound.musicg.fingerprint.FingerprintSimilarityComputer;
+
+
+import musicg.extension.NormalizedSampleAmplitudes;
+import musicg.extension.Spectrogram;
+import musicg.fingerprint.FingerprintManager;
+import musicg.fingerprint.FingerprintSimilarity;
+import musicg.fingerprint.FingerprintSimilarityComputer;
 
 import java.io.*;
 

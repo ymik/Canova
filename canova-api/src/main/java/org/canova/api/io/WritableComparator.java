@@ -18,7 +18,8 @@
 
 package org.canova.api.io;
 
-import org.nd4j.api.util.ReflectionUtils;
+
+import org.canova.api.util.ReflectionUtils;
 
 import java.io.*;
 import java.util.*;

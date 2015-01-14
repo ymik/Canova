@@ -11,8 +11,7 @@ import org.apache.commons.math3.linear.NonSquareMatrixException;
 import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
-import org.nd4j.api.berkeley.Counter;
-
+import org.canova.api.berkeley.Counter;
 
 /**
  * This is a math utils class.
@@ -187,8 +186,8 @@ public class MathUtils  {
     public static double stringSimilarity(String...strings) {
         if(strings==null)
             return 0;
-        Counter<String> counter = new Counter<String>();
-        Counter<String> counter2 = new Counter<String>();
+        Counter<String> counter = new Counter<>();
+        Counter<String> counter2 = new Counter<>();
 
         for(int i = 0; i < strings[0].length(); i++)
             counter.incrementCount(String.valueOf(strings[0].charAt(i)), 1.0);

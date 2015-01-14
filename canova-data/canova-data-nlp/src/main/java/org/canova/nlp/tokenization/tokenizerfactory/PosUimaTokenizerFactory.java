@@ -2,13 +2,13 @@ package org.canova.nlp.tokenization.tokenizerfactory;
 
 
 import org.apache.uima.analysis_engine.AnalysisEngine;
-import org.nd4j.nlp.annotator.PoStagger;
-import org.nd4j.nlp.annotator.SentenceAnnotator;
-import org.nd4j.nlp.annotator.StemmerAnnotator;
-import org.nd4j.nlp.annotator.TokenizerAnnotator;
-import org.nd4j.nlp.tokenization.tokenizer.PosUimaTokenizer;
-import org.nd4j.nlp.tokenization.tokenizer.TokenPreProcess;
-import org.nd4j.nlp.tokenization.tokenizer.Tokenizer;
+import org.canova.nlp.annotator.PoStagger;
+import org.canova.nlp.annotator.SentenceAnnotator;
+import org.canova.nlp.annotator.StemmerAnnotator;
+import org.canova.nlp.annotator.TokenizerAnnotator;
+import org.canova.nlp.tokenization.tokenizer.PosUimaTokenizer;
+import org.canova.nlp.tokenization.tokenizer.TokenPreProcess;
+import org.canova.nlp.tokenization.tokenizer.Tokenizer;
 
 
 import java.io.InputStream;

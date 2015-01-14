@@ -125,9 +125,9 @@ public class MnistManager {
     }
 
     /**
-     * Get the underlying labels file as {@link MnistLabelFile}.
-     * 
-     * @return {@link MnistLabelFile}.
+     * Get the underlying labels file as {@link org.canova.image.mnist.MnistLabelFile}.
+     *
+     * @return {@link org.canova.image.mnist.MnistLabelFile}.
      */
     public MnistLabelFile getLabels() {
         return labels;

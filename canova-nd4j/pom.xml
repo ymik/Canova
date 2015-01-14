@@ -7,6 +7,9 @@
     <version>0.0.0.1-SNAPSHOT</version>
     <modules>
         <module>canova-nd4j-nlp</module>
+        <module>canova-nd4j-image</module>
+        <module>canova-nd4j-timeseries</module>
+        <module>canova-nd4j-audio</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -168,6 +171,13 @@
         </plugins>
     </build>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.nd4j</groupId>
+            <artifactId>nd4j-api</artifactId>
+            <version>${nd4j.version}</version>
+        </dependency>
+    </dependencies>
 
 
 </project>

@@ -33,8 +33,8 @@ public class LFWLoader {
     private int numNames;
     private int numPixelColumns;
     private ImageLoader loader = new ImageLoader(28,28);
-    private List<String> images = new ArrayList<String>();
-    private List<String> outcomes = new ArrayList<String>();
+    private List<String> images = new ArrayList<>();
+    private List<String> outcomes = new ArrayList<>();
 
 
 

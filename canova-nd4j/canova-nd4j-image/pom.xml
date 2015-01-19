@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>cnova-nd4j-image</artifactId>
+    <artifactId>canova-nd4j-image</artifactId>
 
     <dependencies>
         <dependency>

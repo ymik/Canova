@@ -36,11 +36,6 @@
     </distributionManagement>
 
 
-
-
-
-
-
     <profiles>
 
         <profile>
@@ -127,7 +122,7 @@
     </profiles>
     <scm>
         <connection>scm:git:git@github.com:SkymindIO/Canova.git</connection>
-        <developerConnection>scm:git@github.com:SkymindIO/Canova.git</developerConnection>
+        <developerConnection>scm:git:git@github.com:SkymindIO/Canova.git</developerConnection>
         <url>git@github.com:SkymindIO/Canova.git</url>
         <tag>HEAD</tag>
     </scm>

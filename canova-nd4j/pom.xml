@@ -3,7 +3,7 @@
 
     <groupId>org.nd4j</groupId>
     <artifactId>canova-nd4j</artifactId>
-    <version>0.0.0.2-SNAPSHOT</version>
+    <version>0.0.0.1-SNAPSHOT</version>
     <modules>
         <module>canova-nd4j-nlp</module>
         <module>canova-nd4j-image</module>

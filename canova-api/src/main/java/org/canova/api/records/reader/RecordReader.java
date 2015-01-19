@@ -5,13 +5,14 @@ import org.canova.api.writable.Writable;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
  * Record reader
  * @author Adam Gibson
  */
-public interface RecordReader extends Closeable {
+public interface RecordReader extends Closeable,Serializable {
 
     /**
      * Called once at initialization.

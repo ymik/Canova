@@ -3,7 +3,14 @@
 
     <groupId>org.nd4j</groupId>
     <artifactId>canova-nd4j</artifactId>
-    <version>0.0.0.1</version>
+
+
+    <parent>
+        <groupId>org.nd4j</groupId>
+        <artifactId>canova-parent</artifactId>
+        <version>0.0.0.1-SNAPSHOT</version>
+    </parent>
+
     <modules>
         <module>canova-nd4j-nlp</module>
         <module>canova-nd4j-image</module>
@@ -13,7 +20,6 @@
     <packaging>pom</packaging>
 
     <name>canova-nd4j</name>
-    <url>http://nd4j.org</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

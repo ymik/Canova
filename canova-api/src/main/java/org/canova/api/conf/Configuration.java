@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.Writer;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,9 +43,9 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.WeakHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -57,11 +58,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 
-import org.canova.api.io.WritableUtils;
 import org.canova.api.util.ReflectionUtils;
 import org.canova.api.util.StringUtils;
 import org.canova.api.writable.Writable;
@@ -141,7 +140,7 @@ import org.xml.sax.SAXException;
  * of the System property with that name.
  */
 public class Configuration implements Iterable<Map.Entry<String,String>>,
-        Writable {
+        Writable, Serializable {
     private static final Logger LOG =
             LoggerFactory.getLogger(Configuration.class);
 
@@ -150,12 +149,12 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     /**
      * List of configuration resources.
      */
-    private ArrayList<Object> resources = new ArrayList<Object>();
+    private ArrayList<Object> resources = new ArrayList<>();
 
     /**
      * List of configuration parameters marked <b>final</b>.
      */
-    private Set<String> finalParameters = new HashSet<String>();
+    private Set<String> finalParameters = new HashSet<>();
 
     private boolean loadDefaults = true;
 
@@ -163,17 +162,17 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
      * Configuration objects
      */
     private static final WeakHashMap<Configuration,Object> REGISTRY =
-            new WeakHashMap<Configuration,Object>();
+            new WeakHashMap<>();
 
     /**
      * List of default Resources. Resources are loaded in the order of the list
      * entries
      */
     private static final CopyOnWriteArrayList<String> defaultResources =
-            new CopyOnWriteArrayList<String>();
+            new CopyOnWriteArrayList<>();
 
     private static final ConcurrentMap<ClassLoader, Map<String, Class<?>>>
-            CACHE_CLASSES = new ConcurrentHashMap<ClassLoader, Map<String, Class<?>>>();
+            CACHE_CLASSES = new ConcurrentHashMap<>();
 
     /**
      * Flag to indicate if the storage of resource which updates a key needs
@@ -247,7 +246,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
         this.loadDefaults = other.loadDefaults;
         this.storeResource = storeResource;
         if (storeResource) {
-            updatingResource = new HashMap<String, String>();
+            updatingResource = new HashMap<>();
         }
     }
 
@@ -269,7 +268,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
             }
         }
 
-        this.finalParameters = new HashSet<String>(other.finalParameters);
+        this.finalParameters = new HashSet<>(other.finalParameters);
         synchronized(Configuration.class) {
             REGISTRY.put(this, null);
         }
@@ -293,7 +292,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
             }
             defaultResources.add(name);
             // Make a copy so we don't iterate while not holding the lock
-            toReload = new ArrayList<Configuration>(REGISTRY.size());
+            toReload = new ArrayList<>(REGISTRY.size());
             toReload.addAll(REGISTRY.keySet());
         }
         for(Configuration conf : toReload) {
@@ -363,15 +362,15 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     }
 
     private static Pattern varPat = Pattern.compile("\\$\\{[^\\}\\$\u0020]+\\}");
-    private static int MAX_SUBST = 20;
 
-    private String substituteVars(String expr) {
+  private String substituteVars(String expr) {
         if (expr == null) {
             return null;
         }
         Matcher match = varPat.matcher("");
         String eval = expr;
-        for(int s=0; s<MAX_SUBST; s++) {
+        int MAX_SUBST = 20;
+        for(int s=0; s< MAX_SUBST; s++) {
             match.reset(eval);
             if (!match.find()) {
                 return eval;
@@ -531,7 +530,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     private String getHexDigits(String value) {
         boolean negative = false;
         String str = value;
-        String hexString = null;
+        String hexString;
         if (value.startsWith("-")) {
             negative = true;
             str = value.substring(1);
@@ -597,12 +596,9 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
      *         or <code>defaultValue</code>.
      */
     public boolean getBoolean(String name, boolean defaultValue) {
-        String valueString = get(name);
-        if ("true".equals(valueString))
-            return true;
-        else if ("false".equals(valueString))
-            return false;
-        else return defaultValue;
+      String valueString = get(name);
+      return "true".equals(valueString) ||
+          !"false".equals(valueString) && defaultValue;
     }
 
     /**
@@ -745,7 +741,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
 
         @Override
         public String toString() {
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             boolean first = true;
             for(Range r: ranges) {
                 if (first) {
@@ -830,8 +826,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     public Collection<String> getTrimmedStringCollection(String name) {
         String valueString = get(name);
         if (null == valueString) {
-            Collection<String> empty = Collections.emptyList();
-            return empty;
+          return Collections.emptyList();
         }
         return StringUtils.getTrimmedStringCollection(valueString);
     }
@@ -890,7 +885,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     public Class<?> getClassByName(String name) throws ClassNotFoundException {
         Map<String, Class<?>> map = CACHE_CLASSES.get(classLoader);
         if (map == null) {
-            Map<String, Class<?>> newMap = new ConcurrentHashMap<String, Class<?>>();
+            Map<String, Class<?>> newMap = new ConcurrentHashMap<>();
             map = CACHE_CLASSES.putIfAbsent(classLoader, newMap);
             if (map == null) {
                 map = newMap;
@@ -1002,7 +997,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
      */
     @SuppressWarnings("unchecked")
     public <U> List<U> getInstances(String name, Class<U> xface) {
-        List<U> ret = new ArrayList<U>();
+        List<U> ret = new ArrayList<>();
         Class<?>[] classes = getClasses(name);
         for (Class<?> cl: classes) {
             if (!xface.isAssignableFrom(cl)) {
@@ -1159,7 +1154,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
         // methods that allow non-strings to be put into configurations are removed,
         // we could replace properties with a Map<String,String> and get rid of this
         // code.
-        Map<String,String> result = new HashMap<String,String>();
+        Map<String,String> result = new HashMap<>();
         for(Map.Entry<Object,Object> item: getProps().entrySet()) {
             if (item.getKey() instanceof String &&
                     item.getValue() instanceof String) {
@@ -1176,7 +1171,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
             // To avoid addResource causing a ConcurrentModificationException
             ArrayList<String> toLoad;
             synchronized (Configuration.class) {
-                toLoad = new ArrayList<String>(defaultResources);
+                toLoad = new ArrayList<>(defaultResources);
             }
             for (String resource : toLoad) {
                 loadResource(properties, resource, quiet);
@@ -1296,16 +1291,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
                 }
             }
 
-        } catch (IOException e) {
-            LOG.error("error parsing conf file: " + e);
-            throw new RuntimeException(e);
-        } catch (DOMException e) {
-            LOG.error("error parsing conf file: " + e);
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
-            LOG.error("error parsing conf file: " + e);
-            throw new RuntimeException(e);
-        } catch (ParserConfigurationException e) {
+        } catch (IOException | ParserConfigurationException | SAXException | DOMException e) {
             LOG.error("error parsing conf file: " + e);
             throw new RuntimeException(e);
         }
@@ -1328,7 +1314,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
             for (Enumeration e = properties.keys(); e.hasMoreElements();) {
                 String name = (String)e.nextElement();
                 Object object = properties.get(name);
-                String value = null;
+                String value;
                 if (object instanceof String) {
                     value = (String) object;
                 }else {
@@ -1415,7 +1401,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
 
     @Override
     public String toString() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         sb.append("Configuration: ");
         if(loadDefaults) {
             synchronized (Configuration.class) {
@@ -1429,7 +1415,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
         return sb.toString();
     }
 
-    private void toString(List resources, StringBuffer sb) {
+    private void toString(List resources, StringBuilder sb) {
         ListIterator i = resources.listIterator();
         while (i.hasNext()) {
             if (i.nextIndex() != 0) {

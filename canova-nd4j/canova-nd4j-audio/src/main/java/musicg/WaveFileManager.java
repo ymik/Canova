@@ -16,7 +16,6 @@
 
 package musicg;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -39,7 +38,7 @@ public class WaveFileManager {
 	 * @param filename
 	 *            filename to be saved
 	 *            
-	 * @see	wave file saved
+	 * @see	Wave file saved
 	 */
 	public void saveWaveAsFile(String filename){
 
@@ -84,8 +83,6 @@ public class WaveFileManager {
 					(byte) (subChunk2Size >> 24) });
 			fos.write(wave.getBytes());
 			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

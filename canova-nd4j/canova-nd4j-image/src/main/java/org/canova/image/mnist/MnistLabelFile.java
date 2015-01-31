@@ -1,7 +1,6 @@
 package org.canova.image.mnist;
 
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
@@ -22,7 +21,7 @@ public class MnistLabelFile extends MnistDbFile {
      * @throws java.io.IOException
      * @throws java.io.FileNotFoundException
      */
-    public MnistLabelFile(String name, String mode) throws FileNotFoundException, IOException {
+    public MnistLabelFile(String name, String mode) throws IOException {
         super(name, mode);
     }
 

@@ -1,6 +1,5 @@
 package musicg.processor;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,12 +16,10 @@ public class ProcessorChain{
 	}
 	
 	private void process(){
-		Iterator<IntensityProcessor> iterator=processorList.iterator();
-		while(iterator.hasNext()){
-			IntensityProcessor processor=iterator.next();
-			processor.execute();
-			intensities=processor.getIntensities();
-		}
+    for (IntensityProcessor processor : processorList) {
+      processor.execute();
+      intensities = processor.getIntensities();
+    }
 	}
 	
 	public double[][] getIntensities(){

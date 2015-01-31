@@ -1,6 +1,8 @@
 package musicg.processor;
 
 public interface IntensityProcessor{
+
 	public void execute();
-	public double[][] getIntensities();
+
+  public double[][] getIntensities();
 }

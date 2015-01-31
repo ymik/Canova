@@ -260,7 +260,7 @@ public class WaveHeader {
 
 	public String toString() {
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		sb.append("chunkId: " + chunkId);
 		sb.append("\n");
 		sb.append("chunkSize: " + chunkSize);
@@ -285,7 +285,7 @@ public class WaveHeader {
 		sb.append("\n");
 		sb.append("subChunk2Id: " + subChunk2Id);
 		sb.append("\n");
-		sb.append("subChunk2Size: " + subChunk2Size);		
+		sb.append("subChunk2Size: " + subChunk2Size);
 		return sb.toString();
 	}
 }

@@ -20,7 +20,7 @@ public class ArrayRankDouble {
 
 	/**
 	 * Get the index position of maximum value the given array 
-	 * @param array
+	 * @param array an array
 	 * @return	index of the max value in array
 	 */
 	public int getMaxValueIndex(double[] array) {
@@ -40,7 +40,7 @@ public class ArrayRankDouble {
 
 	/**
 	 * Get the index position of minimum value in the given array 
-	 * @param array
+	 * @param array an array
 	 * @return	index of the min value in array
 	 */
 	public int getMinValueIndex(double[] array) {
@@ -60,10 +60,10 @@ public class ArrayRankDouble {
 
 	/**
 	 * Get the n-th value in the array after sorted
-	 * @param array
-	 * @param n
+	 * @param array an array
+	 * @param n position in array
 	 * @param ascending	is ascending order or not
-	 * @return
+	 * @return value at nth position of array
 	 */
 	public double getNthOrderedValue(double[] array, int n, boolean ascending) {
 
@@ -79,9 +79,8 @@ public class ArrayRankDouble {
 		}
 
 		// this value is the value of the numKey-th element
-		double passValue = getOrderedValue(array, targetindex);
 
-		return passValue;
+    return getOrderedValue(array, targetindex);
 	}
 
 	private double getOrderedValue(double[] array, int index) {

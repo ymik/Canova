@@ -36,24 +36,19 @@ public class MnistManager {
      * @throws java.io.IOException
      */
     public static void writeImageToPpm(int[][] image, String ppmFileName) throws IOException {
-        BufferedWriter ppmOut = null;
-        try {
-            ppmOut = new BufferedWriter(new FileWriter(ppmFileName));
-
-            int rows = image.length;
-            int cols = image[0].length;
-            ppmOut.write("P3\n");
-            ppmOut.write("" + rows + " " + cols + " 255\n");
-            for (int i = 0; i < rows; i++) {
-                StringBuffer s = new StringBuffer();
-                for (int j = 0; j < cols; j++) {
-                    s.append(image[i][j] + " " + image[i][j] + " " + image[i][j] + "  ");
-                }
-                ppmOut.write(s.toString());
-            }
-        } finally {
-            ppmOut.close();
+      try (BufferedWriter ppmOut = new BufferedWriter(new FileWriter(ppmFileName))) {
+        int rows = image.length;
+        int cols = image[0].length;
+        ppmOut.write("P3\n");
+        ppmOut.write("" + rows + " " + cols + " 255\n");
+        for (int[] anImage : image) {
+          StringBuilder s = new StringBuilder();
+          for (int j = 0; j < cols; j++) {
+            s.append(anImage[j] + " " + anImage[j] + " " + anImage[j] + "  ");
+          }
+          ppmOut.write(s.toString());
         }
+      }
 
     }
 

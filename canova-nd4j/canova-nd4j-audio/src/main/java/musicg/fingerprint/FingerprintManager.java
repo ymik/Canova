@@ -109,9 +109,8 @@ public class FingerprintManager{
 			for (int j=0; j<numRobustPointsPerFrame; j++){
 				if (coordinates[i][j]!=-1){
 					// first 2 bytes is x
-					int x=i;
-					byteList.add((byte)(x>>8));
-					byteList.add((byte)x);
+          byteList.add((byte)(i >>8));
+					byteList.add((byte) i);
 					
 					// next 2 bytes is y
 					int y=coordinates[i][j];
@@ -119,7 +118,7 @@ public class FingerprintManager{
 					byteList.add((byte)y);
 					
 					// next 4 bytes is intensity
-					int intensity=(int)(spectorgramData[x][y]*Integer.MAX_VALUE);	// spectorgramData is ranged from 0~1
+					int intensity=(int)(spectorgramData[i][y]*Integer.MAX_VALUE);	// spectorgramData is ranged from 0~1
 					byteList.add((byte)(intensity>>24));
 					byteList.add((byte)(intensity>>16));
 					byteList.add((byte)(intensity>>8));
@@ -151,8 +150,6 @@ public class FingerprintManager{
 			InputStream fis=new FileInputStream(fingerprintFile);
 			fingerprint=getFingerprintFromInputStream(fis);
 			fis.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -162,7 +159,7 @@ public class FingerprintManager{
 	/**
 	 * Get bytes from fingerprint inputstream
 	 * 
-	 * @param fingerprintFile	fingerprint inputstream
+	 * @param inputStream	fingerprint inputstream
 	 * @return fingerprint in bytes
 	 */
 	public byte[] getFingerprintFromInputStream(InputStream inputStream){		
@@ -181,7 +178,7 @@ public class FingerprintManager{
 	 * 
 	 * @param fingerprint	fingerprint bytes
 	 * @param filename		fingerprint filename
-	 * @see	fingerprint file saved
+	 * @see	FingerprintManager file saved
 	 */
 	public void saveFingerprintAsFile(byte[] fingerprint, String filename){
 
@@ -190,8 +187,6 @@ public class FingerprintManager{
 			fileOutputStream = new FileOutputStream(filename);
 			fileOutputStream.write(fingerprint);
 			fileOutputStream.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -211,9 +206,7 @@ public class FingerprintManager{
 			double[][] bankIntensities=new double[numX][bandwidthPerBank];
 			
 			for (int i=0; i<numX; i++){
-				for (int j=0; j<bandwidthPerBank; j++){
-					bankIntensities[i][j]=spectrogramData[i][j+b*bandwidthPerBank];
-				}
+        System.arraycopy(spectrogramData[i], b * bandwidthPerBank, bankIntensities[i], 0, bandwidthPerBank);
 			}
 			
 			// get the most robust point in each filter bank
@@ -221,9 +214,7 @@ public class FingerprintManager{
 			double[][] processedIntensities=processorChain.getIntensities();
 			
 			for (int i=0; i<numX; i++){
-				for (int j=0; j<bandwidthPerBank; j++){
-					allBanksIntensities[i][j+b*bandwidthPerBank]=processedIntensities[i][j];
-				}
+        System.arraycopy(processedIntensities[i], 0, allBanksIntensities[i], b * bandwidthPerBank, bandwidthPerBank);
 			}
 		}
 		
@@ -242,17 +233,15 @@ public class FingerprintManager{
 		}
 		// end find robust points
 
-		List<Integer>[] robustLists=new LinkedList[spectrogramData.length];
+		List<Integer>[] robustLists = new LinkedList[spectrogramData.length];
 		for (int i=0; i<robustLists.length; i++){
-			robustLists[i]=new LinkedList<Integer>();
+			robustLists[i]=new LinkedList<>();
 		}
 		
 		// robustLists[x]=y1,y2,y3,...
-		Iterator<int[]> robustPointListIterator=robustPointList.iterator();
-		while (robustPointListIterator.hasNext()){
-			int[] coor=robustPointListIterator.next();
-			robustLists[coor[0]].add(coor[1]);
-		}
+    for (int[] coor : robustPointList) {
+      robustLists[coor[0]].add(coor[1]);
+    }
 		
 		// return the list per frame
 		return robustLists;
@@ -275,7 +264,6 @@ public class FingerprintManager{
 		}
 		
 		// get the last x-coordinate (length-8&length-7)bytes from fingerprint
-		int numFrames=((int)(fingerprint[fingerprint.length-8]&0xff)<<8 | (int)(fingerprint[fingerprint.length-7]&0xff))+1;
-		return numFrames;
+    return ((fingerprint[fingerprint.length-8]&0xff)<<8 | (fingerprint[fingerprint.length-7]&0xff))+1;
 	}
 }

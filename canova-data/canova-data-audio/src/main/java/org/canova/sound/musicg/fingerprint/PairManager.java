@@ -17,13 +17,11 @@
 package org.canova.sound.musicg.fingerprint;
 
 
-
-import org.canova.sound.musicg.properties.FingerprintProperties;
-
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import org.canova.sound.musicg.properties.FingerprintProperties;
 
 /**
  * Make pairs for the audio fingerprints, which a pair is used to group the same features together
@@ -43,7 +41,7 @@ public class PairManager{
 	
 	private int maxPairs;
 	private boolean isReferencePairing;
-	private HashMap<Integer,Boolean> stopPairTable=new HashMap<Integer,Boolean>();
+	private Map<Integer,Boolean> stopPairTable=new HashMap<>();
 	
 	/**
 	 * Constructor
@@ -76,30 +74,27 @@ public class PairManager{
 	 * @param fingerprint	fingerprint bytes
 	 * @return pair-positionList HashMap
 	 */
-	public HashMap<Integer,List<Integer>> getPair_PositionList_Table(byte[] fingerprint){
+	public Map<Integer,List<Integer>> getPair_PositionList_Table(byte[] fingerprint){
 		
 		List<int[]> pairPositionList=getPairPositionList(fingerprint);
 		
 		// table to store pair:pos,pos,pos,...;pair2:pos,pos,pos,....
-		HashMap<Integer,List<Integer>> pair_positionList_table=new HashMap<Integer,List<Integer>>();
+		Map<Integer,List<Integer>> pair_positionList_table=new HashMap<>();
 		
 		// get all pair_positions from list, use a table to collect the data group by pair hashcode
-		Iterator<int[]> pairPositionListIterator=pairPositionList.iterator();
-		while (pairPositionListIterator.hasNext()){
-			int[] pair_position=pairPositionListIterator.next();
-			//System.out.println(pair_position[0]+","+pair_position[1]);
-			
-			// group by pair-hashcode, i.e.: <pair,List<position>>
-			if (pair_positionList_table.containsKey(pair_position[0])){
-				pair_positionList_table.get(pair_position[0]).add(pair_position[1]);
-			}
-			else{
-				List<Integer> positionList=new LinkedList<Integer>();
-				positionList.add(pair_position[1]);
-				pair_positionList_table.put(pair_position[0], positionList);
-			}
-			// end group by pair-hashcode, i.e.: <pair,List<position>>
-		}
+    for (int[] pair_position : pairPositionList) {
+      //System.out.println(pair_position[0]+","+pair_position[1]);
+
+      // group by pair-hashcode, i.e.: <pair,List<position>>
+      if (pair_positionList_table.containsKey(pair_position[0])) {
+        pair_positionList_table.get(pair_position[0]).add(pair_position[1]);
+      } else {
+        List<Integer> positionList = new LinkedList<Integer>();
+        positionList.add(pair_position[1]);
+        pair_positionList_table.put(pair_position[0], positionList);
+      }
+      // end group by pair-hashcode, i.e.: <pair,List<position>>
+    }
 		// end get all pair_positions from list, use a table to collect the data group by pair hashcode
 		
 		return pair_positionList_table;
@@ -117,76 +112,71 @@ public class PairManager{
 		List<int[]> pairList=new LinkedList<int[]>();
 		List<int[]> sortedCoordinateList=getSortedCoordinateList(fingerprint);
 
-		Iterator<int[]> anchorPointListIterator=sortedCoordinateList.iterator();
-		while (anchorPointListIterator.hasNext()){
-			int[] anchorPoint=anchorPointListIterator.next();
-			int anchorX=anchorPoint[0];
-			int anchorY=anchorPoint[1];
-			int numPairs=0;
-			
-			Iterator<int[]> targetPointListIterator=sortedCoordinateList.iterator();
-			while (targetPointListIterator.hasNext()){
-				
-				if (numPairs>=maxPairs){
-					break;
-				}
-				
-				if (isReferencePairing && pairedFrameTable[anchorX/anchorPointsIntervalLength]>=numAnchorPointsPerInterval){
-					break;
-				}
+    for (int[] anchorPoint : sortedCoordinateList) {
+      int anchorX = anchorPoint[0];
+      int anchorY = anchorPoint[1];
+      int numPairs = 0;
 
-				int[] targetPoint=targetPointListIterator.next();
-				int targetX=targetPoint[0];
-				int targetY=targetPoint[1];
-				
-				if (anchorX==targetX && anchorY==targetY){
-					continue;
-				}
-				
-				// pair up the points
-				int x1,y1,x2,y2;	// x2 always >= x1
-				if (targetX>=anchorX){
-					x2=targetX;
-					y2=targetY;
-					x1=anchorX;
-					y1=anchorY;					
-				}
-				else{
-					x2=anchorX;
-					y2=anchorY;
-					x1=targetX;
-					y1=targetY;	
-				}
-				
-				// check target zone
-				if ((x2-x1)>maxTargetZoneDistance){
-					continue;
-				}
-				// end check target zone
-				
-				// check filter bank zone				
-				if (!(y1/bandwidthPerBank == y2/bandwidthPerBank)){
-					continue;	// same filter bank should have equal value
-				}
-				// end check filter bank zone
-				
-				int pairHashcode=(x2-x1)*numFrequencyUnits*numFrequencyUnits+y2*numFrequencyUnits+y1;	
-				
-				// stop list applied on sample pairing only
-				if (!isReferencePairing && stopPairTable.containsKey(pairHashcode)){
-					numPairs++;	// no reservation
-					continue;	// escape this point only							
-				}
-				// end stop list applied on sample pairing only
-				
-				// pass all rules
-				pairList.add(new int[]{pairHashcode,anchorX});
-				pairedFrameTable[anchorX/anchorPointsIntervalLength]++;
-				//System.out.println(anchorX+","+anchorY+"&"+targetX+","+targetY+":"+pairHashcode+" ("+pairedFrameTable[anchorX/anchorPointsIntervalLength]+")");
-				numPairs++;
-				// end pair up the points
-			}
-		}
+      for (int[] aSortedCoordinateList : sortedCoordinateList) {
+
+        if (numPairs >= maxPairs) {
+          break;
+        }
+
+        if (isReferencePairing && pairedFrameTable[anchorX / anchorPointsIntervalLength] >= numAnchorPointsPerInterval) {
+          break;
+        }
+
+        int targetX = aSortedCoordinateList[0];
+        int targetY = aSortedCoordinateList[1];
+
+        if (anchorX == targetX && anchorY == targetY) {
+          continue;
+        }
+
+        // pair up the points
+        int x1, y1, x2, y2;  // x2 always >= x1
+        if (targetX >= anchorX) {
+          x2 = targetX;
+          y2 = targetY;
+          x1 = anchorX;
+          y1 = anchorY;
+        } else {
+          x2 = anchorX;
+          y2 = anchorY;
+          x1 = targetX;
+          y1 = targetY;
+        }
+
+        // check target zone
+        if ((x2 - x1) > maxTargetZoneDistance) {
+          continue;
+        }
+        // end check target zone
+
+        // check filter bank zone
+        if (!(y1 / bandwidthPerBank == y2 / bandwidthPerBank)) {
+          continue;  // same filter bank should have equal value
+        }
+        // end check filter bank zone
+
+        int pairHashcode = (x2 - x1) * numFrequencyUnits * numFrequencyUnits + y2 * numFrequencyUnits + y1;
+
+        // stop list applied on sample pairing only
+        if (!isReferencePairing && stopPairTable.containsKey(pairHashcode)) {
+          numPairs++;  // no reservation
+          continue;  // escape this point only
+        }
+        // end stop list applied on sample pairing only
+
+        // pass all rules
+        pairList.add(new int[]{pairHashcode, anchorX});
+        pairedFrameTable[anchorX / anchorPointsIntervalLength]++;
+        //System.out.println(anchorX+","+anchorY+"&"+targetX+","+targetY+":"+pairHashcode+" ("+pairedFrameTable[anchorX/anchorPointsIntervalLength]+")");
+        numPairs++;
+        // end pair up the points
+      }
+    }
 		
 		return pairList;
 	}
@@ -202,18 +192,18 @@ public class PairManager{
 		int[] intensities=new int[numCoordinates];
 		for (int i=0; i<numCoordinates; i++){
 			int pointer=i*8+4;
-			int intensity=(int)(fingerprint[pointer]&0xff)<<24 | (int)(fingerprint[pointer+1]&0xff)<<16 | (int)(fingerprint[pointer+2]&0xff)<<8 | (int)(fingerprint[pointer+3]&0xff);
+			int intensity=(fingerprint[pointer]&0xff)<<24 | (fingerprint[pointer+1]&0xff)<<16 | (fingerprint[pointer+2]&0xff)<<8 | (fingerprint[pointer+3]&0xff);
 			intensities[i]=intensity;
 		}
 		
 		QuickSortIndexPreserved quicksort=new QuickSortIndexPreserved(intensities);
 		int[] sortIndexes=quicksort.getSortIndexes();
 		
-		List<int[]> sortedCoordinateList=new LinkedList<int[]>();
+		List<int[]> sortedCoordinateList=new LinkedList<>();
 		for (int i=sortIndexes.length-1; i>=0; i--){
 			int pointer=sortIndexes[i]*8;
-			int x=(int)(fingerprint[pointer]&0xff)<<8 | (int)(fingerprint[pointer+1]&0xff);
-			int y=(int)(fingerprint[pointer+2]&0xff)<<8 | (int)(fingerprint[pointer+3]&0xff);
+			int x=(fingerprint[pointer]&0xff)<<8 | (fingerprint[pointer+1]&0xff);
+			int y=(fingerprint[pointer+2]&0xff)<<8 | (fingerprint[pointer+3]&0xff);
 			sortedCoordinateList.add(new int[]{x,y});
 		}
 		return sortedCoordinateList;
@@ -236,6 +226,6 @@ public class PairManager{
 	 * @return hashed pair
 	 */
 	public static int pairBytesToHashcode(byte[] pairBytes){	
-		return (int)(pairBytes[0]&0xFF)<<8|(int)(pairBytes[1]&0xFF);
+		return (pairBytes[0]&0xFF)<<8 | (pairBytes[1]&0xFF);
 	}
 }

@@ -23,8 +23,7 @@ public class Window implements Serializable {
 	private String label = "NONE";
 	private boolean beginLabel;
 	private boolean endLabel;
-	private int windowSize;
-	private int median;
+  private int median;
 	private static String BEGIN_LABEL = "<([A-Z]+|\\d+)>";
 	private static String END_LABEL = "</([A-Z]+|\\d+)>";
     private int begin,end;
@@ -55,7 +54,7 @@ public class Window implements Serializable {
 			throw new IllegalArgumentException("Words must be a list of size 3");
 
 		this.words = new ArrayList<>(words);
-		this.windowSize = windowSize;
+    int windowSize1 = windowSize;
         this.begin = begin;
         this.end = end;
 		initContext();

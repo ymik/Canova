@@ -42,12 +42,12 @@ public class SerializationFactory extends Configured {
     private void add(Configuration conf, String serializationName) {
         try {
 
-            Class<? extends Serialization> serializionClass =
+            Class<? extends Serialization> serializationClass =
                     (Class<? extends Serialization>) conf.getClassByName(serializationName);
             serializations.add(
-                    ReflectionUtils.newInstance(serializionClass, getConf()));
+                    ReflectionUtils.newInstance(serializationClass, getConf()));
         } catch (ClassNotFoundException e) {
-            LOG.warn("Serilization class not found: " +
+            LOG.warn("Serialization class not found: " +
                     StringUtils.stringifyException(e));
         }
     }

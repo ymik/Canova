@@ -1,6 +1,5 @@
 package org.canova.sound.musicg.processor;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -8,7 +7,7 @@ import java.util.List;
 public class TopManyPointsProcessorChain{
 	
 	private double[][] intensities;
-	List<IntensityProcessor> processorList=new LinkedList<IntensityProcessor>();
+	List<IntensityProcessor> processorList=new LinkedList<>();
 	
 	public TopManyPointsProcessorChain(double[][] intensities, int numPoints){
 		this.intensities=intensities;
@@ -18,12 +17,10 @@ public class TopManyPointsProcessorChain{
 	}
 	
 	private void process(){
-		Iterator<IntensityProcessor> iterator=processorList.iterator();
-		while(iterator.hasNext()){
-			IntensityProcessor processor=iterator.next();
-			processor.execute();
-			intensities=processor.getIntensities();
-		}
+    for (IntensityProcessor processor : processorList) {
+      processor.execute();
+      intensities = processor.getIntensities();
+    }
 	}
 	
 	public double[][] getIntensities(){

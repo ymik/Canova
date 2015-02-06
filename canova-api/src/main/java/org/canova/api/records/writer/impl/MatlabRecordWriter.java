@@ -12,21 +12,21 @@ import java.util.Collection;
  * Write matlab records
  */
 public class MatlabRecordWriter extends FileRecordWriter {
-    private boolean tabs = false;
 
-    public MatlabRecordWriter(File path) throws FileNotFoundException {
+  public MatlabRecordWriter(File path) throws FileNotFoundException {
         super(path);
     }
 
     @Override
     public void write(Collection<Writable> record) throws IOException {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
 
         int count = 0;
         for(Writable w : record) {
             // attributes
             if (count > 0) {
-                result.append((tabs ? "\t" : " "));
+              boolean tabs = false;
+              result.append((tabs ? "\t" : " "));
             }
             result.append(w.toString());
             count++;

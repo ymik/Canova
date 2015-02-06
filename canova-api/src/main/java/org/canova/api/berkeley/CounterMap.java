@@ -175,7 +175,7 @@ public class CounterMap<K, V> implements java.io.Serializable {
 			Counter<V> counter = entry.getValue();
 			V localMax = counter.argMax();
 			if (counter.getCount(localMax) > maxCount || maxKey == null) {
-				maxKey = new Pair<K, V>(entry.getKey(), localMax);
+				maxKey = new Pair<>(entry.getKey(), localMax);
 				maxCount = counter.getCount(localMax);
 			}
 		}
@@ -295,7 +295,7 @@ public class CounterMap<K, V> implements java.io.Serializable {
 	 * @return
 	 */
 	public CounterMap<V,K> invert() {
-		CounterMap<V,K> invertCounterMap = new CounterMap<V, K>();
+		CounterMap<V,K> invertCounterMap = new CounterMap<>();
 		for (K key: this.keySet()) {
 			Counter<V> keyCounts = this.getCounter(key);
 			for (V val: keyCounts.keySet()) {
@@ -380,10 +380,10 @@ public class CounterMap<K, V> implements java.io.Serializable {
 		
 	}
 
-	public void setDefault(double defltVal) {
-    this.defltVal = defltVal;
+	public void setDefault(double defaultValue) {
+    this.defltVal = defaultValue;
     for (Counter<V> vCounter : counterMap.values()) {
-      vCounter.setDeflt(defltVal);
+      vCounter.setDeflt(defaultValue);
     }
   }
 	

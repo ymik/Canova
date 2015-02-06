@@ -6,11 +6,11 @@ import java.util.Map.Entry;
 public class MapRankDouble implements MapRank{
 	
 	private Map map;
-	private boolean acsending=true;
+	private boolean ascending=true;
 	
-	public MapRankDouble(Map<?,Double> map, boolean acsending){
+	public MapRankDouble(Map<?,Double> map, boolean ascending){
 		this.map=map;
-		this.acsending=acsending;
+		this.ascending=ascending;
 	}
 	
 	public List getOrderedKeyList(int numKeys, boolean sharpLimit){	// if sharp limited, will return sharp numKeys, otherwise will return until the values not equals the exact key's value
@@ -37,7 +37,7 @@ public class MapRankDouble implements MapRank{
 			// end get the pass values
 			
 			int targetindex;
-			if (acsending){
+			if (ascending){
 				targetindex=numKeys;
 			}
 			else{
@@ -47,13 +47,13 @@ public class MapRankDouble implements MapRank{
 			double passValue=getOrderedValue(array,targetindex);	// this value is the value of the numKey-th element
 			// get the passed keys and values
 			Map passedMap=new HashMap();
-			List<Double> valueList=new LinkedList<Double>();
+			List<Double> valueList=new LinkedList<>();
 			mapIterator=mapEntrySet.iterator();
 			
 			while (mapIterator.hasNext()){
 				Entry entry=mapIterator.next();
 				double value=(Double)entry.getValue();
-				if ((acsending && value<=passValue) || (!acsending && value>=passValue)){
+				if ((ascending && value<=passValue) || (!ascending && value>=passValue)){
 					passedMap.put(entry.getKey(), value);
 					valueList.add(value);
 				}
@@ -69,7 +69,7 @@ public class MapRankDouble implements MapRank{
 			// get the list of keys
 			int resultCount=0;
 			int index;
-			if (acsending){
+			if (ascending){
 				index=0;
 			}
 			else{
@@ -93,7 +93,7 @@ public class MapRankDouble implements MapRank{
 					}
 				}
 				
-				if (acsending){
+				if (ascending){
 					index++;
 				}
 				else{

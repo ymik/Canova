@@ -23,6 +23,7 @@ import org.canova.api.util.ReflectionUtils;
 
 import java.io.*;
 import java.util.*;
+import org.canova.api.writable.Writable;
 
 
 /** A Comparator for {@link WritableComparable}s.
@@ -36,8 +37,7 @@ import java.util.*;
  */
 public class WritableComparator implements RawComparator {
 
-    private static HashMap<Class, WritableComparator> comparators =
-            new HashMap<Class, WritableComparator>(); // registry
+    private static HashMap<Class, WritableComparator> comparators = new HashMap<>(); // registry
 
     /** Get a comparator for a {@link WritableComparable} implementation. */
     public static synchronized
@@ -227,7 +227,7 @@ public class WritableComparator implements RawComparator {
             i = i << 8;
             i = i | (bytes[start+1+idx] & 0xFF);
         }
-        return (isNegative ? (i ^ -1L) : i);
+        return (isNegative ? (~i) : i);
     }
 
     /**

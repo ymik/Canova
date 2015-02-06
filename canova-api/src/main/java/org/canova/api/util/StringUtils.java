@@ -88,7 +88,7 @@ public class StringUtils {
         double result = number;
         String suffix = "";
         if (absNumber < 1024) {
-            // nothing
+            // do nothing
         } else if (absNumber < 1024 * 1024) {
             result = number / 1024.0;
             suffix = "k";
@@ -127,7 +127,7 @@ public class StringUtils {
 
     public static String arrayToString(String[] strs) {
         if (strs.length == 0) { return ""; }
-        StringBuffer sbuf = new StringBuffer();
+        StringBuilder sbuf = new StringBuilder();
         sbuf.append(strs[0]);
         for (int idx = 1; idx < strs.length; idx++) {
             sbuf.append(",");
@@ -182,7 +182,7 @@ public class StringUtils {
         if (uris == null) {
             return null;
         }
-        StringBuffer ret = new StringBuffer(uris[0].toString());
+        StringBuilder ret = new StringBuilder(uris[0].toString());
         for(int i = 1; i < uris.length;i++){
             ret.append(",");
             ret.append(uris[i].toString());
@@ -203,7 +203,7 @@ public class StringUtils {
                 uris[i] = new URI(str[i]);
             }catch(URISyntaxException ur){
                 System.out.println("Exception in specified URI's " + StringUtils.stringifyException(ur));
-                //making sure its asssigned to null in case of an error
+                //making sure its assigned to null in case of an error
                 uris[i] = null;
             }
         }
@@ -233,7 +233,7 @@ public class StringUtils {
      * @param timeDiff The time difference to format
      */
     public static String formatTime(long timeDiff){
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         long hours = timeDiff / (60*60*1000);
         long rem = (timeDiff % (60*60*1000));
         long minutes =  rem / (60*1000);
@@ -265,7 +265,7 @@ public class StringUtils {
      */
     public static String getFormattedTimeWithDiff(DateFormat dateFormat,
                                                   long finishTime, long startTime){
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         if (0 != finishTime) {
             buf.append(dateFormat.format(new Date(finishTime)));
             if (0 != startTime){
@@ -294,11 +294,11 @@ public class StringUtils {
      * @return an <code>ArrayList</code> of string values
      */
     public static Collection<String> getStringCollection(String str){
-        List<String> values = new ArrayList<String>();
+        List<String> values = new ArrayList<>();
         if (str == null)
             return values;
         StringTokenizer tokenizer = new StringTokenizer (str,",");
-        values = new ArrayList<String>();
+        values = new ArrayList<>();
         while (tokenizer.hasMoreTokens()) {
             values.add(tokenizer.nextToken());
         }
@@ -329,7 +329,6 @@ public class StringUtils {
 
     final public static String[] emptyStringArray = {};
     final public static char COMMA = ',';
-    final public static String COMMA_STR = ",";
     final public static char ESCAPE_CHAR = '\\';
 
     /**
@@ -353,7 +352,7 @@ public class StringUtils {
         if (str==null) {
             return null;
         }
-        ArrayList<String> strList = new ArrayList<String>();
+        List<String> strList = new ArrayList<>();
         StringBuilder split = new StringBuilder();
         int index = 0;
         while ((index = findNext(str, separator, escapeChar, index, split)) >= 0) {
@@ -528,7 +527,7 @@ public class StringUtils {
      * @return a message for logging
      */
     private static String toStartupShutdownString(String prefix, String [] msg) {
-        StringBuffer b = new StringBuffer(prefix);
+        StringBuilder b = new StringBuilder(prefix);
         b.append("\n/************************************************************");
         for(String s : msg)
             b.append("\n" + prefix + s);
@@ -610,7 +609,7 @@ public class StringUtils {
         if(string == null) {
             return null;
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         boolean lastCharacterWasSpace = false;
         char[] chars = string.toCharArray();
         for(char c : chars) {
@@ -641,8 +640,8 @@ public class StringUtils {
      * Return an abbreviated English-language desc of the byte length
      */
     public static String byteDesc(long len) {
-        double val = 0.0;
-        String ending = "";
+        double val;
+        String ending;
         if (len < 1024 * 1024) {
             val = (1.0 * len) / 1024;
             ending = " KB";
@@ -673,7 +672,7 @@ public class StringUtils {
      * @param strings Strings to join.
      */
     public static String join(CharSequence separator, Iterable<String> strings) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (String s : strings) {
             if (first) {
@@ -693,8 +692,8 @@ public class StringUtils {
      * @param objects Objects to join.
      */
     public static String joinObjects(
-            CharSequence separator, Iterable<? extends Object> objects) {
-        StringBuffer sb = new StringBuffer();
+            CharSequence separator, Iterable<?> objects) {
+        StringBuilder sb = new StringBuilder();
         boolean first = true;
         for (Object o : objects) {
             if (first) {

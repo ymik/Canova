@@ -18,8 +18,6 @@
 
 package org.canova.api.records;
 
-
-
 import org.canova.api.io.WritableComparator;
 import org.canova.api.io.WritableUtils;
 
@@ -45,7 +43,7 @@ public class Utils {
      * @return
      */
     static String toXMLString(String s) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int idx = 0; idx < s.length(); idx++) {
             char ch = s.charAt(idx);
             if (ch == '<') {
@@ -86,7 +84,7 @@ public class Utils {
      * @return
      */
     static String fromXMLString(String s) {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int idx = 0; idx < s.length();) {
             char ch = s.charAt(idx++);
             if (ch == '%') {
@@ -109,7 +107,7 @@ public class Utils {
      * @return
      */
     static String toCSVString(String s) {
-        StringBuffer sb = new StringBuffer(s.length() + 1);
+        StringBuilder sb = new StringBuilder(s.length() + 1);
         sb.append('\'');
         int len = s.length();
         for (int i = 0; i < len; i++) {
@@ -151,7 +149,7 @@ public class Utils {
             throw new IOException("Error deserializing string.");
         }
         int len = s.length();
-        StringBuffer sb = new StringBuffer(len-1);
+        StringBuilder sb = new StringBuilder(len-1);
         for (int i = 1; i < len; i++) {
             char c = s.charAt(i);
             if (c == '%') {
@@ -214,7 +212,7 @@ public class Utils {
      * @return
      */
     static String toCSVBuffer(Buffer buf) {
-        StringBuffer sb = new StringBuffer("#");
+        StringBuilder sb = new StringBuilder("#");
         sb.append(buf.toString());
         return sb.toString();
     }
@@ -326,7 +324,7 @@ public class Utils {
     }
 
     private static int utf8ToCodePoint(int b1, int b2, int b3, int b4) {
-        int cpt = 0;
+        int cpt;
         cpt = (((b1 & ~B11111) << 18) |
                 ((b2 & ~B11) << 12) |
                 ((b3 & ~B11) << 6) |
@@ -360,7 +358,7 @@ public class Utils {
         // For the most commmon case, i.e. ascii, numChars = utf8Len
         StringBuilder sb = new StringBuilder(utf8Len);
         while(len < utf8Len) {
-            int cpt = 0;
+            int cpt;
             final int b1 = bytes[len++] & 0xFF;
             if (b1 <= 0x7F) {
                 cpt = b1;

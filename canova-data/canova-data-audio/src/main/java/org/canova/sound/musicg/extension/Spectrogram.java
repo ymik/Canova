@@ -85,7 +85,7 @@ public class Spectrogram{
 		short[] amplitudes=wave.getSampleAmplitudes();
 		int numSamples = amplitudes.length;
 
-		int pointer=0;
+		int pointer;
 		// overlapping
 		if (overlapFactor>1){
 			int numOverlappedSamples=numSamples*overlapFactor;

@@ -54,7 +54,7 @@ public class StemmerAnnotator extends SnowballStemmer<Token> {
 
     public static AnalysisEngineDescription getDescription(String language)
             throws ResourceInitializationException {
-        return AnalysisEngineFactory.createPrimitiveDescription(
+        return AnalysisEngineFactory.createEngineDescription(
                 StemmerAnnotator.class,
                 SnowballStemmer.PARAM_STEMMER_NAME,
                 language);

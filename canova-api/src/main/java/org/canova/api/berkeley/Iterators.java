@@ -15,7 +15,7 @@ public class Iterators {
 	}
 
 	public static <T> List<T> fillList(Iterator<? extends T> it) {
-		List<T> lst = new ArrayList<T>();
+		List<T> lst = new ArrayList<>();
 		fillList(it, lst);
 		return lst;
 	}
@@ -89,7 +89,6 @@ public class Iterators {
 	 * 
 	 * @param <T>
 	 * @param base
-	 * @param numThreads
 	 * @return
 	 */
 	public static <T> Iterator<T> thread(final Iterator<T> base) {

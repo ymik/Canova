@@ -41,7 +41,7 @@ public class DefaultStreamTokenizer implements Tokenizer {
 
     @Override
     public String nextToken() {
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
 
         if(streamTokenizer.ttype == StreamTokenizer.TT_WORD) {

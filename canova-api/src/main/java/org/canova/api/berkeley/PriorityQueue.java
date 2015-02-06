@@ -23,7 +23,7 @@ public class PriorityQueue<E> implements Iterator<E>, Serializable, Cloneable, P
 	double[] priorities;
 
 	protected void grow(int newCapacity) {
-		List<E> newElements = new ArrayList<E>(newCapacity);
+		List<E> newElements = new ArrayList<>(newCapacity);
 		double[] newPriorities = new double[newCapacity];
 		if (size > 0) {
 			newElements.addAll(elements);
@@ -210,7 +210,7 @@ public class PriorityQueue<E> implements Iterator<E>, Serializable, Cloneable, P
 	 */
 	public Counter<E> asCounter() {
 		PriorityQueue<E> pq = clone();
-		Counter<E> counter = new Counter<E>();
+		Counter<E> counter = new Counter<>();
 		while (pq.hasNext()) {
 			double priority = pq.getPriority();
 			E element = pq.next();

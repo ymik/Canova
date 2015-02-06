@@ -115,7 +115,7 @@ public class StringUtils {
 	 */
 	public static String slurpReader(Reader reader) {
 		BufferedReader r = new BufferedReader(reader);
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 		try {
 			char[] chars = new char[SLURPBUFFSIZE];
 			while (true) {
@@ -221,7 +221,7 @@ public class StringUtils {
 		}
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, encoding));
 		String temp;
-		StringBuffer buff = new StringBuffer(16000); // make biggish
+		StringBuilder buff = new StringBuilder(16000); // make biggish
 		while ((temp = br.readLine()) != null) {
 			buff.append(temp);
 			buff.append(lineSeparator);
@@ -239,7 +239,7 @@ public class StringUtils {
 		InputStream is = uc.getInputStream();
 		BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		String temp;
-		StringBuffer buff = new StringBuffer(16000); // make biggish
+		StringBuilder buff = new StringBuilder(16000); // make biggish
 		while ((temp = br.readLine()) != null) {
 			buff.append(temp);
 			buff.append(lineSeparator);
@@ -287,7 +287,7 @@ public class StringUtils {
 	 * <tt>join(numbers, ", ")</tt>.
 	 */
 	public static String join(Iterable l, String glue) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		boolean first = true;
 		for (Object o : l) {
 			if (!first) {
@@ -306,7 +306,7 @@ public class StringUtils {
 	 * <tt>join(numbers, ", ")</tt>.
 	 */
 	public static String join(List<?> l, String glue) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < l.size(); i++) {
 			if (i > 0) {
 				sb.append(glue);
@@ -371,7 +371,7 @@ public class StringUtils {
 		if (str == null)
 			str = "null";
 		int slen = str.length();
-		StringBuffer sb = new StringBuffer(str);
+		StringBuilder sb = new StringBuilder(str);
 		for (int i = 0; i < totalChars - slen; i++) {
 			sb.append(" ");
 		}
@@ -396,7 +396,7 @@ public class StringUtils {
 			str = "null";
 		int leng = str.length();
 		if (leng < num) {
-			StringBuffer sb = new StringBuffer(str);
+			StringBuilder sb = new StringBuilder(str);
 			for (int i = 0; i < num - leng; i++) {
 				sb.append(" ");
 			}
@@ -422,7 +422,7 @@ public class StringUtils {
 	public static String padLeft(String str, int totalChars) {
 		if (str == null)
 			str = "null";
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < totalChars - str.length(); i++) {
 			sb.append(" ");
 		}
@@ -462,20 +462,19 @@ public class StringUtils {
 	 */
 	public static String fileNameClean(String s) {
 		char[] chars = s.toCharArray();
-		StringBuffer sb = new StringBuffer();
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-			if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
-					|| (c == '_')) {
-				sb.append(c);
-			} else {
-				if (c == ' ' || c == '-') {
-					sb.append('_');
-				} else {
-					sb.append("x" + (int) c + "x");
-				}
-			}
-		}
+		StringBuilder sb = new StringBuilder();
+    for (char c : chars) {
+      if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')
+          || (c == '_')) {
+        sb.append(c);
+      } else {
+        if (c == ' ' || c == '-') {
+          sb.append('_');
+        } else {
+          sb.append("x" + (int) c + "x");
+        }
+      }
+    }
 		return sb.toString();
 	}
 
@@ -579,7 +578,7 @@ public class StringUtils {
 			key = args[i];
 			if (key.charAt(0) == '-') { // found a flag
 				Integer maxFlagArgs = flagsToNumArgs.get(key);
-				int max = maxFlagArgs == null ? 0 : maxFlagArgs.intValue();
+				int max = maxFlagArgs == null ? 0 : maxFlagArgs;
 				List<String> flagArgs = new ArrayList<String>();
 				for (int j = 0; j < max && i + 1 < args.length && args[i + 1].charAt(0) != '-'; i++, j++) {
 					flagArgs.add(args[i + 1]);
@@ -593,12 +592,12 @@ public class StringUtils {
 						newFlagArg[j + oldNumArgs] = flagArgs.get(j);
 					}
 				} else
-					result.put(key, (String[]) flagArgs.toArray(new String[] {}));
+					result.put(key, flagArgs.toArray(new String[] {}));
 			} else {
 				remainingArgs.add(args[i]);
 			}
 		}
-		result.put(null, (String[]) remainingArgs.toArray(new String[] {}));
+		result.put(null, remainingArgs.toArray(new String[] {}));
 		return result;
 	}
 
@@ -628,7 +627,7 @@ public class StringUtils {
 				key = key.substring(1); // strip off the hyphen
 
 				Integer maxFlagArgs = (Integer) flagsToNumArgs.get(key);
-				int max = maxFlagArgs == null ? 1 : maxFlagArgs.intValue();
+				int max = maxFlagArgs == null ? 1 : maxFlagArgs;
 				List<String> flagArgs = new ArrayList<String>();
 				for (int j = 0; j < max && i + 1 < args.length && args[i + 1].charAt(0) != '-'; i++, j++) {
 					flagArgs.add(args[i + 1]);
@@ -663,20 +662,19 @@ public class StringUtils {
 	public static Properties stringToProperties(String str) {
 		Properties result = new Properties();
 		String[] props = str.trim().split(",\\s*");
-		for (int i = 0; i < props.length; i++) {
-			String term = props[i];
-			int divLoc = term.indexOf("=");
-			String key;
-			String value;
-			if (divLoc >= 0) {
-				key = term.substring(0, divLoc);
-				value = term.substring(divLoc + 1);
-			} else {
-				key = term;
-				value = "true";
-			}
-			result.setProperty(key, value);
-		}
+    for (String term : props) {
+      int divLoc = term.indexOf("=");
+      String key;
+      String value;
+      if (divLoc >= 0) {
+        key = term.substring(0, divLoc);
+        value = term.substring(divLoc + 1);
+      } else {
+        key = term;
+        value = "true";
+      }
+      result.setProperty(key, value);
+    }
 		return result;
 	}
 
@@ -685,7 +683,7 @@ public class StringUtils {
 	 * <code>append=true</code>, and overwrites if <code>append=false</code>
 	 */
 	public static void printToFile(File file, String message, boolean append) {
-		FileWriter fw = null;
+		FileWriter fw;
 		PrintWriter pw = null;
 		try {
 			fw = new FileWriter(file, append);
@@ -740,7 +738,7 @@ public class StringUtils {
 	 * @return A Map from keys to possible values (String or null)
 	 */
 	public static Map parseCommandLineArguments(String[] args) {
-		Map<String, String> result = new HashMap<String, String>();
+		Map<String, String> result = new HashMap<>();
 		String key, value;
 		for (int i = 0; i < args.length; i++) {
 			key = args[i];
@@ -762,7 +760,7 @@ public class StringUtils {
 	}
 
 	public static String stripNonAlphaNumerics(String orig) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		char c;
 		for (int i = 0; i < orig.length(); i++) {
 			c = orig.charAt(i);
@@ -781,18 +779,18 @@ public class StringUtils {
 	}
 
 	public static String escapeString(String s, char[] charsToEscape, char escapeChar) {
-		StringBuffer result = new StringBuffer();
+		StringBuilder result = new StringBuilder();
 		for (int i = 0; i < s.length(); i++) {
 			char c = s.charAt(i);
 			if (c == escapeChar) {
 				result.append(escapeChar);
 			} else {
-				for (int j = 0; j < charsToEscape.length; j++) {
-					if (c == charsToEscape[j]) {
-						result.append(escapeChar);
-						break;
-					}
-				}
+        for (char aCharsToEscape : charsToEscape) {
+          if (c == aCharsToEscape) {
+            result.append(escapeChar);
+            break;
+          }
+        }
 			}
 			result.append(c);
 		}
@@ -813,17 +811,17 @@ public class StringUtils {
 	 */
 	public static String[] splitOnCharWithQuoting(String s, char splitChar, char quoteChar,
 			char escapeChar) {
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		int i = 0;
 		int length = s.length();
-		StringBuffer b = new StringBuffer();
+		StringBuilder b = new StringBuilder();
 		while (i < length) {
 			char curr = s.charAt(i);
 			if (curr == splitChar) {
 				// add last buffer
 				if (b.length() > 0) {
 					result.add(b.toString());
-					b = new StringBuffer();
+					b = new StringBuilder();
 				}
 				i++;
 			} else if (curr == quoteChar) {
@@ -850,7 +848,7 @@ public class StringUtils {
 		if (b.length() > 0) {
 			result.add(b.toString());
 		}
-		return (String[]) result.toArray(new String[0]);
+		return result.toArray(new String[0]);
 	}
 
 	/**
@@ -902,25 +900,7 @@ public class StringUtils {
 				}
 			}
 		}
-		if (false) {
-			// num chars needed to display longest num
-			int numChars = (int) Math.ceil(Math.log(d[n][m]) / Math.log(10));
-			for (i = 0; i < numChars + 3; i++) {
-				System.err.print(' ');
-			}
-			for (j = 0; j < m; j++) {
-				System.err.print("" + t.charAt(j) + " ");
-			}
-			System.err.println();
-			for (i = 0; i <= n; i++) {
-				System.err.print((i == 0 ? ' ' : s.charAt(i - 1)) + " ");
-				for (j = 0; j <= m; j++) {
-					System.err.print("" + d[i][j] + " ");
-				}
-				System.err.println();
-			}
-		}
-		// Step 7
+    // Step 7
 		return d[n][m];
 	}
 
@@ -1003,8 +983,8 @@ public class StringUtils {
 	 * @return a capitalized version of the string
 	 */
 	public static String capitalize(String s) {
-		if ((char) s.charAt(0) >= 'a') {
-			return (String) ((char) (s.charAt(0) + ('A' - 'a')) + s.substring(1));
+		if (s.charAt(0) >= 'a') {
+			return ((char) (s.charAt(0) + ('A' - 'a')) + s.substring(1));
 		} else {
 			return s;
 		}
@@ -1012,7 +992,7 @@ public class StringUtils {
 
   public static List<Matcher> allMatches(String str, String regex) {
     Pattern p = Pattern.compile(regex);
-    List<Matcher> matches = new ArrayList<Matcher>();
+    List<Matcher> matches = new ArrayList<>();
     while (true) {
       Matcher m = p.matcher(str);
       if (!m.find()) break;

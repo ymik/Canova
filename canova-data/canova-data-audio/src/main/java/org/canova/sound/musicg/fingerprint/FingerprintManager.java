@@ -151,8 +151,6 @@ public class FingerprintManager{
 			InputStream fis=new FileInputStream(fingerprintFile);
 			fingerprint=getFingerprintFromInputStream(fis);
 			fis.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -162,7 +160,7 @@ public class FingerprintManager{
 	/**
 	 * Get bytes from fingerprint inputstream
 	 * 
-	 * @param fingerprintFile	fingerprint inputstream
+	 * @param inputStream	fingerprint inputstream
 	 * @return fingerprint in bytes
 	 */
 	public byte[] getFingerprintFromInputStream(InputStream inputStream){		
@@ -181,7 +179,7 @@ public class FingerprintManager{
 	 * 
 	 * @param fingerprint	fingerprint bytes
 	 * @param filename		fingerprint filename
-	 * @see	fingerprint file saved
+	 * @see	FingerprintManager file saved
 	 */
 	public void saveFingerprintAsFile(byte[] fingerprint, String filename){
 
@@ -190,8 +188,6 @@ public class FingerprintManager{
 			fileOutputStream = new FileOutputStream(filename);
 			fileOutputStream.write(fingerprint);
 			fileOutputStream.close();
-		} catch (FileNotFoundException e1) {
-			e1.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -221,13 +217,11 @@ public class FingerprintManager{
 			double[][] processedIntensities=processorChain.getIntensities();
 			
 			for (int i=0; i<numX; i++){
-				for (int j=0; j<bandwidthPerBank; j++){
-					allBanksIntensities[i][j+b*bandwidthPerBank]=processedIntensities[i][j];
-				}
+        System.arraycopy(processedIntensities[i], 0, allBanksIntensities[i], b * bandwidthPerBank, bandwidthPerBank);
 			}
 		}
 		
-		List<int[]> robustPointList=new LinkedList<int[]>();
+		List<int[]> robustPointList=new LinkedList<>();
 		
 		// find robust points
 		for (int i=0; i<allBanksIntensities.length; i++){
@@ -244,15 +238,13 @@ public class FingerprintManager{
 
 		List<Integer>[] robustLists=new LinkedList[spectrogramData.length];
 		for (int i=0; i<robustLists.length; i++){
-			robustLists[i]=new LinkedList<Integer>();
+			robustLists[i]=new LinkedList<>();
 		}
 		
 		// robustLists[x]=y1,y2,y3,...
-		Iterator<int[]> robustPointListIterator=robustPointList.iterator();
-		while (robustPointListIterator.hasNext()){
-			int[] coor=robustPointListIterator.next();
-			robustLists[coor[0]].add(coor[1]);
-		}
+    for (int[] coor : robustPointList) {
+      robustLists[coor[0]].add(coor[1]);
+    }
 		
 		// return the list per frame
 		return robustLists;
@@ -275,7 +267,6 @@ public class FingerprintManager{
 		}
 		
 		// get the last x-coordinate (length-8&length-7)bytes from fingerprint
-		int numFrames=((int)(fingerprint[fingerprint.length-8]&0xff)<<8 | (int)(fingerprint[fingerprint.length-7]&0xff))+1;
-		return numFrames;
+    return ((fingerprint[fingerprint.length-8]&0xff)<<8 | (fingerprint[fingerprint.length-7]&0xff))+1;
 	}
 }

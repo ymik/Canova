@@ -15,7 +15,7 @@ public class SentenceAnnotator extends org.cleartk.opennlp.tools.SentenceAnnotat
         Util.disableLogging();
     }
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
-	    return AnalysisEngineFactory.createPrimitiveDescription(
+	    return AnalysisEngineFactory.createEngineDescription(
                 SentenceAnnotator.class,
                 PARAM_SENTENCE_MODEL_PATH,
                 ParamUtil.getParameterValue(PARAM_SENTENCE_MODEL_PATH, "/models/en-sent.bin"),

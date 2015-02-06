@@ -42,9 +42,7 @@ public class FastFourierTransform {
 		fft.transform(amplitudes);
 		// end call the fft and transform the complex numbers
 
-		double[] complexNumbers = amplitudes;
-
-		// even indexes (0,2,4,6,...) are real parts
+    // even indexes (0,2,4,6,...) are real parts
 		// odd indexes (1,3,5,7,...) are img parts
 		int indexSize = sampleSize / 2;
 
@@ -56,7 +54,7 @@ public class FastFourierTransform {
 
 		double[] mag = new double[positiveSize];
 		for (int i = 0; i < indexSize; i += 2) {
-			mag[i / 2] = Math.sqrt(complexNumbers[i] * complexNumbers[i] + complexNumbers[i + 1] * complexNumbers[i + 1]);
+			mag[i / 2] = Math.sqrt(amplitudes[i] * amplitudes[i] + amplitudes[i + 1] * amplitudes[i + 1]);
 		}
 
 		return mag;

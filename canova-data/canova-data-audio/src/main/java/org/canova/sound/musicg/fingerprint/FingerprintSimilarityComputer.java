@@ -16,8 +16,8 @@
 package org.canova.sound.musicg.fingerprint;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Compute the similarity of two fingerprints
@@ -50,8 +50,8 @@ public class FingerprintSimilarityComputer{
 	 * @return fingerprint similarity object
 	 */
 	public FingerprintSimilarity getFingerprintsSimilarity(){
-		HashMap<Integer,Integer> offset_Score_Table=new HashMap<Integer,Integer>();	// offset_Score_Table<offset,count>
-		int numFrames=0;
+		Map<Integer,Integer> offset_Score_Table=new HashMap<>();	// offset_Score_Table<offset,count>
+		int numFrames;
 		float score=0;
 		int mostSimilarFramePosition=Integer.MIN_VALUE;
 		
@@ -65,40 +65,32 @@ public class FingerprintSimilarityComputer{
 		
 		// get the pairs
 		PairManager pairManager=new PairManager();
-		HashMap<Integer,List<Integer>> this_Pair_PositionList_Table=pairManager.getPair_PositionList_Table(fingerprint1);
-		HashMap<Integer,List<Integer>> compareWave_Pair_PositionList_Table=pairManager.getPair_PositionList_Table(fingerprint2);
-		
-		Iterator<Integer> compareWaveHashNumberIterator=compareWave_Pair_PositionList_Table.keySet().iterator();
-		while (compareWaveHashNumberIterator.hasNext()){
-			int compareWaveHashNumber=compareWaveHashNumberIterator.next();
-			
-			// if the compareWaveHashNumber doesn't exist in both tables, no need to compare
-			if (!this_Pair_PositionList_Table.containsKey(compareWaveHashNumber)
-				|| !compareWave_Pair_PositionList_Table.containsKey(compareWaveHashNumber)){
-				continue;
-			}
-			
-			// for each compare hash number, get the positions
-			List<Integer> wavePositionList=this_Pair_PositionList_Table.get(compareWaveHashNumber);
-			List<Integer> compareWavePositionList=compareWave_Pair_PositionList_Table.get(compareWaveHashNumber);
-			
-			Iterator<Integer> wavePositionListIterator=wavePositionList.iterator();
-			while (wavePositionListIterator.hasNext()){
-				int thisPosition=wavePositionListIterator.next();
-				Iterator<Integer> compareWavePositionListIterator=compareWavePositionList.iterator();
-				while (compareWavePositionListIterator.hasNext()){
-					int compareWavePosition=compareWavePositionListIterator.next();
-					int offset=thisPosition-compareWavePosition;
-					
-					if (offset_Score_Table.containsKey(offset)){
-						offset_Score_Table.put(offset, offset_Score_Table.get(offset)+1);
-					}
-					else{
-						offset_Score_Table.put(offset, 1);
-					}
-				}
-			}
-		}
+		Map<Integer,List<Integer>> this_Pair_PositionList_Table=pairManager.getPair_PositionList_Table(fingerprint1);
+		Map<Integer,List<Integer>> compareWave_Pair_PositionList_Table=pairManager.getPair_PositionList_Table(fingerprint2);
+
+    for (Integer compareWaveHashNumber : compareWave_Pair_PositionList_Table.keySet()) {
+      // if the compareWaveHashNumber doesn't exist in both tables, no need to compare
+      if (!this_Pair_PositionList_Table.containsKey(compareWaveHashNumber)
+          || !compareWave_Pair_PositionList_Table.containsKey(compareWaveHashNumber)) {
+        continue;
+      }
+
+      // for each compare hash number, get the positions
+      List<Integer> wavePositionList = this_Pair_PositionList_Table.get(compareWaveHashNumber);
+      List<Integer> compareWavePositionList = compareWave_Pair_PositionList_Table.get(compareWaveHashNumber);
+
+      for (Integer thisPosition : wavePositionList) {
+        for (Integer compareWavePosition : compareWavePositionList) {
+          int offset = thisPosition - compareWavePosition;
+
+          if (offset_Score_Table.containsKey(offset)) {
+            offset_Score_Table.put(offset, offset_Score_Table.get(offset) + 1);
+          } else {
+            offset_Score_Table.put(offset, 1);
+          }
+        }
+      }
+    }
 		
 		// map rank
 		MapRank mapRank=new MapRankInteger(offset_Score_Table,false);
@@ -108,19 +100,17 @@ public class FingerprintSimilarityComputer{
 		if (orderedKeyList.size()>0){
 			int key=orderedKeyList.get(0);
 			// get the highest score position
-			if (mostSimilarFramePosition==Integer.MIN_VALUE){
-				mostSimilarFramePosition=key;
-				score=offset_Score_Table.get(key);
-				
-				// accumulate the scores from neighbours
-				if (offset_Score_Table.containsKey(key-1)){
-					score+=offset_Score_Table.get(key-1)/2;
-				}
-				if (offset_Score_Table.containsKey(key+1)){
-					score+=offset_Score_Table.get(key+1)/2;
-				}
-			}
-		}
+      mostSimilarFramePosition=key;
+      score=offset_Score_Table.get(key);
+
+      // accumulate the scores from neighbours
+      if (offset_Score_Table.containsKey(key-1)){
+        score+=offset_Score_Table.get(key-1)/2;
+      }
+      if (offset_Score_Table.containsKey(key+1)){
+        score+=offset_Score_Table.get(key+1)/2;
+      }
+    }
 		
 		/*
 		Iterator<Integer> orderedKeyListIterator=orderedKeyList.iterator();

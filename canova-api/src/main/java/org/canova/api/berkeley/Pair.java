@@ -31,7 +31,7 @@ public class Pair<F, S> implements Serializable,Comparable<Pair<F,S>> {
 	}
 
 	public Pair<S, F> reverse() {
-		return new Pair<S, F>(second, first);
+		return new Pair<>(second, first);
 	}
 
 	public boolean equals(Object o) {

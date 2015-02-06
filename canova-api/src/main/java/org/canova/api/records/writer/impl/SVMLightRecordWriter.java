@@ -28,7 +28,7 @@ public class SVMLightRecordWriter extends FileRecordWriter {
     public void write(Collection<Writable> record) throws IOException {
         if(!record.isEmpty()) {
             List<Writable> recordList = record instanceof List ? (List<Writable>) record : new ArrayList<>(record);
-            StringBuffer result = new StringBuffer();
+            StringBuilder result = new StringBuilder();
             result.append(recordList.get(recordList.size() - 1).toString());
 
             for(int i = 0; i < recordList.size() - 1; i++)

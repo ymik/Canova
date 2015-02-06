@@ -71,7 +71,7 @@ public class FingerprintSimilarity {
 	/**
 	 * Set the similarity of the fingerprints
 	 * 
-	 * @param fingerprints similarity
+	 * @param similarity - fingerprints similarity
 	 */
 	public void setSimilarity(float similarity) {
 		this.similarity = similarity;

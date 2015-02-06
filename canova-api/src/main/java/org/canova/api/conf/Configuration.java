@@ -1360,7 +1360,7 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
         Configuration config = new Configuration(conf,true);
         config.reloadConfiguration();
         JsonFactory dumpFactory = new JsonFactory();
-        JsonGenerator dumpGenerator = dumpFactory.createJsonGenerator(out);
+        JsonGenerator dumpGenerator = dumpFactory.createGenerator(out);
         dumpGenerator.writeStartObject();
         dumpGenerator.writeFieldName("properties");
         dumpGenerator.writeStartArray();

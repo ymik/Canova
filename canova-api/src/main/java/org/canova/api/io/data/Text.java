@@ -291,9 +291,7 @@ public class Text extends BinaryComparable
 
     /** Returns true iff <code>o</code> is a Text with the same contents.  */
     public boolean equals(Object o) {
-        if (o instanceof Text)
-            return super.equals(o);
-        return false;
+      return o instanceof Text && super.equals(o);
     }
 
     public int hashCode() {

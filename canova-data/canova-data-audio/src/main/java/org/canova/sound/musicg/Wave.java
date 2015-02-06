@@ -16,9 +16,6 @@
 
 package org.canova.sound.musicg;
 
-
-
-
 import org.canova.sound.musicg.extension.NormalizedSampleAmplitudes;
 import org.canova.sound.musicg.extension.Spectrogram;
 import org.canova.sound.musicg.fingerprint.FingerprintManager;
@@ -59,8 +56,6 @@ public class Wave implements Serializable{
 			InputStream inputStream = new FileInputStream(filename);
 			initWaveWithInputStream(inputStream);
 			inputStream.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -79,10 +74,10 @@ public class Wave implements Serializable{
 	/**
 	 * Constructor
 	 * 
-	 * @param WaveHeader
+	 * @param waveHeader
 	 *            waveHeader
-	 * @param byte[]
-	 *            data
+	 * @param data
+	 *            byte[]
 	 */
 	public Wave(WaveHeader waveHeader, byte[] data) {
 		this.waveHeader = waveHeader;
@@ -135,7 +130,7 @@ public class Wave implements Serializable{
 			waveHeader.setSubChunk2Size(subChunk2Size);
 	
 			byte[] trimmedData = new byte[(int) subChunk2Size];
-			System.arraycopy(data, (int) leftTrimNumberOfSample, trimmedData, 0,
+			System.arraycopy(data, leftTrimNumberOfSample, trimmedData, 0,
 					(int) subChunk2Size);
 			data = trimmedData;
 		}
@@ -260,8 +255,7 @@ public class Wave implements Serializable{
 	 * @return length in second
 	 */
 	public float length() {
-		float second = (float) waveHeader.getSubChunk2Size() / waveHeader.getByteRate();
-		return second;
+    return (float) waveHeader.getSubChunk2Size() / waveHeader.getByteRate();
 	}
 
 	/**
@@ -275,7 +269,7 @@ public class Wave implements Serializable{
 		int minute = (int) totalSeconds / 60 % 60;
 		int hour = (int) (totalSeconds / 3600);
 
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		if (hour > 0) {
 			sb.append(hour + ":");
 		}
@@ -311,7 +305,7 @@ public class Wave implements Serializable{
 	}
 	
 	public String toString(){
-		StringBuffer sb=new StringBuffer(waveHeader.toString());
+		StringBuilder sb = new StringBuilder(waveHeader.toString());
 		sb.append("\n");
 		sb.append("length: " + timestamp());
 		return sb.toString();

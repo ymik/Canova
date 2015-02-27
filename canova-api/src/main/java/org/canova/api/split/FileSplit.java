@@ -25,13 +25,20 @@ public class FileSplit extends BaseInputSplit {
             locations = new URI[subFiles.size()];
             int count = 0;
             for(File f : subFiles) {
-                locations[count++] = f.toURI();
+                if(f.getPath().startsWith("file:"))
+                    locations[count++] = URI.create(f.getPath());
+                else
+                    locations[count++] = f.toURI();
                 length += f.length();
             }
         }
         else {
+            String path = rootDir.getPath();
             locations = new URI[1];
-            locations[0] = rootDir.toURI();
+            if(path.startsWith("file:"))
+                 locations[0] = URI.create(path);
+            else
+                locations[0] = rootDir.toURI();
             length += rootDir.length();
 
         }

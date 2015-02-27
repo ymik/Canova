@@ -28,10 +28,33 @@ public class FileRecordReader implements RecordReader {
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
-        this.locations = split.locations();
-        if(locations != null && locations.length > 0) {
-            iter = FileUtils.iterateFiles(new File(locations[0]),null,true);
+        URI[] locations = split.locations();
+        if(locations != null && locations.length >= 1) {
+            if(locations.length > 1) {
+                List<File> allFiles = new ArrayList<>();
+                for(URI location : locations) {
+                    File iter = new File(location);
+                    if(iter.isDirectory()) {
+                        Iterator<File> allFiles2 = FileUtils.iterateFiles(iter,null,true);
+                        while(allFiles2.hasNext())
+                            allFiles.add(allFiles2.next());
+                    }
+
+                    else
+                        allFiles.add(iter);
+                }
+
+                iter = allFiles.iterator();
+            }
+            else {
+                File curr = new File(locations[0]);
+                if(curr.isDirectory())
+                    iter = FileUtils.iterateFiles(curr,null,true);
+                else
+                    iter = Collections.singletonList(curr).iterator();
+            }
         }
+
 
     }
 
@@ -48,12 +71,6 @@ public class FileRecordReader implements RecordReader {
         }
         else {
             currIndex++;
-            try {
-                close();
-                iter = IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
             if(iter.hasNext()) {
                 try {
@@ -61,12 +78,11 @@ public class FileRecordReader implements RecordReader {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return ret;
             }
 
         }
 
-        throw new NoSuchElementException("No more elements found!");
+        return ret;
     }
 
     @Override

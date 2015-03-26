@@ -1,6 +1,5 @@
 package org.canova.api.records.reader.impl;
 
-import com.sun.prism.impl.Disposer;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;

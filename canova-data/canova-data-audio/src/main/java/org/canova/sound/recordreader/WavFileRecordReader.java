@@ -1,26 +1,22 @@
-package org.canova.api.records.reader.impl;
+package org.canova.sound.recordreader;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.canova.api.io.data.Text;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.InputSplit;
+import org.canova.api.util.RecordUtils;
 import org.canova.api.writable.Writable;
-
+import org.canova.sound.musicg.Wave;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.*;
 
 /**
- * File reader/writer
- *
+ * Wav file loader
  * @author Adam Gibson
  */
-public class FileRecordReader implements RecordReader {
-
+public class WavFileRecordReader implements RecordReader {
     private Iterator<File> iter;
 
 
@@ -33,7 +29,7 @@ public class FileRecordReader implements RecordReader {
                 for(URI location : locations) {
                     File iter = new File(location);
                     if(iter.isDirectory()) {
-                        Iterator<File> allFiles2 = FileUtils.iterateFiles(iter,null,true);
+                        Iterator<File> allFiles2 = FileUtils.iterateFiles(iter, null, true);
                         while(allFiles2.hasNext())
                             allFiles.add(allFiles2.next());
                     }
@@ -55,36 +51,18 @@ public class FileRecordReader implements RecordReader {
 
 
     }
-
     @Override
     public Collection<Writable> next() {
-        List<Writable> ret = new ArrayList<>();
-        try {
-            ret.add(new Text(FileUtils.readFileToString(iter.next())));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(iter.hasNext()) {
-            return ret;
-        }
-        else {
-            if(iter.hasNext()) {
-                try {
-                    ret.add(new Text(FileUtils.readFileToString(iter.next())));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }
-
-        return ret;
+        File next = iter.next();
+        Wave wave = new Wave(next.getAbsolutePath());
+        return RecordUtils.toRecord(wave.getNormalizedAmplitudes());
     }
 
     @Override
     public boolean hasNext() {
         return iter != null && iter.hasNext();
     }
+
 
     @Override
     public void close() throws IOException {

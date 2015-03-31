@@ -42,16 +42,23 @@ public class ArchiveUtils {
             //getFromOrigin the zipped file list entry
             ZipEntry ze = zis.getNextEntry();
 
-            while(ze!=null){
-
+            while(ze != null){
                 String fileName = ze.getName();
+
                 File newFile = new File(dest + File.separator + fileName);
+
+                if(ze.isDirectory()) {
+                    newFile.mkdirs();
+                    zis.closeEntry();
+                    ze = zis.getNextEntry();
+                    continue;
+                }
 
                 log.info("file unzip : "+ newFile.getAbsoluteFile());
 
-                //createComplex all non exists folders
+                //create all non exists folders
                 //else you will hit FileNotFoundException for compressed folder
-                new File(newFile.getParent()).mkdirs();
+
 
                 FileOutputStream fos = new FileOutputStream(newFile);
 
@@ -60,11 +67,12 @@ public class ArchiveUtils {
                     fos.write(data, 0, len);
                 }
 
+                fos.flush();
                 fos.close();
+                zis.closeEntry();
                 ze = zis.getNextEntry();
             }
 
-            zis.closeEntry();
             zis.close();
 
 

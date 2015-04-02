@@ -19,6 +19,13 @@ public class Vectorize implements SubCommand {
 
 	}
 
+	// 1. load conf file
+	// 2, load schema file
+	// 3. transform csv -> output format
+	private void executeVectorizeWorkflow() {
+
+
+	}
 
 
 	  /**

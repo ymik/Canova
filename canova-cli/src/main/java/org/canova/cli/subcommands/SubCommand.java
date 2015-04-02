@@ -1,5 +1,5 @@
 package org.canova.cli.subcommands;
 
-public class SubCommand {
+public interface SubCommand {
 
 }

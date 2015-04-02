@@ -1,5 +1,10 @@
 package org.canova.cli.subcommands;
 
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class BaseSubCommand  implements SubCommand {
 	  private static final Logger log = LoggerFactory.getLogger(BaseSubCommand.class);
 	  protected String[] args;

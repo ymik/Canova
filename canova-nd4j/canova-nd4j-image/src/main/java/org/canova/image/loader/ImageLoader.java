@@ -11,13 +11,15 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 
 /**
  * Image loader for taking images and converting them to matrices
  * @author Adam Gibson
  *
  */
-public class ImageLoader {
+public class ImageLoader implements Serializable {
 
     private int width = -1;
     private int height = -1;
@@ -33,10 +35,50 @@ public class ImageLoader {
         this.height = height;
     }
 
+    /**
+     * Convert a file to a row vector
+     * @param f the image to convert
+     * @return the flattened image
+     * @throws Exception
+     */
     public INDArray asRowVector(File f) throws Exception {
         return ArrayUtil.toNDArray(flattenedImageFromFile(f));
     }
 
+
+    /**
+     * Convert an input stream to a matrix
+     * @param inputStream the input stream to convert
+     * @return the input stream to convert
+     */
+    public INDArray asMatrix(InputStream inputStream) {
+        try {
+            BufferedImage image  = ImageIO.read(inputStream);
+            if (height > 0 && width > 0)
+                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+            Raster raster = image.getData();
+            int w = raster.getWidth(), h = raster.getHeight();
+            int[][] ret = new int[w][h];
+            for (int i = 0; i < w; i++)
+                for (int j = 0; j < h; j++)
+                    ret[i][j] = raster.getSample(i, j, 0);
+            INDArray newRet = Nd4j.create(w,h);
+            for(int i = 0; i < ret.length; i++) {
+                for(int j = 0; j < ret[i].length; j++) {
+                    newRet.putScalar(new int[]{i,j},ret[i][j]);
+                }
+            }
+
+            return newRet;
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load image",e);
+        }
+
+    }
+
+    public INDArray asRowVector(InputStream inputStream) {
+        return asMatrix(inputStream).ravel();
+    }
 
     /**
      * Slices up an image in to a mini batch.

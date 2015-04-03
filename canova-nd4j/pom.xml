@@ -14,6 +14,7 @@
         <module>canova-nd4j-image</module>
         <module>canova-nd4j-timeseries</module>
         <module>canova-nd4j-audio</module>
+        <module>canova-nd4j-common</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -21,6 +21,7 @@ package org.canova.api.writable;
 import java.io.DataOutput;
 import java.io.DataInput;
 import java.io.IOException;
+import java.io.Serializable;
 
 /**
  * A serializable object which implements a simple, efficient, serialization 
@@ -58,7 +59,7 @@ import java.io.IOException;
  *     }
  * </pre></blockquote></p>
  */
-public interface Writable {
+public interface Writable extends Serializable {
     /**
      * Serialize the fields of this object to <code>out</code>.
      *

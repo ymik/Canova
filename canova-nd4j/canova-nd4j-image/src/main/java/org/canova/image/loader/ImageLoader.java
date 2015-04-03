@@ -12,13 +12,14 @@ import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 /**
  * Image loader for taking images and converting them to matrices
  * @author Adam Gibson
  *
  */
-public class ImageLoader {
+public class ImageLoader implements Serializable {
 
     private int width = -1;
     private int height = -1;

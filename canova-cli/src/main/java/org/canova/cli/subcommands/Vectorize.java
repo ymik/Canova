@@ -33,7 +33,18 @@ public class Vectorize implements SubCommand {
 	// 3. transform csv -> output format
 	private void executeVectorizeWorkflow() {
 
+		
+		// load stuff (conf, schema) --> CSVInputSchema
+		
+		// collect dataset statistics --> CSVInputSchema
+		
+			// [ first dataset pass ]
+		
+		// generate dataset report --> DatasetSummaryStatistics
+		
+		// produce converted/vectorized output based on statistics --> Transforms + CSVInputSchema + Rows
 
+			// [ second dataset pass ]		
 	}
 
 

@@ -6,11 +6,29 @@ package org.canova.cli.csv.schema;
 
 */
 public class CSVSchemaColumn {
+	
+	public enum ColumnType { NUMERIC, DATE, NOMINAL, STRING };
+	public enum TransformType { COPY, SKIP, BINARIZE, NORMALIZE, LABEL };
 
 	public String name = ""; // the name of the attribute/column
-	public String columnType = "";
-	public String transform = ""; // we'll use a system of enums here to do transforms
+	public ColumnType columnType = null;
+	public TransformType transform = null; 
 
+	/*
+	 * TODO:
+	 * - how do we model statistics per column?
+	 * 
+	 */
+	public double minValue = 0;
+	public double maxValue = 0;
+	
+	// TODO: hashmap(?) of labels
+	// may wnat to track the label counts to understand the class balance
+	
+	public void addLabel(String label) {
+		
+		
+	}
 
 }
 

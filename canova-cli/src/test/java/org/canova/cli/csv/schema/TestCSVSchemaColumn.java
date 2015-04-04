@@ -61,15 +61,6 @@ public class TestCSVSchemaColumn {
 		assertEquals( -2, schemaCol_0.minValue, 0.0 );
 		assertEquals( 6, schemaCol_0.maxValue, 0.0 );
 	}
-	
-	@Test
-	public void testSchemaEvaluation() {
 		
-		// colSchemaEntry.evaluateColumnValue( columns[ colIndex ] );
-		
-	}
-	
-	
-	
 	
 }

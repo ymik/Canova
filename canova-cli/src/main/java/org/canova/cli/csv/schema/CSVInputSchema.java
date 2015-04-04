@@ -12,6 +12,7 @@ public class CSVInputSchema {
 
 	public String relation = "";
 	public String delimiter = "";
+	private boolean hasComputedStats = false;
 
 	// columns: { columnName, column Schema }
 	private Map<String, CSVSchemaColumn> columnSchemas = new LinkedHashMap<String, CSVSchemaColumn>();
@@ -50,6 +51,18 @@ public class CSVInputSchema {
 		}		
 		
 		
+		
+	}
+	
+	/**
+	 * We call this method once we've scanned the entire dataset once to gather column stats
+	 * 
+	 */
+	public void computeDatasetStatistics() {
+		
+		
+		
+		this.hasComputedStats = true;
 		
 	}
 	

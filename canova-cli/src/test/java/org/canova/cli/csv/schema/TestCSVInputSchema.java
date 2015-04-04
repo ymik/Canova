@@ -11,4 +11,16 @@ public class TestCSVInputSchema {
 		//fail("Not yet implemented");
 	}
 
+	@Test
+	public void testValidateSchema() {
+		//fail("Not yet implemented");
+	}
+	
+	@Test
+	public void testEvaluateCSVRecords() {
+		//fail("Not yet implemented");
+	}
+	
+	
+	
 }

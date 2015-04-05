@@ -1,7 +1,9 @@
 package org.canova.cli.subcommands;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -18,13 +20,15 @@ public class Vectorize implements SubCommand {
 	  public String configurationFile = "";
 	public Properties configProps = null;
 	
-	private CSVInputSchema inputSchema = new CSVInputSchema();
+	private CSVInputSchema inputSchema = null; //
 
 
 	// this picks up the input schema file from the properties file and loads it
-	private void loadInputSchemaFile() {
+	private void loadInputSchemaFile() throws Exception {
 
-		this.inputSchema = null;
+		String schemaFilePath = (String) this.configProps.get("input.vector.schema");
+		this.inputSchema = new CSVInputSchema();
+		this.inputSchema.parseSchemaFile( schemaFilePath );
 
 	}
 
@@ -53,23 +57,60 @@ public class Vectorize implements SubCommand {
 			
 
 	}
+	
 
 	// 1. load conf file
 	// 2, load schema file
 	// 3. transform csv -> output format
 	public void executeVectorizeWorkflow() {
 
-		
+		boolean schemaLoaded = false;
 		// load stuff (conf, schema) --> CSVInputSchema
 		
 		this.loadConfigFile();
 		
-		this.loadInputSchemaFile();
+		try {
+			this.loadInputSchemaFile();
+			schemaLoaded = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			schemaLoaded = false;
+		}
+		
+		if (false == schemaLoaded) {
+		
+			// if we did not load the schema then we cannot proceed with conversion
+			
+		}
 		
 		// collect dataset statistics --> CSVInputSchema
 		
 			// [ first dataset pass ]
 			// for each row in CSV Dataset
+		
+		String datasetInputPath = (String) this.configProps.get("input.directory");
+		
+		System.out.println( "Raw Data to convert: " + datasetInputPath );
+		
+		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
+			
+		    for (String line; (line = br.readLine()) != null; ) {
+
+		    	this.inputSchema.evaluateInputRecord(line);
+		    	
+		    }
+		    // line is not visible here.
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 		
 		// generate dataset report --> DatasetSummaryStatistics
 		

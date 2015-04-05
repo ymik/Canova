@@ -1,5 +1,5 @@
 @RELATION SytheticDatasetUnitTest
-@DELIMITER ‘,’
+@DELIMITER ,
  
    @ATTRIBUTE sepallength  NUMERIC   !COPY
    @ATTRIBUTE sepalwidth   NUMERIC   !SKIP

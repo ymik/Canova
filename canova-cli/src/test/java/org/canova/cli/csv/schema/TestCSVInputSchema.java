@@ -7,7 +7,7 @@ import org.junit.Test;
 public class TestCSVInputSchema {
 
 	@Test
-	public void testLoadSchema() throws Exception {
+	public void testLoadAndValidateSchema() throws Exception {
 
 		String schemaFilePath = "src/test/resources/csv/schemas/unit_test_schema.txt";
 		CSVInputSchema inputSchema = new CSVInputSchema();
@@ -29,11 +29,6 @@ public class TestCSVInputSchema {
 		
 	}
 
-	@Test
-	public void testValidateSchema() {
-		//fail("Not yet implemented");
-	}
-	
 	@Test
 	public void testEvaluateCSVRecords() {
 		//fail("Not yet implemented");

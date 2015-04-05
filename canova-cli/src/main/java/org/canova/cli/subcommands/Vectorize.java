@@ -1,7 +1,9 @@
 package org.canova.cli.subcommands;
 
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -24,7 +26,7 @@ public class Vectorize implements SubCommand {
 	// this picks up the input schema file from the properties file and loads it
 	private void loadInputSchemaFile() throws Exception {
 
-		String schemaFilePath = (String) this.configProps.get("output.vector.format");
+		String schemaFilePath = (String) this.configProps.get("input.vector.schema");
 		this.inputSchema = new CSVInputSchema();
 		this.inputSchema.parseSchemaFile( schemaFilePath );
 
@@ -55,6 +57,7 @@ public class Vectorize implements SubCommand {
 			
 
 	}
+	
 
 	// 1. load conf file
 	// 2, load schema file
@@ -85,6 +88,29 @@ public class Vectorize implements SubCommand {
 		
 			// [ first dataset pass ]
 			// for each row in CSV Dataset
+		
+		String datasetInputPath = (String) this.configProps.get("input.directory");
+		
+		System.out.println( "Raw Data to convert: " + datasetInputPath );
+		
+		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
+			
+		    for (String line; (line = br.readLine()) != null; ) {
+
+		    	this.inputSchema.evaluateInputRecord(line);
+		    	
+		    }
+		    // line is not visible here.
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
 		
 		// generate dataset report --> DatasetSummaryStatistics
 		

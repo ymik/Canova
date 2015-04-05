@@ -39,8 +39,6 @@ public class CSVInputSchema {
 
 	private boolean validateDelimiterLine( String[] lineParts ) {
 		
-		System.out.println( "delimiter line count: " + lineParts.length);
-		
 		if (lineParts.length != 2) {
 			return false;
 		}
@@ -62,12 +60,7 @@ public class CSVInputSchema {
 	
 	
 	private boolean validateSchemaLine( String line ) {
-		
-		//String[] parts = line.trim().split(" ");
-		
-		System.out.println( line );
-		
-		
+				
 		String lineCondensed = line.trim().replaceAll(" +", " ");
 		String[] parts = lineCondensed.split(" ");
 		
@@ -85,7 +78,6 @@ public class CSVInputSchema {
 			
 		} else if ( parts[ 0 ].trim().equals("") ) {
 			
-			System.out.println( "Skipping blank line" );
 			return true;
 			
 		} else {
@@ -222,9 +214,14 @@ public class CSVInputSchema {
 		
 		String[] columns = csvRecordLine.split( this.delimiter );
 		
+		if ( columns[0].trim().equals("") ) {
+			System.out.println("Skipping blank line");
+			return;
+		}
+		
 		if (columns.length != this.columnSchemas.size() ) {
 			
-			throw new Exception("Row column count does not match schema column count.");
+			throw new Exception("Row column count does not match schema column count. (" + columns.length + " != " + this.columnSchemas.size() + ") ");
 			
 		}
 		

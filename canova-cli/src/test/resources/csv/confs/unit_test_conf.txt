@@ -1,4 +1,4 @@
-input.directory=src/test/resources/csv/data/sythetic_unit_test.csv
+input.directory=src/test/resources/csv/data/synthetic_unit_test.csv
 output.directory=/tmp/canova/cli/vectors/output/
-input.vector.schema=src/test/resources/csv/schemas/unit_test_schema.txt 
+input.vector.schema=src/test/resources/csv/schemas/unit_test_schema.txt
 output.vector.format=svmlight

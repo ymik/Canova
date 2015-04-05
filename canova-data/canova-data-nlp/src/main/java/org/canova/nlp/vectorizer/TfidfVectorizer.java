@@ -36,7 +36,13 @@ public abstract class TfidfVectorizer<VECTOR_TYPE> extends TextVectorizer<VECTOR
 
     @Override
     public TokenizerFactory createTokenizerFactory(Configuration conf) {
-        return new DefaultTokenizerFactory();
+        String clazz = conf.get(TOKENIZER,DefaultTokenizerFactory.class.getName());
+        try {
+            Class<? extends TokenizerFactory> tokenizerFactoryClazz = (Class<? extends TokenizerFactory>) Class.forName(clazz);
+            return tokenizerFactoryClazz.newInstance();
+        } catch (Exception e) {
+           throw new RuntimeException(e);
+        }
     }
 
     @Override

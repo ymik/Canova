@@ -1,10 +1,13 @@
 package org.canova.image.loader;
 
+import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
+import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
 
 import javax.imageio.ImageIO;
+import javax.imageio.spi.IIORegistry;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
@@ -33,6 +36,10 @@ public class ImageLoader implements Serializable {
         super();
         this.width = width;
         this.height = height;
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(new TIFFImageWriterSpi());
+        registry.registerServiceProvider(new TIFFImageReaderSpi());
+
     }
 
     /**

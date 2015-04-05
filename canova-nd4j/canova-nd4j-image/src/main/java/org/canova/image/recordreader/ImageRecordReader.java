@@ -35,6 +35,7 @@ public class ImageRecordReader implements RecordReader {
     private List<String> labels  = new ArrayList<>();
     private boolean appendLabel = false;
     private Collection<Writable> record;
+    private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg");
     private boolean hitImage = false;
 
 
@@ -73,6 +74,14 @@ public class ImageRecordReader implements RecordReader {
 
     }
 
+    private boolean containsFormat(String format) {
+        for(String format2 : allowedFormats)
+            if(format.endsWith("." + format2))
+                return true;
+        return false;
+    }
+
+
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
         if(split instanceof FileSplit) {
@@ -82,7 +91,7 @@ public class ImageRecordReader implements RecordReader {
                     List<File> allFiles = new ArrayList<>();
                     for(URI location : locations) {
                         File iter = new File(location);
-                        if(!iter.isDirectory())
+                        if(!iter.isDirectory() && containsFormat(iter.getAbsolutePath()))
                             allFiles.add(iter);
                         if(appendLabel) {
                             File parentDir = iter.getParentFile();

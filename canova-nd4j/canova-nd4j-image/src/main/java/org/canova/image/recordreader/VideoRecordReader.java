@@ -36,6 +36,8 @@ public class VideoRecordReader implements SequenceRecordReader {
     private boolean appendLabel = false;
     private Collection<Writable> record;
     private boolean hitImage = false;
+    private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg");
+
 
 
 
@@ -64,6 +66,8 @@ public class VideoRecordReader implements SequenceRecordReader {
      */
     public VideoRecordReader(int width, int height) {
         this(width, height,false);
+        imageLoader = new ImageLoader(width,height);
+
 
     }
 
@@ -90,6 +94,20 @@ public class VideoRecordReader implements SequenceRecordReader {
                                 if (!labels.contains(name))
                                     labels.add(name);
 
+                            }
+                        }
+
+                        else {
+                            File parent = iter.getParentFile();
+                            if(!allFiles.contains(parent) && containsFormat(iter.getAbsolutePath())) {
+                                allFiles.add(parent);
+                                if (appendLabel) {
+                                    File parentDir = iter.getParentFile();
+                                    String name = parentDir.getName();
+                                    if (!labels.contains(name))
+                                        labels.add(name);
+
+                                }
                             }
                         }
 
@@ -132,12 +150,19 @@ public class VideoRecordReader implements SequenceRecordReader {
 
     }
 
+    private boolean containsFormat(String format) {
+        for(String format2 : allowedFormats)
+            if(format.endsWith("." + format2))
+                return true;
+        return false;
+    }
+
     @Override
     public Collection<Writable> next() {
         if(iter != null) {
             List<Writable> ret = new ArrayList<>();
             File image = iter.next();
-            if(image.isDirectory())
+            if(image.isDirectory() || !containsFormat(image.getAbsolutePath()))
                 return next();
             try {
                 INDArray row = imageLoader.asRowVector(image);
@@ -194,6 +219,8 @@ public class VideoRecordReader implements SequenceRecordReader {
     @Override
     public Collection<Collection<Writable>> sequenceRecord() {
         File next = iter.next();
+        if(!next.isDirectory())
+            return Collections.emptyList();
         File[] list = next.listFiles();
         Collection<Collection<Writable>> ret = new ArrayList<>();
         for(File f : list) {

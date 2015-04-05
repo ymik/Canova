@@ -29,8 +29,9 @@ public abstract class TextVectorizer<VECTOR_TYPE> implements Vectorizer<VECTOR_T
     protected int minWordFrequency = 0;
     public final static String MIN_WORD_FREQUENCY = "org.nd4j.nlp.minwordfrequency";
     public final static String STOP_WORDS = "org.nd4j.nlp.stopwords";
+    public final static String TOKENIZER = "org.canova.nlp.tokenizerfactory";
     protected Collection<String> stopWords;
-    protected VocabCache cache = new DefaultVocabCache();
+    protected VocabCache cache;
 
     @Override
     public void initialize(Configuration conf) {
@@ -39,7 +40,8 @@ public abstract class TextVectorizer<VECTOR_TYPE> implements Vectorizer<VECTOR_T
         stopWords = conf.getStringCollection(STOP_WORDS);
         if(stopWords == null || stopWords.isEmpty())
             stopWords = StopWords.getStopWords();
-        cache = new DefaultVocabCache();
+        cache = new DefaultVocabCache(minWordFrequency);
+
     }
 
     @Override

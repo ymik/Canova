@@ -46,6 +46,9 @@ public class TfidfVectorizer extends org.canova.nlp.vectorizer.TfidfVectorizer<I
             }
         });
 
+        if(records.isEmpty())
+            throw new IllegalStateException("No records found!");
+
         INDArray ret = Nd4j.create(records.size(),cache.vocabWords().size());
         int i = 0;
         for(Collection<Writable> record : records) {

@@ -7,7 +7,10 @@ import org.canova.api.util.MathUtils;
 import org.canova.nlp.vectorizer.TextVectorizer;
 
 /**
- * Created by agibsonccc on 11/21/14.
+ * Vocab cache uswed for storing information
+ * about vocab
+ *
+ * @author Adam Gibson
  */
 public class DefaultVocabCache implements VocabCache {
 
@@ -16,6 +19,14 @@ public class DefaultVocabCache implements VocabCache {
     private int minWordFrequency;
     private Index vocabWords = new Index();
     private double numDocs = 0;
+
+    /**
+     * Instantiate with a given min word frequency
+     * @param minWordFrequency
+     */
+    public DefaultVocabCache(int minWordFrequency) {
+        this.minWordFrequency = minWordFrequency;
+    }
 
     @Override
     public void incrementNumDocs(double by) {
@@ -83,5 +94,13 @@ public class DefaultVocabCache implements VocabCache {
     @Override
     public double tfidf(String word, double frequency) {
         return MathUtils.tfidf(MathUtils.tf((int) frequency), MathUtils.idf(numDocs, idf(word)));
+    }
+
+    public int getMinWordFrequency() {
+        return minWordFrequency;
+    }
+
+    public void setMinWordFrequency(int minWordFrequency) {
+        this.minWordFrequency = minWordFrequency;
     }
 }

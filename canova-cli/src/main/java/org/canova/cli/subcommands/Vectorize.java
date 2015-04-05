@@ -18,13 +18,15 @@ public class Vectorize implements SubCommand {
 	  public String configurationFile = "";
 	public Properties configProps = null;
 	
-	private CSVInputSchema inputSchema = new CSVInputSchema();
+	private CSVInputSchema inputSchema = null; //
 
 
 	// this picks up the input schema file from the properties file and loads it
-	private void loadInputSchemaFile() {
+	private void loadInputSchemaFile() throws Exception {
 
-		this.inputSchema = null;
+		String schemaFilePath = (String) this.configProps.get("output.vector.format");
+		this.inputSchema = new CSVInputSchema();
+		this.inputSchema.parseSchemaFile( schemaFilePath );
 
 	}
 
@@ -59,12 +61,25 @@ public class Vectorize implements SubCommand {
 	// 3. transform csv -> output format
 	public void executeVectorizeWorkflow() {
 
-		
+		boolean schemaLoaded = false;
 		// load stuff (conf, schema) --> CSVInputSchema
 		
 		this.loadConfigFile();
 		
-		this.loadInputSchemaFile();
+		try {
+			this.loadInputSchemaFile();
+			schemaLoaded = true;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			schemaLoaded = false;
+		}
+		
+		if (false == schemaLoaded) {
+		
+			// if we did not load the schema then we cannot proceed with conversion
+			
+		}
 		
 		// collect dataset statistics --> CSVInputSchema
 		

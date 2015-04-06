@@ -1,4 +1,5 @@
+input.format=org.canova.io.TextInputFormat
 input.directory=src/test/resources/csv/data/synthetic_unit_test.csv
-output.directory=/tmp/canova/cli/vectors/output/
 input.vector.schema=src/test/resources/csv/schemas/unit_test_schema.txt
 output.vector.format=svmlight
+output.directory=/tmp/canova/cli/vectors/output/

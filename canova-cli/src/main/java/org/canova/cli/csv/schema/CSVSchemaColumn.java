@@ -3,6 +3,8 @@ package org.canova.cli.csv.schema;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.math3.util.Pair;
+
 /*
 
 	purpose: to parse and represent the input schema + column transforms of CSV data to vectorize
@@ -50,7 +52,8 @@ public class CSVSchemaColumn {
 	
 
 	// we want to track the label counts to understand the class balance
-	private Map<String, Integer> recordLabels = new LinkedHashMap<String, Integer>();
+	// layout: { columnName, columnID, occurenceCount }
+	public Map<String, Pair<Integer, Integer>> recordLabels = new LinkedHashMap<String, Pair<Integer, Integer>>();
 	
 	
 	public CSVSchemaColumn(String colName, ColumnType colType, TransformType transformType) {
@@ -78,7 +81,7 @@ public class CSVSchemaColumn {
 			
 			double tmpVal = Double.parseDouble(value);
 			
-			System.out.println( "converted: " + tmpVal );
+			// System.out.println( "converted: " + tmpVal );
 			
 			if (Double.isNaN(tmpVal)) {
 				throw new Exception("The column was defined as Numeric yet could not be parsed as a Double");
@@ -107,17 +110,19 @@ public class CSVSchemaColumn {
 		} else if ( TransformType.LABEL == this.transform ) {
 			
 			
-			
 			// then we want to track the record label
 			if ( this.recordLabels.containsKey( value ) ) {
 				
-				Integer countInt = this.recordLabels.get( value );
+				Integer labelID = this.recordLabels.get( value ).getFirst();
+				Integer countInt = this.recordLabels.get( value ).getSecond();
 				countInt++;
-				this.recordLabels.put( value, countInt );
+				
+				this.recordLabels.put( value, new Pair<Integer, Integer>( labelID, countInt ) );
 				
 			} else {
 				
-				this.recordLabels.put( value, 1 );
+				Integer labelID = this.recordLabels.size();
+				this.recordLabels.put( value, new Pair<Integer, Integer>( labelID, 1 ) );
 				
 			}
 			
@@ -140,10 +145,11 @@ public class CSVSchemaColumn {
 	
 	public void debugPrintColumns() {
 		
-		for (Map.Entry<String, Integer> entry : this.recordLabels.entrySet()) {
+		for (Map.Entry<String, Pair<Integer,Integer>> entry : this.recordLabels.entrySet()) {
 		    
 			String key = entry.getKey();
-		    Integer value = entry.getValue();
+		    //Integer value = entry.getValue();
+			Pair<Integer,Integer> value = entry.getValue();
 		    
 		    System.out.println( "> " + key + ", " + value);
 		    
@@ -154,7 +160,102 @@ public class CSVSchemaColumn {
 	
 	public Integer getLabelCount( String label ) {
 				
-		return this.recordLabels.get( label );
+		return this.recordLabels.get( label ).getSecond();
+		
+	}
+
+	public Integer getLabelID( String label ) {
+		
+		return this.recordLabels.get( label ).getFirst();
+		
+	}
+	
+	
+	public double transformColumnValue(String inputColumnValue) {
+		
+		if ( TransformType.LABEL == this.transform ) {
+			
+			return this.label(inputColumnValue);
+			
+		} else if ( TransformType.BINARIZE == this.transform ) {
+			
+			return this.binarize(inputColumnValue);
+			
+		} else if ( TransformType.COPY == this.transform ) {
+			
+			return this.copy(inputColumnValue);
+					
+		} else if ( TransformType.NORMALIZE == this.transform ) {
+			
+			return this.normalize(inputColumnValue);
+					
+		} else if ( TransformType.SKIP == this.transform ) {
+			
+			return 0.0; // but the vector engine has to remove this from output
+		}
+
+		return -1.0; // not good
+		
+	}
+	
+
+	public double copy(String inputColumnValue) {
+		
+		return Double.parseDouble(inputColumnValue);
+		
+	}
+
+	/*
+	 * Needed Statistics for binarize() - range of values (min, max) - similar
+	 * to normalize, but we threshold on 0.5 after normalize
+	 */
+	public double binarize(String inputColumnValue) {
+		
+		double val = Double.parseDouble(inputColumnValue);
+		
+		double range = this.maxValue - this.minValue;
+		double midpoint = ( range / 2 ) + this.minValue;
+		
+		if (val < midpoint) {
+			return 0.0;
+		}
+		
+		return 1.0;
+		
+	}
+
+	/*
+	 * Needed Statistics for normalize() - range of values (min, max)
+	 * 
+	 * 
+	 * normalize( x ) = ( x - min ) / range
+	 *  
+	 */
+	public double normalize(String inputColumnValue) {
+
+		double val = Double.parseDouble(inputColumnValue);
+		
+		double range = this.maxValue - this.minValue;
+		double normalizedOut = ( val - this.minValue ) / range;
+				
+		return normalizedOut;		
+		
+	}
+
+	/*
+	 * Needed Statistics for label() - count of distinct labels - index of
+	 * labels to IDs (hashtable?)
+	 */
+	public double label(String inputColumnValue) {
+
+		//this.recordLabels.
+		
+		// TODO: how do get a numeric index from a list of labels? 
+		double ID = this.getLabelID( inputColumnValue.trim() );
+		
+		System.out.println("Label: " + ID );
+		
+		return ID;
 		
 	}
 	

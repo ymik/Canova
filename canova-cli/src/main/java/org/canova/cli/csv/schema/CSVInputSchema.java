@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.math3.util.Pair;
+import org.canova.cli.csv.schema.CSVSchemaColumn.TransformType;
+
 /*
 
 	purpose: to parse and represent the input schema + column transforms of CSV data to vectorize
@@ -25,6 +28,10 @@ public class CSVInputSchema {
 		
 		return this.columnSchemas.get(colName);
 		
+	}
+	
+	public Map<String, CSVSchemaColumn> getColumnSchemas() {
+		return this.columnSchemas;
 	}
 	
 	private boolean validateRelationLine( String[] lineParts ) {
@@ -244,6 +251,8 @@ public class CSVInputSchema {
 		
 	}
 	
+	
+	
 	/**
 	 * We call this method once we've scanned the entire dataset once to gather column stats
 	 * 
@@ -253,6 +262,45 @@ public class CSVInputSchema {
 		
 		
 		this.hasComputedStats = true;
+		
+	}
+	
+	public void debugPringDatasetStatistics() {
+		
+		
+		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
+		    
+			String key = entry.getKey();
+		    CSVSchemaColumn value = entry.getValue();
+		    
+		    // now work with key and value...
+		    
+		    System.out.println( "> " + value.name + ", " + value.columnType + ", " + value.transform );
+		    
+		    if ( value.transform == TransformType.LABEL ) {
+
+			    System.out.println( "> Label > Class Balance Report " );
+			    //System.out.println( "Class Balance Report " );
+			    
+			    for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
+			    
+			    	// value.recordLabels.size()
+			    	System.out.println( " " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond() );
+			    	
+			    }
+			    
+		    	
+		    } else {
+
+			    System.out.println( "\t\tmin: " + value.minValue );
+			    System.out.println( "\t\tmax: " + value.maxValue );
+
+		    }
+		    
+		    		    
+		    
+		}		
+		
 		
 	}
 	

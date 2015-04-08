@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import org.canova.cli.csv.schema.CSVInputSchema;
+import org.canova.cli.csv.vectorization.CSVVectorizationEngine;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.slf4j.Logger;
@@ -21,7 +22,13 @@ public class Vectorize implements SubCommand {
 	public Properties configProps = null;
 	
 	private CSVInputSchema inputSchema = null; //
+	private CSVVectorizationEngine vectorizer = null;
 
+	
+	public Vectorize() {
+		
+		
+	}
 
 	// this picks up the input schema file from the properties file and loads it
 	private void loadInputSchemaFile() throws Exception {
@@ -30,6 +37,7 @@ public class Vectorize implements SubCommand {
 		this.inputSchema = new CSVInputSchema();
 		this.inputSchema.parseSchemaFile( schemaFilePath );
 
+		this.vectorizer = new CSVVectorizationEngine();
 	}
 
 
@@ -93,10 +101,12 @@ public class Vectorize implements SubCommand {
 		
 		System.out.println( "Raw Data to convert: " + datasetInputPath );
 		
+		// TODO: replace this with an { input-format, record-reader }
 		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
 			
 		    for (String line; (line = br.readLine()) != null; ) {
 
+		    	// TODO: this will end up processing key-value pairs
 		    	this.inputSchema.evaluateInputRecord(line);
 		    	
 		    }
@@ -114,9 +124,38 @@ public class Vectorize implements SubCommand {
 		
 		// generate dataset report --> DatasetSummaryStatistics
 		
+		this.inputSchema.computeDatasetStatistics();
+		this.inputSchema.debugPringDatasetStatistics();
+		
 		// produce converted/vectorized output based on statistics --> Transforms + CSVInputSchema + Rows
 
-			// [ second dataset pass ]		
+			// [ second dataset pass ]	
+		
+		System.out.println( " Second Data Pass > Vectorizing each Column ------" );
+		
+		// TODO: replace this with an { input-format, record-reader }
+		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
+			
+		    for (String line; (line = br.readLine()) != null; ) {
+
+		    	// TODO: this will end up processing key-value pairs
+
+		    	// this outputVector needs to be ND4J
+		    	String outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
+		    	
+		    }
+		    // line is not visible here.
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
 	}
 
 

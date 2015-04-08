@@ -35,7 +35,7 @@ public class ImageRecordReader implements RecordReader {
     private List<String> labels  = new ArrayList<>();
     private boolean appendLabel = false;
     private Collection<Writable> record;
-    private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg");
+    private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg","bmp");
     private boolean hitImage = false;
 
 

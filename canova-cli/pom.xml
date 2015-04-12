@@ -12,13 +12,11 @@
     <name>canova-cli</name>
 
     <dependencies>
-<!--
         <dependency>
-            <groupId>org.canova</groupId>
+            <groupId>org.nd4j</groupId>
             <artifactId>canova-nd4j</artifactId>
             <version>${project.version}</version>
         </dependency>
--->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>

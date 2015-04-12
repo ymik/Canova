@@ -5,16 +5,31 @@ import org.canova.api.io.data.FloatWritable;
 import org.canova.api.writable.Writable;
 import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.factory.Nd4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Adam Gibson
  */
 public class RecordConverter {
     private RecordConverter() {}
-
+    /**
+     * Convert a record to an ndarray
+     * @param record the record to convert
+     * @return the record
+     */
+    public static INDArray toArray(Collection<Writable> record) {
+        INDArray ret = Nd4j.create(record.size());
+        Iterator<Writable> recordIter = record.iterator();
+        int count = 0;
+        while(recordIter.hasNext()) {
+            ret.putScalar(count++,Double.valueOf(recordIter.next().toString()));
+        }
+       return ret;
+    }
 
     /**
      * Convert an ndarray to a record

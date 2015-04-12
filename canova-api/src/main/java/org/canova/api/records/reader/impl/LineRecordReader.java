@@ -2,6 +2,7 @@ package org.canova.api.records.reader.impl;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.Text;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.FileSplit;
@@ -83,5 +84,15 @@ public class LineRecordReader implements RecordReader {
                 iter2.close();
             }
         }
+    }
+
+    @Override
+    public void setConf(Configuration conf) {
+
+    }
+
+    @Override
+    public Configuration getConf() {
+        return null;
     }
 }

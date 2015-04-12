@@ -1,6 +1,7 @@
 package org.canova.sound.recordreader;
 
 import org.apache.commons.io.FileUtils;
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.FileSplit;
@@ -28,6 +29,7 @@ public class WavFileRecordReader implements RecordReader {
     private boolean hitImage = false;
     private boolean appendLabel = false;
     private List<String> labels = new ArrayList<>();
+    private Configuration conf;
 
     public WavFileRecordReader(boolean appendLabel, List<String> labels) {
         this.appendLabel = appendLabel;
@@ -122,5 +124,15 @@ public class WavFileRecordReader implements RecordReader {
     @Override
     public void close() throws IOException {
 
+    }
+
+    @Override
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+    }
+
+    @Override
+    public Configuration getConf() {
+        return conf;
     }
 }

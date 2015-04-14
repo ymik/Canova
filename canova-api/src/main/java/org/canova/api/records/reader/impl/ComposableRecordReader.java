@@ -1,5 +1,6 @@
 package org.canova.api.records.reader.impl;
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
@@ -54,5 +55,15 @@ public class ComposableRecordReader implements RecordReader {
     public void close() throws IOException {
        for(RecordReader reader : readers)
            reader.close();
+    }
+
+    @Override
+    public void setConf(Configuration conf) {
+
+    }
+
+    @Override
+    public Configuration getConf() {
+        return null;
     }
 }

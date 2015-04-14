@@ -1,5 +1,6 @@
 package org.canova.api.records.reader;
 
+import org.canova.api.conf.Configurable;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
@@ -12,7 +13,7 @@ import java.util.Collection;
  * Record reader
  * @author Adam Gibson
  */
-public interface RecordReader extends Closeable,Serializable {
+public interface RecordReader extends Closeable,Serializable,Configurable {
 
     /**
      * Called once at initialization.

@@ -3,6 +3,8 @@ package org.canova.cli.csv.schema;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.commons.math3.util.Pair;
+
 /*
 
 	purpose: to parse and represent the input schema + column transforms of CSV data to vectorize
@@ -50,7 +52,8 @@ public class CSVSchemaColumn {
 	
 
 	// we want to track the label counts to understand the class balance
-	private Map<String, Integer> recordLabels = new LinkedHashMap<String, Integer>();
+	// layout: { columnName, columnID, occurenceCount }
+	public Map<String, Pair<Integer, Integer>> recordLabels = new LinkedHashMap<String, Pair<Integer, Integer>>();
 	
 	
 	public CSVSchemaColumn(String colName, ColumnType colType, TransformType transformType) {
@@ -72,13 +75,17 @@ public class CSVSchemaColumn {
 	 */
 	public void evaluateColumnValue(String value) throws Exception {
 		
-		if ( ColumnType.NUMERIC == this.columnType ) {
+	//	System.out.println( "# evalColValue() => " + value );
+		
+		
+		
+		if ( ColumnType.NUMERIC == this.columnType &&  TransformType.LABEL != this.transform  ) {
 			
 			// then we want to look at min/max values
 			
 			double tmpVal = Double.parseDouble(value);
 			
-			System.out.println( "converted: " + tmpVal );
+			// System.out.println( "converted: " + tmpVal );
 			
 			if (Double.isNaN(tmpVal)) {
 				throw new Exception("The column was defined as Numeric yet could not be parsed as a Double");
@@ -106,18 +113,27 @@ public class CSVSchemaColumn {
 			
 		} else if ( TransformType.LABEL == this.transform ) {
 			
+		//	System.out.println( "> label '" + value + "' " );
 			
+			String trimmedKey = value.trim();
 			
 			// then we want to track the record label
-			if ( this.recordLabels.containsKey( value ) ) {
+			if ( this.recordLabels.containsKey( trimmedKey ) ) {
 				
-				Integer countInt = this.recordLabels.get( value );
+				//System.out.println( " size: " + this.recordLabels.size() );
+				
+				Integer labelID = this.recordLabels.get( trimmedKey ).getFirst();
+				Integer countInt = this.recordLabels.get( trimmedKey ).getSecond();
 				countInt++;
-				this.recordLabels.put( value, countInt );
+				
+				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, countInt ) );
 				
 			} else {
 				
-				this.recordLabels.put( value, 1 );
+				Integer labelID = this.recordLabels.size();
+				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, 1 ) );
+
+			//	System.out.println( ">>> Adding Label: '" + trimmedKey + "' @ " + labelID );
 				
 			}
 			
@@ -140,10 +156,11 @@ public class CSVSchemaColumn {
 	
 	public void debugPrintColumns() {
 		
-		for (Map.Entry<String, Integer> entry : this.recordLabels.entrySet()) {
+		for (Map.Entry<String, Pair<Integer,Integer>> entry : this.recordLabels.entrySet()) {
 		    
 			String key = entry.getKey();
-		    Integer value = entry.getValue();
+		    //Integer value = entry.getValue();
+			Pair<Integer,Integer> value = entry.getValue();
 		    
 		    System.out.println( "> " + key + ", " + value);
 		    
@@ -153,8 +170,127 @@ public class CSVSchemaColumn {
 	}
 	
 	public Integer getLabelCount( String label ) {
+
+		if ( this.recordLabels.containsKey(label) ) {
+		
+			return this.recordLabels.get( label ).getSecond();
+		
+		}
+		
+		return null;
+		
+	}
+
+	public Integer getLabelID( String label ) {
+		
+	//	System.out.println( "getLableID() => '" + label + "' " );
+		
+		if ( this.recordLabels.containsKey(label) ) {
+		
+			return this.recordLabels.get( label ).getFirst();
+			
+		}
+		
+	//	System.out.println( ".getLabelID() >> returning null with size: " + this.recordLabels.size() );
+		return null;
+		
+	}
+	
+	
+	public double transformColumnValue(String inputColumnValue) {
+		
+		if ( TransformType.LABEL == this.transform ) {
+			
+			return this.label(inputColumnValue);
+			
+		} else if ( TransformType.BINARIZE == this.transform ) {
+			
+			return this.binarize(inputColumnValue);
+			
+		} else if ( TransformType.COPY == this.transform ) {
+			
+			return this.copy(inputColumnValue);
+					
+		} else if ( TransformType.NORMALIZE == this.transform ) {
+			
+			return this.normalize(inputColumnValue);
+					
+		} else if ( TransformType.SKIP == this.transform ) {
+			
+			return 0.0; // but the vector engine has to remove this from output
+		}
+
+		return -1.0; // not good
+		
+	}
+	
+
+	public double copy(String inputColumnValue) {
+		
+		return Double.parseDouble(inputColumnValue);
+		
+	}
+
+	/*
+	 * Needed Statistics for binarize() - range of values (min, max) - similar
+	 * to normalize, but we threshold on 0.5 after normalize
+	 */
+	public double binarize(String inputColumnValue) {
+		
+		double val = Double.parseDouble(inputColumnValue);
+		
+		double range = this.maxValue - this.minValue;
+		double midpoint = ( range / 2 ) + this.minValue;
+		
+		if (val < midpoint) {
+			return 0.0;
+		}
+		
+		return 1.0;
+		
+	}
+
+	/*
+	 * Needed Statistics for normalize() - range of values (min, max)
+	 * 
+	 * 
+	 * normalize( x ) = ( x - min ) / range
+	 *  
+	 */
+	public double normalize(String inputColumnValue) {
+
+		double val = Double.parseDouble(inputColumnValue);
+		
+		double range = this.maxValue - this.minValue;
+		double normalizedOut = ( val - this.minValue ) / range;
 				
-		return this.recordLabels.get( label );
+		return normalizedOut;		
+		
+	}
+
+	/*
+	 * Needed Statistics for label() - count of distinct labels - index of
+	 * labels to IDs (hashtable?)
+	 */
+	public double label(String inputColumnValue) {
+
+		//this.recordLabels.
+		
+	//	System.out.println( ".lable() => '" + inputColumnValue.trim() + "' --- class count: " + this.recordLabels.size() );
+		
+		// TODO: how do get a numeric index from a list of labels? 
+		Integer ID = this.getLabelID( inputColumnValue.trim() );
+		
+		if (null == ID) {
+			
+			// add ID
+			//this.
+			
+		}
+		
+	//	System.out.println("#### Label: " + ID );
+		
+		return ID;
 		
 	}
 	

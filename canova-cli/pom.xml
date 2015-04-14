@@ -17,7 +17,6 @@
     </properties>
 
     <dependencies>
-<<<<<<< HEAD
 <!--
 	<dependency>
 		<groupId>org.nd4j</groupId>
@@ -32,13 +31,6 @@
             <version>${project.version}</version>
         </dependency>
 
-=======
-        <dependency>
-            <groupId>org.nd4j</groupId>
-            <artifactId>canova-nd4j</artifactId>
-            <version>${project.version}</version>
-        </dependency>
->>>>>>> ccd1a1ad2280ebc40d7701fe669453012e1587fa
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>

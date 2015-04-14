@@ -1,6 +1,7 @@
 package org.canova.image.recordreader;
 
 import org.apache.commons.io.FileUtils;
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.io.data.Text;
 import org.canova.api.records.reader.SequenceRecordReader;
@@ -37,7 +38,7 @@ public class VideoRecordReader implements SequenceRecordReader {
     private Collection<Writable> record;
     private boolean hitImage = false;
     private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg");
-
+    private Configuration conf;
 
 
 
@@ -235,5 +236,15 @@ public class VideoRecordReader implements SequenceRecordReader {
 
         }
         return ret;
+    }
+
+    @Override
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+    }
+
+    @Override
+    public Configuration getConf() {
+        return conf;
     }
 }

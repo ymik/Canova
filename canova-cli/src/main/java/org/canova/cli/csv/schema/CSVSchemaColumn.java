@@ -75,7 +75,11 @@ public class CSVSchemaColumn {
 	 */
 	public void evaluateColumnValue(String value) throws Exception {
 		
-		if ( ColumnType.NUMERIC == this.columnType ) {
+	//	System.out.println( "# evalColValue() => " + value );
+		
+		
+		
+		if ( ColumnType.NUMERIC == this.columnType &&  TransformType.LABEL != this.transform  ) {
 			
 			// then we want to look at min/max values
 			
@@ -109,20 +113,27 @@ public class CSVSchemaColumn {
 			
 		} else if ( TransformType.LABEL == this.transform ) {
 			
+		//	System.out.println( "> label '" + value + "' " );
+			
+			String trimmedKey = value.trim();
 			
 			// then we want to track the record label
-			if ( this.recordLabels.containsKey( value ) ) {
+			if ( this.recordLabels.containsKey( trimmedKey ) ) {
 				
-				Integer labelID = this.recordLabels.get( value ).getFirst();
-				Integer countInt = this.recordLabels.get( value ).getSecond();
+				//System.out.println( " size: " + this.recordLabels.size() );
+				
+				Integer labelID = this.recordLabels.get( trimmedKey ).getFirst();
+				Integer countInt = this.recordLabels.get( trimmedKey ).getSecond();
 				countInt++;
 				
-				this.recordLabels.put( value, new Pair<Integer, Integer>( labelID, countInt ) );
+				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, countInt ) );
 				
 			} else {
 				
 				Integer labelID = this.recordLabels.size();
-				this.recordLabels.put( value, new Pair<Integer, Integer>( labelID, 1 ) );
+				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, 1 ) );
+
+			//	System.out.println( ">>> Adding Label: '" + trimmedKey + "' @ " + labelID );
 				
 			}
 			
@@ -159,14 +170,29 @@ public class CSVSchemaColumn {
 	}
 	
 	public Integer getLabelCount( String label ) {
-				
-		return this.recordLabels.get( label ).getSecond();
+
+		if ( this.recordLabels.containsKey(label) ) {
+		
+			return this.recordLabels.get( label ).getSecond();
+		
+		}
+		
+		return null;
 		
 	}
 
 	public Integer getLabelID( String label ) {
 		
-		return this.recordLabels.get( label ).getFirst();
+	//	System.out.println( "getLableID() => '" + label + "' " );
+		
+		if ( this.recordLabels.containsKey(label) ) {
+		
+			return this.recordLabels.get( label ).getFirst();
+			
+		}
+		
+	//	System.out.println( ".getLabelID() >> returning null with size: " + this.recordLabels.size() );
+		return null;
 		
 	}
 	
@@ -250,10 +276,19 @@ public class CSVSchemaColumn {
 
 		//this.recordLabels.
 		
-		// TODO: how do get a numeric index from a list of labels? 
-		double ID = this.getLabelID( inputColumnValue.trim() );
+	//	System.out.println( ".lable() => '" + inputColumnValue.trim() + "' --- class count: " + this.recordLabels.size() );
 		
-		System.out.println("Label: " + ID );
+		// TODO: how do get a numeric index from a list of labels? 
+		Integer ID = this.getLabelID( inputColumnValue.trim() );
+		
+		if (null == ID) {
+			
+			// add ID
+			//this.
+			
+		}
+		
+	//	System.out.println("#### Label: " + ID );
 		
 		return ID;
 		

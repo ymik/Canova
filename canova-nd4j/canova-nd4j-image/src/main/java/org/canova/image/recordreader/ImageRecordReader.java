@@ -1,6 +1,7 @@
 package org.canova.image.recordreader;
 
 import org.apache.commons.io.FileUtils;
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.io.data.Text;
 import org.canova.api.records.reader.RecordReader;
@@ -35,8 +36,9 @@ public class ImageRecordReader implements RecordReader {
     private List<String> labels  = new ArrayList<>();
     private boolean appendLabel = false;
     private Collection<Writable> record;
-    private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg");
+    private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg","bmp");
     private boolean hitImage = false;
+    private Configuration conf;
 
 
 
@@ -197,5 +199,15 @@ public class ImageRecordReader implements RecordReader {
     @Override
     public void close() throws IOException {
 
+    }
+
+    @Override
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+    }
+
+    @Override
+    public Configuration getConf() {
+        return conf;
     }
 }

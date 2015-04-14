@@ -215,6 +215,31 @@ public class CSVInputSchema {
 
 	}
 	
+	/**
+	 * Returns how many columns a newly transformed vector should have
+	 * 
+	 * 
+	 * 
+	 * @return
+	 */
+	public int getTransformedVectorSize() {
+		
+		int colCount = 0;
+		
+		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
+
+			if (entry.getValue().transform != CSVSchemaColumn.TransformType.SKIP) {
+				
+				colCount++;
+				
+			}
+			
+		}
+		
+		return colCount;
+		
+	}
+	
 	public void evaluateInputRecord(String csvRecordLine) throws Exception {
 		
 		// does the record have the same number of columns that our schema expects?
@@ -267,6 +292,7 @@ public class CSVInputSchema {
 	
 	public void debugPringDatasetStatistics() {
 		
+		System.out.println( "Print Schema --------" );
 		
 		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
 		    
@@ -279,13 +305,13 @@ public class CSVInputSchema {
 		    
 		    if ( value.transform == TransformType.LABEL ) {
 
-			    System.out.println( "> Label > Class Balance Report " );
+			    System.out.println( "\t> Label > Class Balance Report " );
 			    //System.out.println( "Class Balance Report " );
 			    
 			    for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
 			    
 			    	// value.recordLabels.size()
-			    	System.out.println( " " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond() );
+			    	System.out.println( "\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond() );
 			    	
 			    }
 			    
@@ -299,7 +325,9 @@ public class CSVInputSchema {
 		    
 		    		    
 		    
-		}		
+		}	
+		
+		System.out.println( "End Print Schema --------\n\n" );
 		
 		
 	}
@@ -318,7 +346,7 @@ public class CSVInputSchema {
 		}		
 		
 	}
-	
+		
 
 
 }

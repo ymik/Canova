@@ -10,6 +10,8 @@ import org.canova.api.writable.Writable;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.schema.CSVSchemaColumn;
 import org.canova.cli.csv.schema.CSVSchemaColumn.TransformType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Vectorization Engine
@@ -21,6 +23,8 @@ import org.canova.cli.csv.schema.CSVSchemaColumn.TransformType;
  */
 public class CSVVectorizationEngine {
 
+    private static Logger log = LoggerFactory.getLogger(CSVVectorizationEngine.class);
+    
 	/**
 	 * Use statistics collected from a previous pass to vectorize (or drop) each column
 	 * 
@@ -29,21 +33,21 @@ public class CSVVectorizationEngine {
 	public Collection<Writable> vectorize( String key, String value, CSVInputSchema schema ) {
 		
 		//INDArray
-        Collection<Writable> ret = new new ArrayList<>();
+        Collection<Writable> ret =  new ArrayList<>();
 		
 		// TODO: this needs to be different (needs to be real vector representation
 		//String outputVector = "";
 		String[] columns = value.split( schema.delimiter );
 				
 		if ( columns[0].trim().equals("") ) {
-			System.out.println("Skipping blank line");
+			log.info("Skipping blank line");
 			return null;
 		}
 		
 		int srcColIndex = 0;
 		int dstColIndex = 0;
 		
-		System.out.println( "> Engine.vectorize() ----- ");
+		log.info( "> Engine.vectorize() ----- ");
 		
 		// scan through the columns in the schema / input csv data
 		for (Map.Entry<String, CSVSchemaColumn> entry : schema.getColumnSchemas().entrySet()) {
@@ -59,7 +63,7 @@ public class CSVVectorizationEngine {
 		    	
 		    } else {
 		    
-		    	System.out.println( " column value: " + columns[ srcColIndex ] );
+		    	log.info( " column value: " + columns[ srcColIndex ] );
 		    	
 		    	double convertedColumn = colSchemaEntry.transformColumnValue( columns[ srcColIndex ].trim() );
 		    	// add this value to the output vector
@@ -96,14 +100,14 @@ public class CSVVectorizationEngine {
 		String[] columns = value.split( schema.delimiter );
 				
 		if ( columns[0].trim().equals("") ) {
-			System.out.println("Skipping blank line");
+			log.info("Skipping blank line");
 			return null;
 		}
 		
 		int srcColIndex = 0;
 		int dstColIndex = 0;
 		
-		System.out.println( "> Engine.vectorize() ----- ");
+		log.info( "> Engine.vectorize() ----- ");
 		
 		// scan through the columns in the schema / input csv data
 		for (Map.Entry<String, CSVSchemaColumn> entry : schema.getColumnSchemas().entrySet()) {
@@ -119,7 +123,7 @@ public class CSVVectorizationEngine {
 		    	
 		    } else {
 		    
-		    	System.out.println( " column value: " + columns[ srcColIndex ] );
+		    	log.info( " column value: " + columns[ srcColIndex ] );
 		    	
 		    	double convertedColumn = colSchemaEntry.transformColumnValue( columns[ srcColIndex ].trim() );
 		    	// add this value to the output vector

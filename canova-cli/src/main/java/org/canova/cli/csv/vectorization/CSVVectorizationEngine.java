@@ -10,8 +10,6 @@ import org.canova.api.writable.Writable;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.schema.CSVSchemaColumn;
 import org.canova.cli.csv.schema.CSVSchemaColumn.TransformType;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
 
 /**
  * Vectorization Engine
@@ -28,10 +26,10 @@ public class CSVVectorizationEngine {
 	 * 
 	 * @return
 	 */
-	public INDArray vectorize( String key, String value, CSVInputSchema schema ) {
+	public Collection<Writable> vectorize( String key, String value, CSVInputSchema schema ) {
 		
 		//INDArray
-		INDArray ret = this.createArray( schema.getTransformedVectorSize() );
+        Collection<Writable> ret = new new ArrayList<>();
 		
 		// TODO: this needs to be different (needs to be real vector representation
 		//String outputVector = "";
@@ -65,9 +63,8 @@ public class CSVVectorizationEngine {
 		    	
 		    	double convertedColumn = colSchemaEntry.transformColumnValue( columns[ srcColIndex ].trim() );
 		    	// add this value to the output vector
+                ret.add(new DoubleWritable(convertedColumn));
 
-		    	ret.putScalar(dstColIndex, convertedColumn);
-		    	
 		    	dstColIndex++;
 		    	
 		    }
@@ -92,7 +89,7 @@ public class CSVVectorizationEngine {
 		
 		//INDArray
 		//INDArray ret = this.createArray( schema.getTransformedVectorSize() );
-		Collection<Writable> ret = new ArrayList<Writable>();
+		Collection<Writable> ret = new ArrayList<>();
 		
 		// TODO: this needs to be different (needs to be real vector representation
 		//String outputVector = "";
@@ -145,14 +142,7 @@ public class CSVVectorizationEngine {
 		
 	}	
 	
-	
-	public INDArray createArray( int size ) {
-		
-		INDArray ret = Nd4j.create( size ); //cache.vocabWords().size());
-		
-		return ret;
-		
-	}
+
 	
 	
 	

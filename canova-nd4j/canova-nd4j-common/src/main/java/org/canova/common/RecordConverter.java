@@ -22,7 +22,8 @@ public class RecordConverter {
      * @param record the array to convert
      * @return the record
      */
-    public static INDArray toArray(Collection<Writable> record) {
+    public static INDArray toArray
+    (Collection<Writable> record) {
         Iterator<Writable> writables = record.iterator();
         INDArray linear = Nd4j.zeros(record.size());
 

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
@@ -20,12 +21,17 @@ import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
 import org.canova.api.formats.input.impl.LineInputFormat;
 import org.canova.api.formats.output.OutputFormat;
+import org.canova.api.records.reader.RecordReader;
 import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.records.writer.impl.SVMLightRecordWriter;
+import org.canova.api.split.FileSplit;
+import org.canova.api.split.InputSplit;
+import org.canova.api.writable.Writable;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.vectorization.CSVVectorizationEngine;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +49,12 @@ public class Vectorize implements SubCommand {
 	  public static final String DEFAULT_OUTPUT_FORMAT_CLASSNAME = "org.canova.api.formats.output.impl.SVMLightOutputFormat";
 	  
 	  protected String[] args;
+	  
+	  public boolean validCommandLineParameters = true;
+
+	  @Option(name="-conf",usage="Sets a configuration file to drive the vectorization process")	  
 	  public String configurationFile = "";
+	  
 	public Properties configProps = null;
 	public String outputVectorFilename = "";
 	
@@ -183,8 +194,13 @@ public class Vectorize implements SubCommand {
 	// 1. load conf file
 	// 2, load schema file
 	// 3. transform csv -> output format
-	public void executeVectorizeWorkflow() throws CanovaException, IOException {
+	public void execute() throws CanovaException, IOException, InterruptedException {
 
+		if (false == this.validCommandLineParameters) {
+			System.out.println( "Vectorize function is not configured properly, stopping." );
+			return;
+		}
+		
 		boolean schemaLoaded = false;
 		// load stuff (conf, schema) --> CSVInputSchema
 		
@@ -220,15 +236,29 @@ public class Vectorize implements SubCommand {
 		
 		System.out.println( "Raw Data to convert: " + datasetInputPath );
 		
+		File inputFile = new File( datasetInputPath );
+		InputSplit split = new FileSplit( inputFile );
+		InputFormat inputFormat = this.createInputFormat();
+		
+		RecordReader reader = inputFormat.createReader(split);
+		
 		// TODO: replace this with an { input-format, record-reader }
-		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
-			
-		    for (String line; (line = br.readLine()) != null; ) {
+//		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
+		
+		while(reader.hasNext()) {
+			Collection<Writable> w = reader.next();
+		    //for (String line; (line = br.readLine()) != null; ) {
 
 		    	// TODO: this will end up processing key-value pairs
-		    	this.inputSchema.evaluateInputRecord(line);
+		    	try {
+					this.inputSchema.evaluateInputRecord( (String) w.toArray()[0].toString() );
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 		    	
-		    }
+		}
+/*		    
 		    // line is not visible here.
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
@@ -240,6 +270,9 @@ public class Vectorize implements SubCommand {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}		
+		*/
+		
+		reader.close();
 		
 		// generate dataset report --> DatasetSummaryStatistics
 		
@@ -249,6 +282,8 @@ public class Vectorize implements SubCommand {
 		// produce converted/vectorized output based on statistics --> Transforms + CSVInputSchema + Rows
 
 			// [ second dataset pass ]	
+		
+		reader = inputFormat.createReader(split);
 		
 		System.out.println( " Second Data Pass > Vectorizing each Column ------" );
 		
@@ -262,10 +297,13 @@ public class Vectorize implements SubCommand {
 
 		
 		// TODO: replace this with an { input-format, record-reader }
-		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
+//		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
 			
-		    for (String line; (line = br.readLine()) != null; ) {
+//		    for (String line; (line = br.readLine()) != null; ) {
+		while(reader.hasNext()) {
+			Collection<Writable> w = reader.next();
 
+			String line = (String) w.toArray()[0].toString();
 		    	// TODO: this will end up processing key-value pairs
 
 		    	// this outputVector needs to be ND4J
@@ -276,7 +314,8 @@ public class Vectorize implements SubCommand {
 		    	}
 		    	
 		    }
-		    // line is not visible here.
+		
+/*		    // line is not visible here.
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -286,7 +325,11 @@ public class Vectorize implements SubCommand {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+		}	
+		*/	
+		
+		reader.close();
+		writer.close();
 		
 	}
 
@@ -295,11 +338,13 @@ public class Vectorize implements SubCommand {
 	   * @param args arguments for command
 	   */
 	  public Vectorize(String[] args) {
+		  
 	    this.args = args;
 	    CmdLineParser parser = new CmdLineParser(this);
 	    try {
 	      parser.parseArgument(args);
 	    } catch (CmdLineException e) {
+	    	this.validCommandLineParameters = false;
 	      parser.printUsage(System.err);
 	      log.error("Unable to parse args", e);
 	    }

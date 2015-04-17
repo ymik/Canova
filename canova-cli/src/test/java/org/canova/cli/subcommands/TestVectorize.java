@@ -44,7 +44,7 @@ public class TestVectorize {
 	}
 	
 	@Test
-	public void testExecuteCSVConversionWorkflow() throws CanovaException, IOException {
+	public void testExecuteCSVConversionWorkflow() throws CanovaException, IOException, InterruptedException {
 		
 		String confFile = "src/test/resources/csv/confs/unit_test_conf.txt";
 		
@@ -62,7 +62,7 @@ public class TestVectorize {
 		// output.directory=/tmp/canova/cli/vectors/output/
 		//assertEquals( "/tmp/canova/cli/vectors/output/", vecCommand.configProps.get("output.directory") );
 		
-		vecCommand.executeVectorizeWorkflow();
+		vecCommand.execute();
 		
 		// now check the output
 		

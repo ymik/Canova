@@ -7,26 +7,21 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-//import org.canova.api.records.reader.RecordReader;
 
 import org.canova.api.conf.Configuration;
 import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
-import org.canova.api.formats.input.impl.LineInputFormat;
 import org.canova.api.formats.output.OutputFormat;
 import org.canova.api.records.writer.RecordWriter;
-import org.canova.api.records.writer.impl.SVMLightRecordWriter;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.vectorization.CSVVectorizationEngine;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

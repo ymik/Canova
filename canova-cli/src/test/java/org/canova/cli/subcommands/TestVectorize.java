@@ -24,43 +24,20 @@ public class TestVectorize {
 
 	@Test
 	public void testLoadConfFile() throws IOException {
+				
+		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
+		Vectorize vecCommand = new Vectorize( args );
 		
-		String confFile = "src/test/resources/csv/confs/unit_test_conf.txt";
-		
-		String[] foo = new String[1];
-		foo[0] = "1";
-		
-		Vectorize vecCommand = new Vectorize( foo );
-		
-		vecCommand.configurationFile = confFile;
 		vecCommand.loadConfigFile();
-		
-		// output.vector.format=svmlight
-		assertEquals( "svmlight", vecCommand.configProps.get("output.vector.format") );
-		
-		// output.directory=/tmp/canova/cli/vectors/output/
-		assertEquals( "/tmp/canova/cli/vectors/output/", vecCommand.configProps.get("output.directory") );
+		assertEquals( "/tmp/iris_unit_test_sample.txt", vecCommand.configProps.get("output.directory") );
 		
 	}
 	
 	@Test
 	public void testExecuteCSVConversionWorkflow() throws CanovaException, IOException, InterruptedException {
 		
-		String confFile = "src/test/resources/csv/confs/unit_test_conf.txt";
-		
-		String[] foo = new String[1];
-		foo[0] = "1";
-		
-		Vectorize vecCommand = new Vectorize( foo );
-		
-		vecCommand.configurationFile = confFile;
-		//vecCommand.loadConfigFile();
-		
-		// output.vector.format=svmlight
-		//assertEquals( "svmlight", vecCommand.configProps.get("output.vector.format") );
-		
-		// output.directory=/tmp/canova/cli/vectors/output/
-		//assertEquals( "/tmp/canova/cli/vectors/output/", vecCommand.configProps.get("output.directory") );
+		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
+		Vectorize vecCommand = new Vectorize( args );
 		
 		vecCommand.execute();
 		
@@ -71,13 +48,8 @@ public class TestVectorize {
 	@Test
 	public void testRandomShit() throws Exception {
 		
-		String confFile = "src/test/resources/csv/confs/unit_test_conf.txt";
-		
-		String[] foo = new String[1];
-		foo[0] = "1";
-		
-		Vectorize vecCommand = new Vectorize( foo );
-		vecCommand.configurationFile = confFile;
+		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
+		Vectorize vecCommand = new Vectorize( args );
 		vecCommand.loadConfigFile();
 		
 		vecCommand.debugLoadedConfProperties();

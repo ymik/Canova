@@ -263,7 +263,11 @@ public class CSVSchemaColumn {
 		
 		double range = this.maxValue - this.minValue;
 		double normalizedOut = ( val - this.minValue ) / range;
-				
+		
+		if (0.0 == range) {
+			return 0.0;
+		}
+		
 		return normalizedOut;		
 		
 	}

@@ -100,33 +100,14 @@ public class Vectorize implements SubCommand {
 			e.printStackTrace();
 		}
 			
-		
-		/*
-
-			new File(path).exists();
-			
-			
-			This will tell you if it is a directory:
-			
-			new File(path).isDirectory();
-			
-			
-			Similarly, this will tell you if it's a file:
-			
-			new File(path).isFile();
-
-		 */
+	
 		
 		if (null == this.configProps.get( OUTPUT_FILENAME_KEY )) {
 			
 			Date date = new Date() ;
 			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
-			//File file = new File(dateFormat.format(date) + ".tsv") ;
-			
-			this.outputVectorFilename = "/tmp/SVMLight_" + dateFormat.format(date) + ".txt";
-			
-			System.out.println( "No output file specified, defaulting to: " + this.outputVectorFilename );
-			
+			this.outputVectorFilename = "/tmp/canova_vectors_" + dateFormat.format(date) + ".txt";
+						
 		} else {
 			
 			// what if its only a directory?
@@ -146,32 +127,30 @@ public class Vectorize implements SubCommand {
 				
 				if ( new File( this.outputVectorFilename ).isDirectory() ) {
 					
+					
 					Date date = new Date() ;
 					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
 					//File file = new File(dateFormat.format(date) + ".tsv") ;
 					
-					this.outputVectorFilename += "/SVMLight_" + dateFormat.format(date) + ".txt";
+					this.outputVectorFilename += "/canova_vectors_" + dateFormat.format(date) + ".txt";
 					
 					
 				} else {
 					
 					// if a file that exists
 					
-					System.out.println( "File path already exists, using default" );
 					
-					Date date = new Date() ;
-					SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
-					//File file = new File(dateFormat.format(date) + ".tsv") ;
+					(new File( this.outputVectorFilename )).delete();
 					
-					this.outputVectorFilename += "/SVMLight_" + dateFormat.format(date) + ".txt";
-
+					System.out.println( "File path already exists, deleting the old file before proceeding..." );
+					
 					
 				}
 				
 				
 			}
 			
-			System.out.println( "Writing vectorized output to: " + this.outputVectorFilename + "\n\n" );
+			//System.out.println( "Writing vectorized output to: " + this.outputVectorFilename + "\n\n" );
 			
 		}
 		
@@ -183,11 +162,14 @@ public class Vectorize implements SubCommand {
 		Properties props = this.configProps; //System.getProperties();
 	    Enumeration e = props.propertyNames();
 
+	    System.out.println("\n--- Canova Configuration ---");
+	    
 	    while (e.hasMoreElements()) {
 	      String key = (String) e.nextElement();
 	      System.out.println(key + " -- " + props.getProperty(key));
 	    }		
 		
+	    System.out.println("--- Canova Configuration ---\n");
 	}
 	
 
@@ -206,7 +188,12 @@ public class Vectorize implements SubCommand {
 		
 		this.loadConfigFile();
 		
-		this.debugLoadedConfProperties();
+		if (null != this.configProps.get( "conf.print" )) {
+			String print = (String) this.configProps.get( "conf.print" );
+			if ("true".equals(print.trim().toLowerCase())) {
+				this.debugLoadedConfProperties();
+			}
+		}
 		
 		
 		try {
@@ -234,7 +221,6 @@ public class Vectorize implements SubCommand {
 		
 		String datasetInputPath = (String) this.configProps.get("input.directory");
 		
-		System.out.println( "Raw Data to convert: " + datasetInputPath );
 		
 		File inputFile = new File( datasetInputPath );
 		InputSplit split = new FileSplit( inputFile );
@@ -258,26 +244,23 @@ public class Vectorize implements SubCommand {
 				}
 		    	
 		}
-/*		    
-		    // line is not visible here.
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}		
-		*/
 		
 		reader.close();
 		
 		// generate dataset report --> DatasetSummaryStatistics
 		
 		this.inputSchema.computeDatasetStatistics();
-		this.inputSchema.debugPringDatasetStatistics();
+
+		String schema_print_key = "input.statistics.debug.print";
+		if (null != this.configProps.get( schema_print_key )) {
+			String printSchema = (String) this.configProps.get( schema_print_key );
+			if ("true".equals(printSchema.trim().toLowerCase())) {
+				//this.debugLoadedConfProperties();
+				this.inputSchema.debugPringDatasetStatistics();
+			}
+		}
+		
+		
 		
 		// produce converted/vectorized output based on statistics --> Transforms + CSVInputSchema + Rows
 
@@ -285,21 +268,13 @@ public class Vectorize implements SubCommand {
 		
 		reader = inputFormat.createReader(split);
 		
-		System.out.println( " Second Data Pass > Vectorizing each Column ------" );
-		
 		OutputFormat outputFormat = this.createOutputFormat();
 		
 		Configuration conf = new Configuration();
 		conf.set(OutputFormat.OUTPUT_PATH, this.outputVectorFilename);
 		
-        //File tmpOutSVMLightFile = new File("/tmp/vectorsTmp.svmLight");
         RecordWriter writer = outputFormat.createWriter(conf); //new SVMLightRecordWriter(tmpOutSVMLightFile,true);
 
-		
-		// TODO: replace this with an { input-format, record-reader }
-//		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
-			
-//		    for (String line; (line = br.readLine()) != null; ) {
 		while(reader.hasNext()) {
 			Collection<Writable> w = reader.next();
 
@@ -315,21 +290,10 @@ public class Vectorize implements SubCommand {
 		    	
 		    }
 		
-/*		    // line is not visible here.
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}	
-		*/	
-		
 		reader.close();
 		writer.close();
+		
+		System.out.println( "Output vectors written to: " + this.outputVectorFilename);
 		
 	}
 
@@ -355,7 +319,7 @@ public class Vectorize implements SubCommand {
 
     public InputFormat createInputFormat() {
     	
-    	System.out.println( "> Loading Input Format: " + (String) this.configProps.get( INPUT_FORMAT ) );
+    	//System.out.println( "> Loading Input Format: " + (String) this.configProps.get( INPUT_FORMAT ) );
     	
         String clazz = (String) this.configProps.get( INPUT_FORMAT );
         
@@ -376,7 +340,7 @@ public class Vectorize implements SubCommand {
     public OutputFormat createOutputFormat() {
 	    //String clazz = conf.get( OUTPUT_FORMAT, DEFAULT_OUTPUT_FORMAT_CLASSNAME );
     	
-    	System.out.println( "> Loading Output Format: " + (String) this.configProps.get( OUTPUT_FORMAT ) );
+    	//System.out.println( "> Loading Output Format: " + (String) this.configProps.get( OUTPUT_FORMAT ) );
     	
     	
         String clazz = (String) this.configProps.get( OUTPUT_FORMAT );

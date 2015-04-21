@@ -33,21 +33,23 @@ public class CSVVectorizationEngine {
 	public Collection<Writable> vectorize( String key, String value, CSVInputSchema schema ) {
 		
 		//INDArray
-        Collection<Writable> ret =  new ArrayList<>();
+        Collection<Writable> ret =  new ArrayList<Writable>();
 		
 		// TODO: this needs to be different (needs to be real vector representation
 		//String outputVector = "";
 		String[] columns = value.split( schema.delimiter );
 				
 		if ( columns[0].trim().equals("") ) {
-			log.info("Skipping blank line");
+		//	log.info("Skipping blank line");
 			return null;
 		}
 		
 		int srcColIndex = 0;
 		int dstColIndex = 0;
 		
-		log.info( "> Engine.vectorize() ----- ");
+		//log.info( "> Engine.vectorize() ----- ");
+		
+		double label = 0;
 		
 		// scan through the columns in the schema / input csv data
 		for (Map.Entry<String, CSVSchemaColumn> entry : schema.getColumnSchemas().entrySet()) {
@@ -60,10 +62,15 @@ public class CSVVectorizationEngine {
 		    if ( TransformType.SKIP == colSchemaEntry.transform ) {
 		    	
 		    	// dont append this to the output vector, skipping
+		    } else if ( TransformType.LABEL == colSchemaEntry.transform ) {
+		    	
+		    //	log.info( " label value: " + columns[ srcColIndex ] );
+		    	
+		    	label = colSchemaEntry.transformColumnValue( columns[ srcColIndex ].trim() );
 		    	
 		    } else {
 		    
-		    	log.info( " column value: " + columns[ srcColIndex ] );
+		    //	log.info( " column value: " + columns[ srcColIndex ] );
 		    	
 		    	double convertedColumn = colSchemaEntry.transformColumnValue( columns[ srcColIndex ].trim() );
 		    	// add this value to the output vector
@@ -78,6 +85,10 @@ public class CSVVectorizationEngine {
 		    srcColIndex++;
 		    
 		}		
+		
+        ret.add(new DoubleWritable(label));
+
+    	//dstColIndex++;
 		
 		
 		return ret;
@@ -100,14 +111,14 @@ public class CSVVectorizationEngine {
 		String[] columns = value.split( schema.delimiter );
 				
 		if ( columns[0].trim().equals("") ) {
-			log.info("Skipping blank line");
+		//	log.info("Skipping blank line");
 			return null;
 		}
 		
 		int srcColIndex = 0;
 		int dstColIndex = 0;
 		
-		log.info( "> Engine.vectorize() ----- ");
+		//log.info( "> Engine.vectorize() ----- ");
 		
 		// scan through the columns in the schema / input csv data
 		for (Map.Entry<String, CSVSchemaColumn> entry : schema.getColumnSchemas().entrySet()) {
@@ -123,7 +134,7 @@ public class CSVVectorizationEngine {
 		    	
 		    } else {
 		    
-		    	log.info( " column value: " + columns[ srcColIndex ] );
+		    //	log.info( " column value: " + columns[ srcColIndex ] );
 		    	
 		    	double convertedColumn = colSchemaEntry.transformColumnValue( columns[ srcColIndex ].trim() );
 		    	// add this value to the output vector

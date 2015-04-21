@@ -192,7 +192,9 @@ public class CSVInputSchema {
 
 		//throw new UnsupportedOperationException();
 		
-		try (BufferedReader br = new BufferedReader( new FileReader( schemaPath ) )) {
+		try  {
+
+			BufferedReader br = new BufferedReader( new FileReader( schemaPath ) );
 			
 		    for (String line; (line = br.readLine()) != null; ) {
 		        // process the line.

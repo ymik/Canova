@@ -3,7 +3,7 @@ Canova
 
 # Description
 
-A tool focused simply on vectorizing raw data into usable vector formats across machine learning tools.
+A tool for vectorizing raw data into usable vector formats across machine learning tools.
 
 # Example
 
@@ -41,7 +41,7 @@ Below is an example of the CSV transform language in action from the command lin
 
 ## Setting Up Canova
 
-We need to do a git pull from the github repo and then build the dependencies
+We need to do a *git pull* from this Github repo, and then build the dependencies with Maven
 
 ```
 mvn -DskipTests=true -Dmaven.javadoc.skip=true install
@@ -54,9 +54,9 @@ cd canova-cli/
 mvn -DskipTests=true -Dmaven.javadoc.skip=true package
 ```
 
-## Setup the Configuration File
+## Set Up the Configuration File
 
-We need a file to tell the vectorization engine what to do. Create a text file that look like:
+We need a file to tell the vectorization engine what to do. Create a text file that looks like:
 
 ```
 
@@ -74,13 +74,13 @@ output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat
 
 ## Running Canova From the Command Line
 
-We can now convert UCI's Iris dataset into svmLight from the command line:
+We can now convert [UCI's Iris dataset](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data) into svmLight from the command line:
 
 ```
 ./bin/canova vectorize -conf [my_conf_file]
 ```
 
-The output should look like:
+The output should look like
 
 ```
 ./bin/canova vectorize -conf /tmp/iris_conf.txt 
@@ -91,7 +91,7 @@ Output vectors written to: /tmp/iris_svmlight.txt
 
 # Execution
 
-Runs as both a local serial process and a MapReduce (MR engine on the roadmap) scale out process with no code changes.
+Runs as both a local serial process and a MapReduce (MR engine on the roadmap) scale-out process with no code changes.
 
 # Targetted Vector Formats
 * svmLight

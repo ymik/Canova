@@ -39,60 +39,12 @@ public class TestVectorize {
 		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
 		Vectorize vecCommand = new Vectorize( args );
 		
-		vecCommand.execute();
+		vecCommand.executeVectorizeWorkflow();
 		
 		// now check the output
 		
 	}	
 	
-	@Test
-	public void testRandomShit() throws Exception {
-		
-		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
-		Vectorize vecCommand = new Vectorize( args );
-		vecCommand.loadConfigFile();
-		
-		vecCommand.debugLoadedConfProperties();
-		
-		
-		InputFormat in = vecCommand.createInputFormat();
-		OutputFormat outputFormat = vecCommand.createOutputFormat();
-		
-		File tmp = new File("tmp.txt");
-        FileUtils.writeLines(tmp, Arrays.asList("1","2","3"));
-        InputSplit split = new FileSplit(tmp);
-        tmp.deleteOnExit();
-  //      RecordReader reader = new LineRecordReader();
-   //     reader.initialize(split);
-    
-        RecordReader reader = in.createReader(split);
-        
-        //Collectionreader.next();
-        
-        File tmpOutSVMLightFile = new File("/tmp/vectorsTmp.svmLight");
-        RecordWriter writer = new SVMLightRecordWriter(tmpOutSVMLightFile,true);
-        
-        
-        int count = 0;
-        while(reader.hasNext()) {
-        	
-        	Collection<Writable> w = reader.next();
-        	System.out.println( "writeable: " + w.toArray()[0] );
-        	
-        	writer.write(w);
-        	
-            assertEquals(1,w.size());
-            count++;
-        } 
-        
-        
-//        for(Collection<Writable> record : records)
- //           writer.write(record);
 
-        writer.close();
-     
-		
-		
-	}
 
 }

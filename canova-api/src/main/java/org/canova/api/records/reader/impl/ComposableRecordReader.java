@@ -32,6 +32,11 @@ public class ComposableRecordReader implements RecordReader {
     }
 
     @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+
+    }
+
+    @Override
     public Collection<Writable> next() {
         List<Writable> ret = new ArrayList<>();
         if (this.hasNext()) {

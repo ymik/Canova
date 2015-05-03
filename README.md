@@ -1,11 +1,11 @@
 Canova
 ======
 
-# Description
+## Description
 
 A tool for vectorizing raw data into usable vector formats across machine learning tools.
 
-# Example
+## Example
 
  * Convert the CSV-based UCI Iris dataset into svmLight open vector text format
  * Convert the MNIST dataset from raw binary files to the svmLight text format.
@@ -13,7 +13,7 @@ A tool for vectorizing raw data into usable vector formats across machine learni
  * Convert raw text into TF-IDF based vectors in a text vector format {svmLight, metronome, arff}
  * Convert raw text into the word2vec in a text vector format {svmLight, metronome, arff}
 
-# Targeted Vectorization Engines
+## Targeted Vectorization Engines
 
  * Any CSV to vectors with a scriptable transform language
  * MNIST to vectors
@@ -22,11 +22,11 @@ A tool for vectorizing raw data into usable vector formats across machine learni
     * Bag of Words
     * word2vec
 
-# CSV Transformation Engine
+## CSV Transformation Engine
 
 Below is an example of the CSV transform language in action from the command line
 
-## UCI Iris Schema Transform
+### UCI Iris Schema Transform
 
 ```
 @RELATION UCIIrisDataset
@@ -59,7 +59,6 @@ mvn -DskipTests=true -Dmaven.javadoc.skip=true package
 We need a file to tell the vectorization engine what to do. Create a text file containing the following lines in the *canova-cli* directory (you might name the file vec_conf.txt):
 
 ```
-
 input.header.skip=false
 input.statistics.debug.print=false
 input.format=org.canova.api.formats.input.impl.LineInputFormat
@@ -69,7 +68,6 @@ input.vector.schema=src/test/resources/csv/schemas/uci/iris.txt
 output.directory=/tmp/iris_unit_test_sample.txt
 
 output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat
-
 ```
 
 ## Running Canova From the Command Line
@@ -122,15 +120,15 @@ If you cd into /tmp and open *iris_svmlight.txt*, you'll see something like this
 2.0 1:0.6666666666666666 2:0.5 3:0.9148936170212765 4:0.6956521739130436
 ```
 
-# Execution
+## Execution
 
 Runs as both a local serial process and a MapReduce (MR engine on the roadmap) scale-out process with no code changes.
 
-# Targetted Vector Formats
+## Targetted Vector Formats
 * svmLight
 * libsvm
 * Metronome
 * ARFF
 
-# Built-In General Functionality
+## Built-In General Functionality
 * Understands how to take general text and convert it into vectors with stock techniques such as kernel hashing and TF-IDF [TODO]

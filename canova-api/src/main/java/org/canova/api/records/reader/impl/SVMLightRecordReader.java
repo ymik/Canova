@@ -20,6 +20,9 @@ import java.util.StringTokenizer;
 public class SVMLightRecordReader extends LineRecordReader {
     private static Logger log = LoggerFactory.getLogger(SVMLightRecordReader.class);
 
+    public SVMLightRecordReader() {
+    }
+
     @Override
     public Collection<Writable> next() {
         Text t =  (Text) super.next().iterator().next();

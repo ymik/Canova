@@ -2,9 +2,12 @@ package org.canova.api.records.reader.impl;
 
 
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.Text;
+import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -18,6 +21,8 @@ public class CSVRecordReader extends LineRecordReader {
     private boolean skippedLines = false;
     private int skipNumLines = 0;
     private String delimiter = ",";
+    public final static String SKIP_NUM_LINES = NAME_SPACE + ".skipnumlines";
+    public final static String DELIMITER = NAME_SPACE + ".delimiter";
 
     /**
      * Skip first n lines
@@ -39,6 +44,13 @@ public class CSVRecordReader extends LineRecordReader {
 
     public CSVRecordReader() {
         this(0,",");
+    }
+
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        super.initialize(conf, split);
+        this.skipNumLines = conf.getInt(SKIP_NUM_LINES,0);
+        this.delimiter = conf.get(DELIMITER, ","); 
     }
 
     @Override

@@ -29,6 +29,11 @@ public class CollectionRecordReader implements RecordReader {
     }
 
     @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        initialize(split);
+    }
+
+    @Override
     public Collection<Writable> next() {
         return records.next();
     }

@@ -23,7 +23,9 @@ import java.util.*;
 public class FileRecordReader implements RecordReader {
 
     protected Iterator<File> iter;
-
+    protected Configuration conf;
+    public FileRecordReader() {
+    }
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
@@ -55,6 +57,11 @@ public class FileRecordReader implements RecordReader {
         }
 
 
+    }
+
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        initialize(split);
     }
 
     @Override
@@ -94,11 +101,11 @@ public class FileRecordReader implements RecordReader {
 
     @Override
     public void setConf(Configuration conf) {
-
+        this.conf = conf;
     }
 
     @Override
     public Configuration getConf() {
-        return null;
+        return conf;
     }
 }

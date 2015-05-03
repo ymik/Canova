@@ -31,6 +31,9 @@ public class WavFileRecordReader implements RecordReader {
     private List<String> labels = new ArrayList<>();
     private Configuration conf;
 
+    public WavFileRecordReader() {
+    }
+
     public WavFileRecordReader(boolean appendLabel, List<String> labels) {
         this.appendLabel = appendLabel;
         this.labels = labels;
@@ -92,6 +95,15 @@ public class WavFileRecordReader implements RecordReader {
         }
 
     }
+
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        this.conf = conf;
+        this.appendLabel = conf.getBoolean(APPEND_LABEL,false);
+        this.labels = new ArrayList<>(conf.getStringCollection(LABELS));
+        initialize(split);
+    }
+
     @Override
     public Collection<Writable> next() {
         if(iter != null) {

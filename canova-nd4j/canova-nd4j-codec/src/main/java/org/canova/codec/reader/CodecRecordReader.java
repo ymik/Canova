@@ -3,6 +3,7 @@ package org.canova.codec.reader;
 import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.SequenceRecordReader;
 import org.canova.api.records.reader.impl.FileRecordReader;
+import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
 import org.canova.image.loader.ImageLoader;
@@ -11,6 +12,7 @@ import org.jcodec.api.FrameGrab;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -96,6 +98,12 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
         return record;
     }
 
+
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        setConf(conf);
+        initialize(split);
+    }
 
     @Override
     public Collection<Writable> next() {

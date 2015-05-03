@@ -54,7 +54,7 @@ cd canova-cli/
 mvn -DskipTests=true -Dmaven.javadoc.skip=true package
 ```
 
-## Set Up the Configuration File
+## Create the Configuration File
 
 We need a file to tell the vectorization engine what to do. Create a text file containing the following lines in the *canova-cli* directory (you might name the file vec_conf.txt):
 
@@ -70,7 +70,7 @@ output.directory=/tmp/iris_unit_test_sample.txt
 output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat
 ```
 
-## Running Canova From the Command Line
+## Run Canova From the Command Line
 
 Now we're going to take this [sample](https://github.com/deeplearning4j/Canova/blob/master/canova-cli/src/test/resources/csv/data/uci_iris_sample.txt) of [UCI's Iris dataset](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data).
 

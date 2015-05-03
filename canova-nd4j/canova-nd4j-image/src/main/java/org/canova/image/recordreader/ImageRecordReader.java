@@ -39,8 +39,11 @@ public class ImageRecordReader implements RecordReader {
     private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg","bmp");
     private boolean hitImage = false;
     private Configuration conf;
+    public final static String WIDTH = NAME_SPACE + ".width";
+    public final static String HEIGHT = NAME_SPACE + ".width";
 
-
+    public ImageRecordReader() {
+    }
 
     /**
      * Load the record reader with the given width and height
@@ -140,6 +143,15 @@ public class ImageRecordReader implements RecordReader {
 
 
 
+    }
+
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        this.appendLabel = conf.getBoolean(APPEND_LABEL,false);
+        this.labels = new ArrayList<>(conf.getStringCollection(LABELS));
+        imageLoader = new ImageLoader(conf.getInt(WIDTH,28),conf.getInt(HEIGHT,28));
+        this.conf = conf;
+        initialize(split);
     }
 
     @Override

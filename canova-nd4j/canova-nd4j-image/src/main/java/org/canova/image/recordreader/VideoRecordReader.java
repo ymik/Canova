@@ -39,8 +39,12 @@ public class VideoRecordReader implements SequenceRecordReader {
     private boolean hitImage = false;
     private final List<String> allowedFormats = Arrays.asList("tif","jpg","png","jpeg");
     private Configuration conf;
+    public final static String WIDTH = NAME_SPACE + ".video.width";
+    public final static String HEIGHT = NAME_SPACE + ".video.height";
 
 
+    public VideoRecordReader() {
+    }
 
     /**
      * Load the record reader with the given width and height
@@ -149,6 +153,15 @@ public class VideoRecordReader implements SequenceRecordReader {
 
 
 
+    }
+
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        this.conf = conf;
+        this.appendLabel = conf.getBoolean(APPEND_LABEL,false);
+        this.imageLoader = new ImageLoader(conf.getInt(WIDTH,28),conf.getInt(HEIGHT,28));
+
+        initialize(split);
     }
 
     private boolean containsFormat(String format) {

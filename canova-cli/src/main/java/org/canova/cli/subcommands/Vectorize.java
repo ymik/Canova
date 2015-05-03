@@ -141,7 +141,7 @@ public class Vectorize implements SubCommand {
 				// TODO: this will end up processing key-value pairs
 
 				// this outputVector needs to be ND4J
-				String outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
+				String outputVector = String.valueOf(this.vectorizer.vectorize( "", line, this.inputSchema ));
 
 			}
 			// line is not visible here.

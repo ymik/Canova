@@ -8,6 +8,5 @@ input.format=org.canova.api.formats.input.impl.LineInputFormat
 input.directory=src/test/resources/csv/data/uci_iris_sample.txt
 input.vector.schema=src/test/resources/csv/schemas/uci/iris.txt
 output.vector.format=svmlight
-output.directory=/tmp/iris_unit_test_sample.txt
 
 output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat

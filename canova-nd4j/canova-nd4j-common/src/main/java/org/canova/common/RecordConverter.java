@@ -16,21 +16,23 @@ import java.util.Iterator;
  */
 public class RecordConverter {
     private RecordConverter() {}
+
     /**
-     * Convert a record to an ndarray
-     * @param record the record to convert
+     * Convert an ndarray to a record
+     * @param record the array to convert
      * @return the record
      */
-    public static INDArray toArray(Collection<Writable> record) {
-        INDArray ret = Nd4j.create(record.size());
-        Iterator<Writable> recordIter = record.iterator();
-        int count = 0;
-        while(recordIter.hasNext()) {
-            ret.putScalar(count++,Double.valueOf(recordIter.next().toString()));
-        }
-       return ret;
-    }
+    public static INDArray toArray
+    (Collection<Writable> record) {
+        Iterator<Writable> writables = record.iterator();
+        INDArray linear = Nd4j.zeros(record.size());
 
+        int count = 0;
+        while(writables.hasNext()) {
+            linear.putScalar(count++,Double.valueOf(writables.next().toString()));
+        }
+        return linear;
+    }
     /**
      * Convert an ndarray to a record
      * @param array the array to convert

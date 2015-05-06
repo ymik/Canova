@@ -62,7 +62,7 @@ public class RecordConverter {
         INDArray linear = array.linearView();
         Collection<Writable> writables = new ArrayList<>();
         for(int i = 0; i < linear.length(); i++) {
-            writables.add(array.data().dataType() == DataBuffer.DOUBLE ? new DoubleWritable(linear.getDouble(i)) : new FloatWritable(linear.getFloat(i)));
+            writables.add(array.data().dataType() == DataBuffer.Type.DOUBLE ? new DoubleWritable(linear.getDouble(i)) : new FloatWritable(linear.getFloat(i)));
         }
         return writables;
     }

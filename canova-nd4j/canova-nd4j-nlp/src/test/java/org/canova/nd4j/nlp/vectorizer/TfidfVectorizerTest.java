@@ -44,7 +44,9 @@ public class TfidfVectorizerTest {
     @Test
     public void testTfidfVectorizer() {
         TfidfVectorizer vectorizer = new TfidfVectorizer();
-        vectorizer.initialize(new Configuration());
+        Configuration conf = new Configuration();
+        conf.setInt(TfidfVectorizer.MIN_WORD_FREQUENCY,1);
+        vectorizer.initialize(conf);
         RecordReader reader = new CollectionRecordReader(Writables.writables(Arrays.asList("Testing one.", "Testing 2.")));
         INDArray n = vectorizer.fitTransform(reader);
         //number of vocab words is 3

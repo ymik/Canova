@@ -25,6 +25,12 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Basic sub command
+ * with the command line parser
+ *
+ * @author Adam Gibson
+ */
 public class BaseSubCommand  implements SubCommand {
 	  private static final Logger log = LoggerFactory.getLogger(BaseSubCommand.class);
 	  protected String[] args;

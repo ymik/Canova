@@ -59,7 +59,7 @@ public class TestVectorize {
 		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
 		Vectorize vecCommand = new Vectorize( args );
 		
-		vecCommand.executeVectorizeWorkflow();
+		vecCommand.execute();
 		
 		// now check the output
 		

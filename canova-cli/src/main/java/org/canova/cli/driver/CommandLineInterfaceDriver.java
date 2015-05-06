@@ -20,44 +20,38 @@
 
 package org.canova.cli.driver;
 
-import java.io.IOException;
 import java.util.Arrays;
 
-import org.canova.api.exceptions.CanovaException;
 import org.canova.cli.subcommands.Vectorize;
-import org.kohsuke.args4j.Option;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+/**
+ * Command line interface driver
+ *
+ * @author Adam Gibson
+ * @author josh
+ */
 public class CommandLineInterfaceDriver {
-		
-	
-	public static void main(String [ ] args) {
-	    /*
-		System.out.println( "CommandLineInterfaceDriver > Printing args:");
-		
-		for ( String arg : args ) {
-			
-			System.out.println( ">> " + arg );
-			
-		}
-		*/
-		
-		if ("vectorize".equals( args[ 0 ] )) {
+    private static Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
 
-			String[] vec_params = Arrays.copyOfRange(args, 1, args.length);
-			
-			Vectorize vecCommand = new Vectorize( vec_params );
-			vecCommand.executeVectorizeWorkflow();
+    public static void main(String [] args) {
+
+        if ("vectorize".equals( args[0] )) {
+            String[] vecParams = Arrays.copyOfRange(args, 1, args.length);
+            Vectorize vecCommand = new Vectorize( vecParams );
+            try {
+                vecCommand.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        else
+            log.info( "Canova's command line system only supports the 'vectorize' command." );
 
 
-		} else {
-			
-			System.out.println( "Canova's command line system only supports the 'vectorize' command." );
-			
-		}
-		
-		
-		
-		
-	}	
+    }
 
 }

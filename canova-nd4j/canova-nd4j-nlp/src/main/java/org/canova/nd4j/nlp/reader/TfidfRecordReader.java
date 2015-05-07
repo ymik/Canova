@@ -21,7 +21,8 @@
 package org.canova.nd4j.nlp.reader;
 
 import org.canova.api.conf.Configuration;
-import org.canova.api.records.reader.RecordReader;
+import org.canova.api.io.data.IntWritable;
+import org.canova.api.records.reader.impl.FileRecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.vector.Vectorizer;
 import org.canova.api.writable.Writable;
@@ -33,13 +34,16 @@ import java.util.Collection;
 import java.util.Iterator;
 
 /**
+ * TFIDF record reader (wraps a tfidf vectorizer for delivering labels and conforming to the record reader interface)
+ *
  * @author Adam Gibson
  */
-public class TfidfRecordReader implements RecordReader  {
+public class TfidfRecordReader extends FileRecordReader  {
     private TfidfVectorizer tfidfVectorizer;
     private Collection<Collection<Writable>> records = new ArrayList<>();
     private Iterator<Collection<Writable>> recordIter;
     private Configuration conf;
+
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
@@ -48,6 +52,7 @@ public class TfidfRecordReader implements RecordReader  {
 
     @Override
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        super.initialize(conf,split);
         tfidfVectorizer = new TfidfVectorizer();
         tfidfVectorizer.initialize(conf);
         tfidfVectorizer.fit(this, new Vectorizer.RecordCallBack() {
@@ -58,16 +63,23 @@ public class TfidfRecordReader implements RecordReader  {
         });
 
         recordIter = records.iterator();
-
     }
 
     @Override
     public Collection<Writable> next() {
-        return recordIter.next();
+        if(recordIter == null)
+            return super.next();
+        Collection<Writable> record = recordIter.next();
+        if(appendLabel)
+            record.add(new IntWritable(getCurrentLabel()));
+        return record;
     }
 
     @Override
     public boolean hasNext() {
+        //we aren't done vectorizing yet
+        if(recordIter == null)
+            return super.hasNext();
         return recordIter.hasNext();
     }
 

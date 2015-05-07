@@ -38,7 +38,7 @@ public interface RecordReader extends Closeable,Serializable,Configurable {
 
     public final static String NAME_SPACE = RecordReader.class.getName();
 
-    public final static String APPEND_LABEL = NAME_SPACE + ".appendlabe";
+    public final static String APPEND_LABEL = NAME_SPACE + ".appendlabel";
     public final static String LABELS = NAME_SPACE + ".labels";
 
     /**

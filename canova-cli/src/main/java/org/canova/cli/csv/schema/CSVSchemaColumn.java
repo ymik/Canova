@@ -49,8 +49,8 @@ TODO:
 */
 public class CSVSchemaColumn {
 	
-	public enum ColumnType { NUMERIC, DATE, NOMINAL, STRING };
-	public enum TransformType { COPY, SKIP, BINARIZE, NORMALIZE, LABEL };
+	public enum ColumnType { NUMERIC, DATE, NOMINAL, STRING }
+	public enum TransformType { COPY, SKIP, BINARIZE, NORMALIZE, LABEL }
 
 	public String name = ""; // the name of the attribute/column
 	public ColumnType columnType = null;
@@ -73,7 +73,7 @@ public class CSVSchemaColumn {
 
 	// we want to track the label counts to understand the class balance
 	// layout: { columnName, columnID, occurenceCount }
-	public Map<String, Pair<Integer, Integer>> recordLabels = new LinkedHashMap<String, Pair<Integer, Integer>>();
+	public Map<String, Pair<Integer, Integer>> recordLabels = new LinkedHashMap<>();
 	
 	
 	public CSVSchemaColumn(String colName, ColumnType colType, TransformType transformType) {
@@ -294,13 +294,6 @@ public class CSVSchemaColumn {
 		
 		// TODO: how do get a numeric index from a list of labels? 
 		Integer ID = this.getLabelID( inputColumnValue.trim() );
-		
-		if (null == ID) {
-			
-			// add ID
-			//this.
-			
-		}
 		
 	//	System.out.println("#### Label: " + ID );
 		

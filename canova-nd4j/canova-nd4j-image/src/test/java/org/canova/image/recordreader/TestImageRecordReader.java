@@ -20,17 +20,17 @@
 
 package org.canova.image.recordreader;
 
-import static org.junit.Assert.*;
+import java.util.Collection;
 
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.InputStreamInputSplit;
 import org.canova.api.writable.Writable;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 
-import java.util.Collection;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -38,9 +38,8 @@ import java.util.Collection;
  */
 public class TestImageRecordReader {
 
-    private static Logger log = LoggerFactory.getLogger(TestImageRecordReader.class);
-
     @Test
+    @Ignore
     public void testInputStream() throws Exception {
         RecordReader reader = new ImageRecordReader(28,28,false);
         ClassPathResource res = new ClassPathResource("/test.jpg");

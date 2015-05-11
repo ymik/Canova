@@ -1,5 +1,36 @@
+/*
+ *
+ *  *
+ *  *  * Copyright 2015 Skymind,Inc.
+ *  *  *
+ *  *  *    Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  *    you may not use this file except in compliance with the License.
+ *  *  *    You may obtain a copy of the License at
+ *  *  *
+ *  *  *        http://www.apache.org/licenses/LICENSE-2.0
+ *  *  *
+ *  *  *    Unless required by applicable law or agreed to in writing, software
+ *  *  *    distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  *    See the License for the specific language governing permissions and
+ *  *  *    limitations under the License.
+ *  *
+ *
+ */
+
 package org.canova.cli.subcommands;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Properties;
+
+import com.google.common.base.Strings;
 import org.canova.api.conf.Configuration;
 import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
@@ -11,23 +42,11 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.vectorization.CSVVectorizationEngine;
-import com.google.common.base.Strings;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Properties;
 
 public class Vectorize implements SubCommand {
 
@@ -72,17 +91,11 @@ public class Vectorize implements SubCommand {
     //Properties prop = new Properties();
     try (InputStream in = new FileInputStream(this.configurationFile)) {
       this.configProps.load(in);
-    } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
     }
 
     if (null == this.configProps.get(OUTPUT_FILENAME_KEY)) {
-
-      Date date = new Date();
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-      this.outputVectorFilename = "/tmp/canova_vectors_" + dateFormat.format(date) + ".txt";
-
+      this.outputVectorFilename = "/tmp/canova_vectors_" + dateFormat.format(new Date()) + ".txt";
     } else {
 
       // what if its only a directory?
@@ -137,7 +150,7 @@ public class Vectorize implements SubCommand {
       return;
     }
 
-    boolean schemaLoaded = false;
+    boolean schemaLoaded;
     // load stuff (conf, schema) --> CSVInputSchema
 
     this.loadConfigFile();
@@ -159,7 +172,7 @@ public class Vectorize implements SubCommand {
       schemaLoaded = false;
     }
 
-    if (false == schemaLoaded) {
+    if (!schemaLoaded) {
 
       // if we did not load the schema then we cannot proceed with conversion
 
@@ -174,8 +187,6 @@ public class Vectorize implements SubCommand {
     // for each row in CSV Dataset
 
     String datasetInputPath = (String) this.configProps.get("input.directory");
-
-
     File inputFile = new File(datasetInputPath);
     InputSplit split = new FileSplit(inputFile);
     InputFormat inputFormat = this.createInputFormat();
@@ -191,7 +202,7 @@ public class Vectorize implements SubCommand {
 
       // TODO: this will end up processing key-value pairs
       try {
-        this.inputSchema.evaluateInputRecord((String) w.toArray()[0].toString());
+        this.inputSchema.evaluateInputRecord(w.toArray()[0].toString());
       } catch (Exception e) {
         // TODO Auto-generated catch block
         e.printStackTrace();

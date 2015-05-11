@@ -33,11 +33,11 @@ import org.slf4j.LoggerFactory;
  * @author josh
  */
 public class CommandLineInterfaceDriver {
-    private static Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
 
     public static void main(String [] args) {
 
-        if ("vectorize".equals( args[0] )) {
+        if ("vectorize".equalsIgnoreCase(args[0])) {
             String[] vecParams = Arrays.copyOfRange(args, 1, args.length);
             Vectorize vecCommand = new Vectorize( vecParams );
             try {

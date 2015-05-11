@@ -146,12 +146,12 @@ public class CSVSchemaColumn {
 				Integer countInt = this.recordLabels.get( trimmedKey ).getSecond();
 				countInt++;
 				
-				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, countInt ) );
+				this.recordLabels.put( trimmedKey, new Pair<>( labelID, countInt ) );
 				
 			} else {
 				
 				Integer labelID = this.recordLabels.size();
-				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, 1 ) );
+				this.recordLabels.put( trimmedKey, new Pair<>( labelID, 1 ) );
 
 			//	System.out.println( ">>> Adding Label: '" + trimmedKey + "' @ " + labelID );
 				
@@ -218,26 +218,18 @@ public class CSVSchemaColumn {
 	
 	
 	public double transformColumnValue(String inputColumnValue) {
-		
-		if ( TransformType.LABEL == this.transform ) {
-			
-			return this.label(inputColumnValue);
-			
-		} else if ( TransformType.BINARIZE == this.transform ) {
-			
-			return this.binarize(inputColumnValue);
-			
-		} else if ( TransformType.COPY == this.transform ) {
-			
-			return this.copy(inputColumnValue);
-					
-		} else if ( TransformType.NORMALIZE == this.transform ) {
-			
-			return this.normalize(inputColumnValue);
-					
-		} else if ( TransformType.SKIP == this.transform ) {
-			
-			return 0.0; // but the vector engine has to remove this from output
+
+		switch (this.transform) {
+			case LABEL:
+				return this.label(inputColumnValue);
+			case BINARIZE:
+				return this.binarize(inputColumnValue);
+			case COPY:
+				return this.copy(inputColumnValue);
+			case NORMALIZE:
+				return this.normalize(inputColumnValue);
+			case SKIP:
+				return 0.0; // but the vector engine has to remove this from output
 		}
 
 		return -1.0; // not good
@@ -246,9 +238,7 @@ public class CSVSchemaColumn {
 	
 
 	public double copy(String inputColumnValue) {
-		
 		return Double.parseDouble(inputColumnValue);
-		
 	}
 
 	/*

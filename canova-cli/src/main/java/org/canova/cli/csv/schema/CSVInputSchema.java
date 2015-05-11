@@ -24,15 +24,15 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
 import org.canova.cli.csv.schema.CSVSchemaColumn.TransformType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /*
-
 	purpose: to parse and represent the input schema + column transforms of CSV data to vectorize
-
 */
 public class CSVInputSchema {
 
@@ -202,7 +202,7 @@ public class CSVInputSchema {
 
 		String[] columns = csvRecordLine.split( this.delimiter );
 
-		if ( columns[0].trim().equals("") ) {
+		if (Strings.isNullOrEmpty(columns[0])) {
 			log.info("Skipping blank line");
 			return;
 		}
@@ -251,16 +251,16 @@ public class CSVInputSchema {
 
 		  // now work with key and value...
 
-		  log.info( "> " + value.name + ", " + value.columnType + ", " + value.transform );
+		  log.info("> " + value.name + ", " + value.columnType + ", " + value.transform);
 
 		  if ( value.transform == TransformType.LABEL ) {
 
-			  log.info( "\t> Label > Class Balance Report " );
+			  log.info("\t> Label > Class Balance Report ");
 
 			  for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
 
 			  	// value.recordLabels.size()
-			  	log.info( "\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond());
+			  	log.info("\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond());
 
 			  }
 
@@ -286,7 +286,7 @@ public class CSVInputSchema {
 
 		    // now work with key and value...
 
-		    log.debug( "> {} , {} , {}", value.name, value.columnType, value.transform );
+		    log.debug("> {} , {} , {}", value.name, value.columnType, value.transform);
 
 		}
 

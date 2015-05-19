@@ -1,3 +1,23 @@
+/*
+ *
+ *  *
+ *  *  * Copyright 2015 Skymind,Inc.
+ *  *  *
+ *  *  *    Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  *    you may not use this file except in compliance with the License.
+ *  *  *    You may obtain a copy of the License at
+ *  *  *
+ *  *  *        http://www.apache.org/licenses/LICENSE-2.0
+ *  *  *
+ *  *  *    Unless required by applicable law or agreed to in writing, software
+ *  *  *    distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  *    See the License for the specific language governing permissions and
+ *  *  *    limitations under the License.
+ *  *
+ *
+ */
+
 package org.canova.nd4j.nlp.vectorizer;
 
 import static org.junit.Assert.*;
@@ -24,7 +44,9 @@ public class TfidfVectorizerTest {
     @Test
     public void testTfidfVectorizer() {
         TfidfVectorizer vectorizer = new TfidfVectorizer();
-        vectorizer.initialize(new Configuration());
+        Configuration conf = new Configuration();
+        conf.setInt(TfidfVectorizer.MIN_WORD_FREQUENCY,1);
+        vectorizer.initialize(conf);
         RecordReader reader = new CollectionRecordReader(Writables.writables(Arrays.asList("Testing one.", "Testing 2.")));
         INDArray n = vectorizer.fitTransform(reader);
         //number of vocab words is 3

@@ -1,3 +1,23 @@
+/*
+ *
+ *  *
+ *  *  * Copyright 2015 Skymind,Inc.
+ *  *  *
+ *  *  *    Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  *    you may not use this file except in compliance with the License.
+ *  *  *    You may obtain a copy of the License at
+ *  *  *
+ *  *  *        http://www.apache.org/licenses/LICENSE-2.0
+ *  *  *
+ *  *  *    Unless required by applicable law or agreed to in writing, software
+ *  *  *    distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  *    See the License for the specific language governing permissions and
+ *  *  *    limitations under the License.
+ *  *
+ *
+ */
+
 package org.canova.api.records.reader.impl;
 
 import org.apache.commons.io.FileUtils;
@@ -24,17 +44,36 @@ public class FileRecordReader implements RecordReader {
 
     protected Iterator<File> iter;
     protected Configuration conf;
-    public FileRecordReader() {
-    }
+    protected File currentFile;
+    protected List<String> labels;
+    protected boolean appendLabel = false;
+    public FileRecordReader() {}
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
+        doInitialize(split);
+    }
+
+
+    protected void doInitialize(InputSplit split) {
         URI[] locations = split.locations();
+
         if(locations != null && locations.length >= 1) {
             if(locations.length > 1) {
                 List<File> allFiles = new ArrayList<>();
                 for(URI location : locations) {
                     File iter = new File(location);
+                    if(labels == null && appendLabel) {
+                        //root dir relative to example where the label is the parent directory and the root directory is
+                        //recursively the parent of that
+                        File parent = iter.getParentFile().getParentFile();
+                        //calculate the labels relative to the parent file
+                        labels = new ArrayList<>();
+
+                        for(File labelDir : parent.listFiles())
+                            labels.add(labelDir.getName());
+                    }
+
                     if(iter.isDirectory()) {
                         Iterator<File> allFiles2 = FileUtils.iterateFiles(iter,null,true);
                         while(allFiles2.hasNext())
@@ -56,19 +95,21 @@ public class FileRecordReader implements RecordReader {
             }
         }
 
-
     }
 
     @Override
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
-        initialize(split);
+        appendLabel = conf.getBoolean(APPEND_LABEL,true);
+        doInitialize(split);
     }
 
     @Override
     public Collection<Writable> next() {
         List<Writable> ret = new ArrayList<>();
         try {
-            ret.add(new Text(FileUtils.readFileToString(iter.next())));
+            File next = iter.next();
+            this.currentFile = next;
+            ret.add(new Text(FileUtils.readFileToString(next)));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,7 +119,9 @@ public class FileRecordReader implements RecordReader {
         else {
             if(iter.hasNext()) {
                 try {
-                    ret.add(new Text(FileUtils.readFileToString(iter.next())));
+                    File next = iter.next();
+                    this.currentFile = next;
+                    ret.add(new Text(FileUtils.readFileToString(next)));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -87,6 +130,24 @@ public class FileRecordReader implements RecordReader {
         }
 
         return ret;
+    }
+
+    /**
+     * Return the current label.
+     * The index of the current file's parent directory
+     * in the label list
+     * @return The index of the current file's parent directory
+     */
+    protected int getCurrentLabel() {
+        return labels.indexOf(currentFile.getParentFile().getName());
+    }
+
+    public List<String> getLabels() {
+        return labels;
+    }
+
+    public void setLabels(List<String> labels) {
+        this.labels = labels;
     }
 
     @Override

@@ -28,7 +28,7 @@ import java.util.List;
 
 /**
  * Convert a label in to an index based on the
- * passed in list
+ *
  *
  * @author Adam Gibson
  */

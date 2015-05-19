@@ -33,25 +33,23 @@ import org.slf4j.LoggerFactory;
  * @author josh
  */
 public class CommandLineInterfaceDriver {
-    private static Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
 
     public static void main(String [] args) {
-        if(args.length > 0) {
-            if ("vectorize".equals( args[0] )) {
-                String[] vecParams = Arrays.copyOfRange(args, 1, args.length);
-                Vectorize vecCommand = new Vectorize(vecParams);
-                try {
-                    vecCommand.execute();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
 
+        if ("vectorize".equalsIgnoreCase(args[0])) {
+            String[] vecParams = Arrays.copyOfRange(args, 1, args.length);
+            Vectorize vecCommand = new Vectorize( vecParams );
+            try {
+                vecCommand.execute();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
         }
 
         else
-            log.info( "Usage: canova subcommand (1 of: vectorize)" );
+            log.info( "Canova's command line system only supports the 'vectorize' command." );
 
 
     }

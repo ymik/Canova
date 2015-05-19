@@ -20,7 +20,6 @@
 
 package org.canova.nlp.vectorizer;
 
-
 import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.writable.Writable;
@@ -32,15 +31,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-
 /**
  * Tf idf vectorizer
  * @author Adam Gibson
  */
 public abstract class TfidfVectorizer<VECTOR_TYPE> extends TextVectorizer<VECTOR_TYPE> {
-
-
-
 
     @Override
     public void doWithTokens(Tokenizer tokenizer) {

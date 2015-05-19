@@ -49,8 +49,8 @@ TODO:
 */
 public class CSVSchemaColumn {
 	
-	public enum ColumnType { NUMERIC, DATE, NOMINAL, STRING };
-	public enum TransformType { COPY, SKIP, BINARIZE, NORMALIZE, LABEL };
+	public enum ColumnType { NUMERIC, DATE, NOMINAL, STRING }
+	public enum TransformType { COPY, SKIP, BINARIZE, NORMALIZE, LABEL }
 
 	public String name = ""; // the name of the attribute/column
 	public ColumnType columnType = null;
@@ -73,7 +73,7 @@ public class CSVSchemaColumn {
 
 	// we want to track the label counts to understand the class balance
 	// layout: { columnName, columnID, occurenceCount }
-	public Map<String, Pair<Integer, Integer>> recordLabels = new LinkedHashMap<String, Pair<Integer, Integer>>();
+	public Map<String, Pair<Integer, Integer>> recordLabels = new LinkedHashMap<>();
 	
 	
 	public CSVSchemaColumn(String colName, ColumnType colType, TransformType transformType) {
@@ -146,12 +146,12 @@ public class CSVSchemaColumn {
 				Integer countInt = this.recordLabels.get( trimmedKey ).getSecond();
 				countInt++;
 				
-				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, countInt ) );
+				this.recordLabels.put( trimmedKey, new Pair<>( labelID, countInt ) );
 				
 			} else {
 				
 				Integer labelID = this.recordLabels.size();
-				this.recordLabels.put( trimmedKey, new Pair<Integer, Integer>( labelID, 1 ) );
+				this.recordLabels.put( trimmedKey, new Pair<>( labelID, 1 ) );
 
 			//	System.out.println( ">>> Adding Label: '" + trimmedKey + "' @ " + labelID );
 				
@@ -218,26 +218,18 @@ public class CSVSchemaColumn {
 	
 	
 	public double transformColumnValue(String inputColumnValue) {
-		
-		if ( TransformType.LABEL == this.transform ) {
-			
-			return this.label(inputColumnValue);
-			
-		} else if ( TransformType.BINARIZE == this.transform ) {
-			
-			return this.binarize(inputColumnValue);
-			
-		} else if ( TransformType.COPY == this.transform ) {
-			
-			return this.copy(inputColumnValue);
-					
-		} else if ( TransformType.NORMALIZE == this.transform ) {
-			
-			return this.normalize(inputColumnValue);
-					
-		} else if ( TransformType.SKIP == this.transform ) {
-			
-			return 0.0; // but the vector engine has to remove this from output
+
+		switch (this.transform) {
+			case LABEL:
+				return this.label(inputColumnValue);
+			case BINARIZE:
+				return this.binarize(inputColumnValue);
+			case COPY:
+				return this.copy(inputColumnValue);
+			case NORMALIZE:
+				return this.normalize(inputColumnValue);
+			case SKIP:
+				return 0.0; // but the vector engine has to remove this from output
 		}
 
 		return -1.0; // not good
@@ -246,9 +238,7 @@ public class CSVSchemaColumn {
 	
 
 	public double copy(String inputColumnValue) {
-		
 		return Double.parseDouble(inputColumnValue);
-		
 	}
 
 	/*
@@ -304,13 +294,6 @@ public class CSVSchemaColumn {
 		
 		// TODO: how do get a numeric index from a list of labels? 
 		Integer ID = this.getLabelID( inputColumnValue.trim() );
-		
-		if (null == ID) {
-			
-			// add ID
-			//this.
-			
-		}
 		
 	//	System.out.println("#### Label: " + ID );
 		

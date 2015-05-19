@@ -21,354 +21,277 @@
 package org.canova.cli.csv.schema;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.google.common.base.Strings;
 import org.apache.commons.math3.util.Pair;
 import org.canova.cli.csv.schema.CSVSchemaColumn.TransformType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
-
 	purpose: to parse and represent the input schema + column transforms of CSV data to vectorize
-
 */
 public class CSVInputSchema {
+
+  private static final Logger log = LoggerFactory.getLogger(CSVInputSchema.class);
 
 	public String relation = "";
 	public String delimiter = "";
 	private boolean hasComputedStats = false;
 
 	// columns: { columnName, column Schema }
-	private Map<String, CSVSchemaColumn> columnSchemas = new LinkedHashMap<String, CSVSchemaColumn>();
+	private Map<String, CSVSchemaColumn> columnSchemas = new LinkedHashMap<>();
 
 	public CSVSchemaColumn getColumnSchemaByName( String colName ) {
-		
+
 		return this.columnSchemas.get(colName);
-		
+
 	}
-	
+
 	public Map<String, CSVSchemaColumn> getColumnSchemas() {
 		return this.columnSchemas;
 	}
-	
+
 	private boolean validateRelationLine( String[] lineParts ) {
-		
-		if (lineParts.length != 2) {
-			return false;
-		}
-		
-		return true;
-		
-	}
+    return lineParts.length == 2;
+  }
 
 	private boolean validateDelimiterLine( String[] lineParts ) {
-		
-		if (lineParts.length != 2) {
-			return false;
-		}
-		
-		return true;
-		
-	}
-	
+    return lineParts.length == 2;
+  }
+
 	private boolean validateAttributeLine( String[] lineParts ) {
-		
-		if (lineParts.length != 4) {
-			return false;
-		}
-		
-		return true;
-		
-	}
-	
-	
-	
+    return lineParts.length == 4;
+  }
+
 	private boolean validateSchemaLine( String line ) {
-				
+
 		String lineCondensed = line.trim().replaceAll(" +", " ");
 		String[] parts = lineCondensed.split(" ");
-		
+
 		if ( parts[ 0 ].toLowerCase().equals("@relation") ) {
-			
+
 			return this.validateRelationLine(parts);
-			
+
 		} else if ( parts[ 0 ].toLowerCase().equals("@delimiter") ) {
-			
+
 			return this.validateDelimiterLine(parts);
-			
+
 		} else if ( parts[ 0 ].toLowerCase().equals("@attribute") ) {
-			
+
 			return this.validateAttributeLine(parts);
-			
+
 		} else if ( parts[ 0 ].trim().equals("") ) {
-			
+
 			return true;
-			
+
 		} else {
-			
+
 			// bad schema line
-			System.err.println("Line attribute matched no known attribute in schema! --- " + line);
+			log.error("Line attribute matched no known attribute in schema! --- {}", line);
 			return false;
-			
+
 		}
-		
-		
+
+
 		//return true;
-		
+
 	}
-	
+
 	private String parseRelationInformation(String[] parts) {
-		
+
 		return parts[1];
-		
+
 	}
-	
+
 	private String parseDelimiter(String[] parts) {
-		
+
 		return parts[1];
-		
+
 	}
-	
+
 	/**
 	 * parse out lines like:
 	 * 		@ATTRIBUTE sepallength  NUMERIC   !COPY
-	 * 
+	 *
 	 * @param parts
 	 * @return
 	 */
 	private CSVSchemaColumn parseColumnSchemaFromAttribute( String[] parts ) {
-		
+
 		String columnName = parts[1];
 		String columnType = parts[2];
 		String columnTransform = parts[3];
-		
-		CSVSchemaColumn.ColumnType colTypeEnum = null;
-		CSVSchemaColumn.TransformType colTransformEnum = null;
-		
-		if ( "NUMERIC".equals( columnType.toUpperCase() ) ) {
-			colTypeEnum = CSVSchemaColumn.ColumnType.NUMERIC;
-		} else if ( "DATE".equals( columnType.toUpperCase() ) ) {
-			colTypeEnum = CSVSchemaColumn.ColumnType.DATE;
-		} else if ( "NOMINAL".equals( columnType.toUpperCase() ) ) {
-			colTypeEnum = CSVSchemaColumn.ColumnType.NOMINAL;
-		} else if ( "STRING".equals( columnType.toUpperCase() ) ) {
-			colTypeEnum = CSVSchemaColumn.ColumnType.STRING;
-		}
-		
-		if ( "!COPY".equals( columnTransform.toUpperCase() ) ) {
-			colTransformEnum = CSVSchemaColumn.TransformType.COPY;
-		} else if ( "!BINARIZE".equals( columnTransform.toUpperCase() ) ) {
-			colTransformEnum = CSVSchemaColumn.TransformType.BINARIZE;
-		} else if ( "!LABEL".equals( columnTransform.toUpperCase() ) ) {
-			colTransformEnum = CSVSchemaColumn.TransformType.LABEL;
-		} else if ( "!NORMALIZE".equals( columnTransform.toUpperCase() ) ) {
-			colTransformEnum = CSVSchemaColumn.TransformType.NORMALIZE;
-		} else if ( "!SKIP".equals( columnTransform.toUpperCase() ) ) {
-			colTransformEnum = CSVSchemaColumn.TransformType.SKIP;
-			
-		}
-		
-		CSVSchemaColumn colValue = new CSVSchemaColumn( columnName, colTypeEnum, colTransformEnum );
-		
-		return colValue;
-		
+
+		CSVSchemaColumn.ColumnType colTypeEnum =
+        CSVSchemaColumn.ColumnType.valueOf(columnType.toUpperCase());
+		CSVSchemaColumn.TransformType colTransformEnum =
+        CSVSchemaColumn.TransformType.valueOf(columnTransform.toUpperCase().substring(1));
+
+		return new CSVSchemaColumn( columnName, colTypeEnum, colTransformEnum );
 	}
-	
+
 	private void addSchemaLine( String line ) {
-		
+
 		// parse out: columnName, columnType, columnTransform
 		String lineCondensed = line.trim().replaceAll(" +", " ");
 		String[] parts = lineCondensed.split(" ");
-		
+
 		if ( parts[ 0 ].toLowerCase().equals("@relation") ) {
-			
+
 		//	return this.validateRelationLine(parts);
 			this.relation = parts[1];
-			
+
 		} else if ( parts[ 0 ].toLowerCase().equals("@delimiter") ) {
-			
+
 		//	return this.validateDelimiterLine(parts);
 			this.delimiter = parts[1];
-			
+
 		} else if ( parts[ 0 ].toLowerCase().equals("@attribute") ) {
-			
+
 			String key = parts[1];
 			CSVSchemaColumn colValue = this.parseColumnSchemaFromAttribute( parts );
-			
+
 			this.columnSchemas.put( key, colValue );
-			
-		} else {
-			
-			
-		}		
-		
-		
+		}
 	}
-	
+
 	public void parseSchemaFile(String schemaPath) throws Exception {
-
-		//throw new UnsupportedOperationException();
-		
-		try  {
-
-			BufferedReader br = new BufferedReader( new FileReader( schemaPath ) );
-			
+		try (BufferedReader br = new BufferedReader(new FileReader(schemaPath))) {
 		    for (String line; (line = br.readLine()) != null; ) {
 		        // process the line.
-		    	if (false == this.validateSchemaLine(line) ) {
+		    	if (!this.validateSchemaLine(line) ) {
 		    		throw new Exception("Bad Schema for CSV Data");
 		    	}
-		    	
+
 		    	// now add it to the schema cache
 		    	this.addSchemaLine(line);
-		    	
+
 		    }
 		    // line is not visible here.
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 	}
-	
+
 	/**
 	 * Returns how many columns a newly transformed vector should have
-	 * 
-	 * 
-	 * 
+	 *
+	 *
+	 *
 	 * @return
 	 */
 	public int getTransformedVectorSize() {
-		
-		int colCount = 0;
-		
-		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
 
+		int colCount = 0;
+
+		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
 			if (entry.getValue().transform != CSVSchemaColumn.TransformType.SKIP) {
-				
 				colCount++;
-				
 			}
-			
 		}
-		
+
 		return colCount;
-		
+
 	}
-	
+
 	public void evaluateInputRecord(String csvRecordLine) throws Exception {
-		
+
 		// does the record have the same number of columns that our schema expects?
-		
+
 		String[] columns = csvRecordLine.split( this.delimiter );
-		
-		if ( columns[0].trim().equals("") ) {
-			System.out.println("Skipping blank line");
+
+		if (Strings.isNullOrEmpty(columns[0])) {
+			log.info("Skipping blank line");
 			return;
 		}
-		
+
 		if (columns.length != this.columnSchemas.size() ) {
-			
+
 			throw new Exception("Row column count does not match schema column count. (" + columns.length + " != " + this.columnSchemas.size() + ") ");
-			
+
 		}
-		
+
 		int colIndex = 0;
-		
+
 		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
-		
-			
+
+
 			String colKey = entry.getKey();
 		    CSVSchemaColumn colSchemaEntry = entry.getValue();
-		    
+
 		    // now work with key and value...
 		    colSchemaEntry.evaluateColumnValue( columns[ colIndex ] );
-		    
+
 		    colIndex++;
-		    
-		}		
-		
-		
-		
+
+		}
+
 	}
-	
-	
-	
+
+
+
 	/**
 	 * We call this method once we've scanned the entire dataset once to gather column stats
-	 * 
+	 *
 	 */
 	public void computeDatasetStatistics() {
-		
-		
-		
 		this.hasComputedStats = true;
-		
 	}
-	
+
 	public void debugPringDatasetStatistics() {
-		
-		System.out.println( "Print Schema --------" );
-		
+
+		log.info("Print Schema --------");
+
 		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
-		    
+
 			String key = entry.getKey();
-		    CSVSchemaColumn value = entry.getValue();
-		    
-		    // now work with key and value...
-		    
-		    System.out.println( "> " + value.name + ", " + value.columnType + ", " + value.transform );
-		    
-		    if ( value.transform == TransformType.LABEL ) {
+      CSVSchemaColumn value = entry.getValue();
 
-			    System.out.println( "\t> Label > Class Balance Report " );
-			    //System.out.println( "Class Balance Report " );
-			    
-			    for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
-			    
-			    	// value.recordLabels.size()
-			    	System.out.println( "\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond() );
-			    	
-			    }
-			    
-		    	
-		    } else {
+		  // now work with key and value...
 
-			    System.out.println( "\t\tmin: " + value.minValue );
-			    System.out.println( "\t\tmax: " + value.maxValue );
+		  log.info("> " + value.name + ", " + value.columnType + ", " + value.transform);
+
+		  if ( value.transform == TransformType.LABEL ) {
+
+			  log.info("\t> Label > Class Balance Report ");
+
+			  for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
+
+			  	// value.recordLabels.size()
+			  	log.info("\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond());
+
+			  }
+
+      } else {
+
+			    log.info("\t\tmin: {}", value.minValue);
+			    log.info("\t\tmax: {}", value.maxValue);
 
 		    }
-		    
-		    		    
-		    
-		}	
-		
-		System.out.println( "End Print Schema --------\n\n" );
-		
-		
+
+		}
+
+		log.info("End Print Schema --------\n\n");
+
 	}
-	
+
 	public void debugPrintColumns() {
-		
+
 		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
-		    
+
 			String key = entry.getKey();
 		    CSVSchemaColumn value = entry.getValue();
-		    
+
 		    // now work with key and value...
-		    
-		    System.out.println( "> " + value.name + ", " + value.columnType + ", " + value.transform );
-		    
-		}		
-		
+
+		    log.debug("> {} , {} , {}", value.name, value.columnType, value.transform);
+
+		}
+
 	}
-		
+
 
 
 }

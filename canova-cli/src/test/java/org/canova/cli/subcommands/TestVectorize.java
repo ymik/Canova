@@ -54,7 +54,7 @@ public class TestVectorize {
 	}
 	
 	@Test
-	public void testExecuteCSVConversionWorkflow() throws CanovaException, IOException, InterruptedException {
+	public void testExecuteCSVConversionWorkflow() throws Exception {
 		
 		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_conf.txt" };		
 		Vectorize vecCommand = new Vectorize( args );

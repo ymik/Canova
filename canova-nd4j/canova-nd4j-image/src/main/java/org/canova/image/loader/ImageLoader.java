@@ -44,6 +44,11 @@ public class ImageLoader implements Serializable {
     private int width = -1;
     private int height = -1;
 
+    static {
+        IIORegistry registry = IIORegistry.getDefaultInstance();
+        registry.registerServiceProvider(new TIFFImageWriterSpi());
+        registry.registerServiceProvider(new TIFFImageReaderSpi());
+    }
 
     public ImageLoader() {
         super();
@@ -60,10 +65,6 @@ public class ImageLoader implements Serializable {
         super();
         this.width = width;
         this.height = height;
-        IIORegistry registry = IIORegistry.getDefaultInstance();
-        registry.registerServiceProvider(new TIFFImageWriterSpi());
-        registry.registerServiceProvider(new TIFFImageReaderSpi());
-
     }
 
     /**

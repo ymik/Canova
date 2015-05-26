@@ -62,7 +62,6 @@ Add the local compiled file dependencies to your pom.xml file like the following
 	    <version>0.0.0.3</version>
 	</dependency>
 
-
 #### Yum Install / Load RPM (Fedora or CentOS)
 Create a yum repo and run yum install to load the Red Hat Package Management (RPM) files. First create the repo file to setup the configuration locally.
 
@@ -83,9 +82,8 @@ Add the following to the dl4j.repo file:
 Then run the following command on the dl4j repo packages to install them on your machine:
 
     $ sudo yum install [package name] -y
-    $ sudo yum install nd4j-cli -y # for example
+    $ sudo yum install Canova-Distro -y # for example
 
-Note, be sure to install the nd4j modules you need first, especially the backend and then install Canova and dl4j.
 
 ---
 ## CSV Transformation Engine Example

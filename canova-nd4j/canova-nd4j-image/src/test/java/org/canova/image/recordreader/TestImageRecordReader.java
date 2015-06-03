@@ -39,7 +39,6 @@ import static org.junit.Assert.assertTrue;
 public class TestImageRecordReader {
 
     @Test
-    @Ignore
     public void testInputStream() throws Exception {
         RecordReader reader = new ImageRecordReader(28,28,false);
         ClassPathResource res = new ClassPathResource("/test.jpg");

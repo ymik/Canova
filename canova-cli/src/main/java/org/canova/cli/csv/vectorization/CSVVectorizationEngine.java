@@ -20,14 +20,22 @@
 
 package org.canova.cli.csv.vectorization;
 
+import org.canova.api.conf.Configuration;
+import org.canova.api.exceptions.CanovaException;
+import org.canova.api.formats.output.OutputFormat;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.io.data.Text;
+import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.writable.Writable;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.schema.CSVSchemaColumn;
+import org.canova.cli.vectorization.VectorizationEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
@@ -39,10 +47,116 @@ import java.util.Map;
  *
  * @author josh
  */
-public class CSVVectorizationEngine {
+public class CSVVectorizationEngine extends VectorizationEngine {
 
   private static final Logger log = LoggerFactory.getLogger(CSVVectorizationEngine.class);
 
+
+  private CSVInputSchema inputSchema = null;
+  //private CSVVectorizationEngine vectorizer = null;
+  
+
+  // this picks up the input schema file from the properties file and loads it
+  private void loadInputSchemaFile() throws Exception {
+      String schemaFilePath = (String) this.configProps.get("input.vector.schema");
+      this.inputSchema = new CSVInputSchema();
+      this.inputSchema.parseSchemaFile(schemaFilePath);
+  //    this.vectorizer = new CSVVectorizationEngine();
+  }
+
+  /**
+   * 
+   * This is where our custom vectorization engine does its thing
+ * @throws CanovaException 
+ * @throws IOException 
+ * @throws InterruptedException 
+   * 
+   */
+  public void execute() throws CanovaException, IOException, InterruptedException {
+	  
+
+	  try {
+		this.loadInputSchemaFile();
+	} catch (Exception e1) {
+		// TODO Auto-generated catch block
+		//e1.printStackTrace();
+		log.error("No schema loaded for CSV transforms.");
+		return;
+	}
+	  
+      // 1. Do a pre-pass to collect dataset statistics
+      while (reader.hasNext()) {
+    	  
+          Collection<Writable> w = reader.next();
+
+          // TODO: this will end up processing key-value pairs
+          try {
+              this.inputSchema.evaluateInputRecord(w.toArray()[0].toString());
+          } catch (Exception e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+          }
+
+      }
+
+      reader.close();
+
+      // 2. computate the dataset statistics
+      this.inputSchema.computeDatasetStatistics();	  
+	  
+      // 2.a. debug dataset stats
+      String schema_print_key = "input.statistics.debug.print";
+      if (null != this.configProps.get(schema_print_key)) {
+          String printSchema = (String) this.configProps.get(schema_print_key);
+          if ("true".equals(printSchema.trim().toLowerCase())) {
+              //this.debugLoadedConfProperties();
+              this.inputSchema.debugPringDatasetStatistics();
+          }
+      }
+
+      
+      
+      
+      
+      
+
+      // 1. make second pass to do transforms now that we have stats on the datasets
+
+      // 1.a. reset the reader
+		reader = inputFormat.createReader(split);
+
+
+      Configuration conf = new Configuration();
+      conf.set( OutputFormat.OUTPUT_PATH, this.outputFilename );
+
+      RecordWriter writer = outputFormat.createWriter(conf); //new SVMLightRecordWriter(tmpOutSVMLightFile,true);
+
+      while (reader.hasNext()) {
+    	  
+          Collection<Writable> w = reader.next();
+
+          String line = w.toArray()[0].toString();
+          // TODO: this will end up processing key-value pairs
+
+          // TODO: this is where the transform system would live (example: execute the filter transforms, etc, here)
+          
+          // this outputVector needs to be ND4J
+          // TODO: we need to be re-using objects here for heap churn purposes
+          //INDArray outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
+          if (!Strings.isNullOrEmpty(line)) {
+              writer.write(this.vectorizeToWritable("", line, this.inputSchema));
+          }
+
+      }
+
+      reader.close();
+      writer.close();      
+      
+      
+      
+      
+  }
+  
   /**
    * Use statistics collected from a previous pass to vectorize (or drop) each column
    *

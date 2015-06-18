@@ -176,7 +176,7 @@ public class MNISTRecordReader implements RecordReader {
         	// get the record row
        //     INDArray row = imageLoader.asRowVector(image);
             
-        System.out.println( "size of label vector: " + labels.length() );
+        //System.out.println( "size of label vector: " + labels.length() );
         
             // convert it to a List<Writable>
             for (int i = 0; i < data.length(); i++) {

@@ -1,0 +1,16 @@
+
+conf.print=true
+
+input.header.skip=false
+input.statistics.debug.print=false
+
+input.data.type=image
+
+input.format=org.canova.image.format.MNISTInputFormat
+
+input.directory=/tmp/MNIST/images-idx1-ubyte
+
+output.vector.format=svmlight
+output.directory=/tmp/mnist_to_svmlight_unit_test.txt
+
+output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat

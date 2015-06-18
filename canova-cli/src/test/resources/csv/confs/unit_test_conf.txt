@@ -3,6 +3,9 @@ conf.print=true
 
 input.header.skip=false
 input.statistics.debug.print=false
+
+input.data.type=csv
+
 input.format=org.canova.api.formats.input.impl.LineInputFormat
 
 input.directory=src/test/resources/csv/data/uci_iris_sample.txt

@@ -49,11 +49,23 @@ public class SVMLightRecordWriter extends FileRecordWriter {
         if(!record.isEmpty()) {
             List<Writable> recordList = record instanceof List ? (List<Writable>) record : new ArrayList<>(record);
             StringBuilder result = new StringBuilder();
+
+            // get the label
             result.append(recordList.get(recordList.size() - 1).toString());
 
-            for(int i = 0; i < recordList.size() - 1; i++)
-                result.append(" " + (i + 1) + ":"
+            // get only the non-zero entries
+            Double value = 0.0;
+            
+            for (int i = 0; i < recordList.size() - 1; i++) {
+
+                value = Double.valueOf(recordList.get(i).toString());
+
+                if ( value > 0.0 ) {
+                	result.append(" " + (i + 1) + ":"
                         + Double.valueOf(recordList.get(i).toString()));
+                }
+                
+            }
 
             out.write(result.toString().getBytes());
             out.write(NEW_LINE.getBytes());

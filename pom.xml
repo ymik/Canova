@@ -27,7 +27,7 @@
 
     <packaging>pom</packaging>
 
-    <version>0.0.0.3-SNAPSHOT</version>
+    <version>0.0.0.5-SNAPSHOT</version>
     <modules>
         <module>canova-api</module>
         <module>canova-nd4j</module>

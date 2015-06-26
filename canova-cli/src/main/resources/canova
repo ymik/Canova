@@ -1,0 +1,20 @@
+#!/bin/sh
+
+# Reference all jar files
+# params:
+
+export jar_name="/usr/local/Skymind/canova/lib/*:/usr/local/Skymind/nd4j/lib/$ND4J_BACKEND/*"
+export main_class_name="org.canova.cli.driver.CommandLineInterfaceDriver"
+
+export params=""
+
+for i in $*;
+do
+    export params="$params $i"
+done
+
+echo $params
+java -cp "$jar_name" "$main_class_name" $params
+
+
+printf '\n\n'

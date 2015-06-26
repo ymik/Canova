@@ -23,6 +23,12 @@ package org.canova.cli.driver;
 import java.util.Arrays;
 
 import org.canova.cli.subcommands.Vectorize;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.spi.SubCommand;
+import org.kohsuke.args4j.spi.SubCommandHandler;
+import org.kohsuke.args4j.spi.SubCommands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,24 +39,32 @@ import org.slf4j.LoggerFactory;
  * @author josh
  */
 public class CommandLineInterfaceDriver {
-    private static Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
+    private static final Logger log = LoggerFactory.getLogger(CommandLineInterfaceDriver.class);
 
-    public static void main(String [] args) {
+    @Argument(required=true,index=0,metaVar="action",usage="subcommands, e.g., {vectorize}",handler=SubCommandHandler.class)
+    @SubCommands({
+            @SubCommand(name="vectorize",impl=Vectorize.class)
+    })
+    protected org.canova.cli.subcommands.SubCommand action;
 
-        if ("vectorize".equals( args[0] )) {
-            String[] vecParams = Arrays.copyOfRange(args, 1, args.length);
-            Vectorize vecCommand = new Vectorize( vecParams );
-            try {
-                vecCommand.execute();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
 
+
+
+
+    public void doMain(String[] args) throws Exception {
+        CmdLineParser parser = new CmdLineParser(this);
+        try {
+            parser.parseArgument(args);
+            action.execute();
+        } catch( CmdLineException e ) {
+            System.err.println(e.getMessage());
+            return;
         }
+    }
 
-        else
-            log.info( "Canova's command line system only supports the 'vectorize' command." );
 
+    public static void main(String [] args) throws Exception {
+        new CommandLineInterfaceDriver().doMain(args);
 
     }
 

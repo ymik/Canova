@@ -20,7 +20,6 @@
 
 package org.canova.nlp.vectorizer;
 
-
 import org.canova.api.berkeley.Counter;
 import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.RecordReader;
@@ -106,8 +105,7 @@ public abstract class TextVectorizer<VECTOR_TYPE> implements Vectorizer<VECTOR_T
             }
         }
 
-        String s = new String(bos.toByteArray());
-        return s;
+        return new String(bos.toByteArray());
     }
 
 

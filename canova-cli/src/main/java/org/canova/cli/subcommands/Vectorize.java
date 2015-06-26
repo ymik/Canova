@@ -1,8 +1,27 @@
+/*
+ *
+ *  *
+ *  *  * Copyright 2015 Skymind,Inc.
+ *  *  *
+ *  *  *    Licensed under the Apache License, Version 2.0 (the "License");
+ *  *  *    you may not use this file except in compliance with the License.
+ *  *  *    You may obtain a copy of the License at
+ *  *  *
+ *  *  *        http://www.apache.org/licenses/LICENSE-2.0
+ *  *  *
+ *  *  *    Unless required by applicable law or agreed to in writing, software
+ *  *  *    distributed under the License is distributed on an "AS IS" BASIS,
+ *  *  *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  *  *    See the License for the specific language governing permissions and
+ *  *  *    limitations under the License.
+ *  *
+ *
+ */
+
 package org.canova.cli.subcommands;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -11,7 +30,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-
+import com.google.common.base.Strings;
 import org.canova.api.conf.Configuration;
 import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
@@ -26,17 +45,22 @@ import org.canova.cli.csv.vectorization.CSVVectorizationEngine;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
-import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Vectorize Command.
+ * Based on an input and output format
+ * transforms data
+ *
+ * @author jp
+ * @author Adam Gibson
+ */
 public class Vectorize implements SubCommand {
 
     private static final Logger log = LoggerFactory.getLogger(Vectorize.class);
 
-
     public static final String OUTPUT_FILENAME_KEY = "output.directory";
-
     public static final String INPUT_FORMAT = "input.format";
     public static final String DEFAULT_INPUT_FORMAT_CLASSNAME = "org.canova.api.formats.input.impl.LineInputFormat";
     public static final String OUTPUT_FORMAT = "output.format";
@@ -46,32 +70,26 @@ public class Vectorize implements SubCommand {
 
     public boolean validCommandLineParameters = true;
 
-    @Option(name="-conf",usage="Sets a configuration file to drive the vectorization process")
+    @Option(name = "-conf", usage = "Sets a configuration file to drive the vectorization process")
     public String configurationFile = "";
 
     public Properties configProps = null;
     public String outputVectorFilename = "";
 
-    private CSVInputSchema inputSchema = null; //
+    private CSVInputSchema inputSchema = null;
     private CSVVectorizationEngine vectorizer = null;
 
-
     public Vectorize() {
-
 
     }
 
     // this picks up the input schema file from the properties file and loads it
     private void loadInputSchemaFile() throws Exception {
-
         String schemaFilePath = (String) this.configProps.get("input.vector.schema");
         this.inputSchema = new CSVInputSchema();
-        this.inputSchema.parseSchemaFile( schemaFilePath );
-
+        this.inputSchema.parseSchemaFile(schemaFilePath);
         this.vectorizer = new CSVVectorizationEngine();
     }
-
-
 
     // picked up in the command line parser flags (-conf=<foo.txt>)
     public void loadConfigFile() throws IOException {
@@ -79,111 +97,74 @@ public class Vectorize implements SubCommand {
         this.configProps = new Properties();
 
         //Properties prop = new Properties();
-        InputStream in = null;
-        try {
-            in = new FileInputStream( this.configurationFile );
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        try {
+        try (InputStream in = new FileInputStream(this.configurationFile)) {
             this.configProps.load(in);
-            in.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
         }
 
-
-
-        if (null == this.configProps.get( OUTPUT_FILENAME_KEY )) {
-
-            Date date = new Date() ;
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
-            this.outputVectorFilename = "/tmp/canova_vectors_" + dateFormat.format(date) + ".txt";
-
+        if (null == this.configProps.get(OUTPUT_FILENAME_KEY)) {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            this.outputVectorFilename = "/tmp/canova_vectors_" + dateFormat.format(new Date()) + ".txt";
         } else {
 
             // what if its only a directory?
 
-            this.outputVectorFilename = (String) this.configProps.get( OUTPUT_FILENAME_KEY );
+            this.outputVectorFilename = (String) this.configProps.get(OUTPUT_FILENAME_KEY);
 
-            if ( (new File( this.outputVectorFilename ).exists()) == false ) {
+            if (!(new File(this.outputVectorFilename).exists())) {
 
                 // file path does not exist
 
-                File yourFile = new File( this.outputVectorFilename );
-                if(!yourFile.exists()) {
+                File yourFile = new File(this.outputVectorFilename);
+                if (!yourFile.exists()) {
                     yourFile.createNewFile();
                 }
 
             } else {
-
-                if ( new File( this.outputVectorFilename ).isDirectory() ) {
-
-
-                    Date date = new Date() ;
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss") ;
+                if (new File(this.outputVectorFilename).isDirectory()) {
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
                     //File file = new File(dateFormat.format(date) + ".tsv") ;
-
-                    this.outputVectorFilename += "/canova_vectors_" + dateFormat.format(date) + ".txt";
-
-
+                    this.outputVectorFilename += "/canova_vectors_" + dateFormat.format(new Date()) + ".txt";
                 } else {
-
-                    // if a file that exists
-
-
-                    (new File( this.outputVectorFilename )).delete();
-
-                    System.out.println( "File path already exists, deleting the old file before proceeding..." );
-
-
+                    // if a file already exists
+                    (new File(this.outputVectorFilename)).delete();
+                    log.info("File path already exists, deleting the old file before proceeding...");
                 }
-
-
             }
-
-            //System.out.println( "Writing vectorized output to: " + this.outputVectorFilename + "\n\n" );
-
         }
-
-
     }
 
     public void debugLoadedConfProperties() {
-
         Properties props = this.configProps; //System.getProperties();
         Enumeration e = props.propertyNames();
 
-        System.out.println("\n--- Canova Configuration ---");
+        log.info("\n--- Start Canova Configuration ---");
 
         while (e.hasMoreElements()) {
             String key = (String) e.nextElement();
             System.out.println(key + " -- " + props.getProperty(key));
         }
 
-        System.out.println("--- Canova Configuration ---\n");
+        log.info("---End Canova Configuration ---\n");
     }
 
 
     // 1. load conf file
     // 2, load schema file
     // 3. transform csv -> output format
-    public void execute() throws CanovaException, IOException, InterruptedException {
+    public void execute() throws Exception  {
 
-        if (false == this.validCommandLineParameters) {
-            System.out.println( "Vectorize function is not configured properly, stopping." );
+        if (!this.validCommandLineParameters) {
+            log.error("Vectorize function is not configured properly, stopping.");
             return;
         }
 
-        boolean schemaLoaded = false;
+        boolean schemaLoaded;
         // load stuff (conf, schema) --> CSVInputSchema
 
         this.loadConfigFile();
 
-        if (null != this.configProps.get( "conf.print" )) {
-            String print = (String) this.configProps.get( "conf.print" );
+        if (null != this.configProps.get("conf.print")) {
+            String print = (String) this.configProps.get("conf.print");
             if ("true".equals(print.trim().toLowerCase())) {
                 this.debugLoadedConfProperties();
             }
@@ -199,7 +180,7 @@ public class Vectorize implements SubCommand {
             schemaLoaded = false;
         }
 
-        if (false == schemaLoaded) {
+        if (!schemaLoaded) {
 
             // if we did not load the schema then we cannot proceed with conversion
 
@@ -214,10 +195,8 @@ public class Vectorize implements SubCommand {
         // for each row in CSV Dataset
 
         String datasetInputPath = (String) this.configProps.get("input.directory");
-
-
-        File inputFile = new File( datasetInputPath );
-        InputSplit split = new FileSplit( inputFile );
+        File inputFile = new File(datasetInputPath);
+        InputSplit split = new FileSplit(inputFile);
         InputFormat inputFormat = this.createInputFormat();
 
         RecordReader reader = inputFormat.createReader(split);
@@ -225,13 +204,13 @@ public class Vectorize implements SubCommand {
         // TODO: replace this with an { input-format, record-reader }
 //		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
 
-        while(reader.hasNext()) {
+        while (reader.hasNext()) {
             Collection<Writable> w = reader.next();
             //for (String line; (line = br.readLine()) != null; ) {
 
             // TODO: this will end up processing key-value pairs
             try {
-                this.inputSchema.evaluateInputRecord( (String) w.toArray()[0].toString() );
+                this.inputSchema.evaluateInputRecord(w.toArray()[0].toString());
             } catch (Exception e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -246,14 +225,13 @@ public class Vectorize implements SubCommand {
         this.inputSchema.computeDatasetStatistics();
 
         String schema_print_key = "input.statistics.debug.print";
-        if (null != this.configProps.get( schema_print_key )) {
-            String printSchema = (String) this.configProps.get( schema_print_key );
+        if (null != this.configProps.get(schema_print_key)) {
+            String printSchema = (String) this.configProps.get(schema_print_key);
             if ("true".equals(printSchema.trim().toLowerCase())) {
                 //this.debugLoadedConfProperties();
                 this.inputSchema.debugPringDatasetStatistics();
             }
         }
-
 
 
         // produce converted/vectorized output based on statistics --> Transforms + CSVInputSchema + Rows
@@ -269,26 +247,24 @@ public class Vectorize implements SubCommand {
 
         RecordWriter writer = outputFormat.createWriter(conf); //new SVMLightRecordWriter(tmpOutSVMLightFile,true);
 
-        while(reader.hasNext()) {
+        while (reader.hasNext()) {
             Collection<Writable> w = reader.next();
 
-            String line = (String) w.toArray()[0].toString();
+            String line = w.toArray()[0].toString();
             // TODO: this will end up processing key-value pairs
 
             // this outputVector needs to be ND4J
             // TODO: we need to be re-using objects here for heap churn purposes
             //INDArray outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
-            if (line.trim().equals("") == false ) {
-                writer.write( vectorizer.vectorizeToWritable( "", line, this.inputSchema ) );
+            if (!Strings.isNullOrEmpty(line)) {
+                writer.write(vectorizer.vectorizeToWritable("", line, this.inputSchema));
             }
 
         }
 
         reader.close();
         writer.close();
-
-        System.out.println( "Output vectors written to: " + this.outputVectorFilename);
-
+        log.info("Output vectors written to: " + this.outputVectorFilename);
     }
 
 
@@ -312,15 +288,16 @@ public class Vectorize implements SubCommand {
 
     /**
      * Creates an input format
+     *
      * @return
      */
     public InputFormat createInputFormat() {
 
         //System.out.println( "> Loading Input Format: " + (String) this.configProps.get( INPUT_FORMAT ) );
 
-        String clazz = (String) this.configProps.get( INPUT_FORMAT );
+        String clazz = (String) this.configProps.get(INPUT_FORMAT);
 
-        if ( null == clazz ) {
+        if (null == clazz) {
             clazz = DEFAULT_INPUT_FORMAT_CLASSNAME;
         }
 
@@ -336,16 +313,11 @@ public class Vectorize implements SubCommand {
 
     public OutputFormat createOutputFormat() {
         //String clazz = conf.get( OUTPUT_FORMAT, DEFAULT_OUTPUT_FORMAT_CLASSNAME );
-
         //System.out.println( "> Loading Output Format: " + (String) this.configProps.get( OUTPUT_FORMAT ) );
-
-
-        String clazz = (String) this.configProps.get( OUTPUT_FORMAT );
-
-        if ( null == clazz ) {
+        String clazz = (String) this.configProps.get(OUTPUT_FORMAT);
+        if (null == clazz) {
             clazz = DEFAULT_OUTPUT_FORMAT_CLASSNAME;
         }
-
 
         try {
             Class<? extends OutputFormat> outputFormatClazz = (Class<? extends OutputFormat>) Class.forName(clazz);
@@ -353,12 +325,6 @@ public class Vectorize implements SubCommand {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
-
-
-
-
-
 
 }

@@ -1,32 +1,102 @@
 Canova
-======
+=========================
 
-## Description
+[![Join the chat at https://gitter.im/deeplearning4j/deeplearning4j](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/deeplearning4j/deeplearning4j?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-A tool for vectorizing raw data into usable vector formats across machine learning tools.
+Canova is an Apache2 Licensed open-sourced tool for vectorizing raw data into usable vector formats across machine learning tools.
 
-## Example
+Canova understands how to take general text and convert it into vectors with stock techniques such as kernel hashing and TF-IDF [TODO]. Runs as both a local serial process and a MapReduce (MR engine on the roadmap) scale-out process with no code changes.
 
- * Convert the CSV-based UCI Iris dataset into svmLight open vector text format
- * Convert the MNIST dataset from raw binary files to the svmLight text format.
- * Convert raw text into the Metronome vector format
- * Convert raw text into TF-IDF based vectors in a text vector format {svmLight, metronome, arff}
- * Convert raw text into the word2vec in a text vector format {svmLight, metronome, arff}
+---
+## Targetted Vector Formats & Vectorization Engines
 
-## Targeted Vectorization Engines
+#### Formats
+* svmLight
+* libsvm
+* Metronome
+* ARFF
 
- * Any CSV to vectors with a scriptable transform language
- * MNIST to vectors
- * Text to vectors
-    * TF-IDF
-    * Bag of Words
-    * word2vec
+#### Targeted Vectorization Engines
 
-## CSV Transformation Engine
+* Any CSV to vectors with a scriptable transform language
+* MNIST to vectors
+* Text to vectors:
+	* TF-IDF
+	* Bag of Words
+	* word2vec
 
-Below is an example of the CSV transform language in action from the command line
+#### Example Functionality
+* Convert the CSV-based UCI Iris dataset into svmLight open vector text format
+* Convert the MNIST dataset from raw binary files to the svmLight text format.
+* Convert raw text into the Metronome vector format
+* Convert raw text into TF-IDF based vectors in a text vector format {svmLight, metronome, arff}
+* Convert raw text into the word2vec in a text vector format {svmLight, metronome, arff}
 
-### UCI Iris Schema Transform
+---
+## Installation
+
+To install Canova there are a couple approaches and more information can be found on the site at this [link](http://nd4j.org/getstarted.html).
+
+#### Use Maven Central Repository
+
+    Search for [canova](https://search.maven.org/#search%7Cga%7C1%7CCanova) to get a list of jars you can use
+
+    Add the dependency information into your pom.xml
+
+#### Clone from the GitHub Repo
+Canova is actively developed and you can clone the repository, compile it and reference it in your project. First clone the [ND4J repo](https://github.com/deeplearning4j/nd4j) and build compile prior to building Canova.
+
+Clone the repository:
+
+    $ git clone https://github.com/deeplearning4j/Canova.git
+
+Compile the project:
+
+    $ cd canova && mvn clean install -DskipTests -Dmaven.javadoc.skip=true
+
+Add the local compiled file dependencies to your pom.xml file like the following example:
+
+	<dependency>
+	    <groupId>org.nd4j</groupId>
+	    <artifactId>canova-api-SNAPSHOT</artifactId>
+	    <version>0.0.0.3</version>
+	</dependency>
+
+#### Yum Install / Load RPM (Fedora or CentOS)
+Create a yum repo and run yum install to load the Red Hat Package Management (RPM) files. First create the repo file to setup the configuration locally.
+
+    $ sudo vi /etc/yum.repos.d/dl4j.repo 
+
+Add the following to the dl4j.repo file:
+
+'''
+
+    [dl4j.repo]
+
+    name=dl4j-repo
+    baseurl=http://ec2-52-5-255-24.compute-1.amazonaws.com/repo/RPMS
+    enabled=1
+    gpgcheck=0
+'''
+
+Then run the following command on the dl4j repo packages to install them on your machine:
+
+    $ sudo yum install [package name] -y
+    $ sudo yum install Canova-Distro -y # for example
+
+
+---
+## CSV Transformation Engine Example
+Below is an example of the CSV transform language in action from the command line.
+
+#### Setup Canova CLI
+
+Follow the Get the Code Installation approach and then build the stand-alone Canova jar to run the CLI from the command line:
+
+	cd canova-cli/ && mvn -DskipTests=true -Dmaven.javadoc.skip=true package
+
+
+#### UCI Iris Schema Transform
 
 ```
 @RELATION UCIIrisDataset
@@ -39,23 +109,7 @@ Below is an example of the CSV transform language in action from the command lin
    @ATTRIBUTE class        STRING   !LABEL
 ```
 
-## Setting Up Canova
-
-We need to do a *git pull* from this Github repo, and then build the dependencies with Maven. 
-
-```
-mvn -DskipTests=true -Dmaven.javadoc.skip=true install
-```
-(We also recommend that you clone the [ND4J repo](https://github.com/deeplearning4j/nd4j) and build its dependencies now.)
-
-Then we'd want to build the stand-alone Canova jar to run the CLI from the command line:
-
-```
-cd canova-cli/
-mvn -DskipTests=true -Dmaven.javadoc.skip=true package
-```
-
-## Create the Configuration File
+#### Create the Configuration File
 
 We need a file to tell the vectorization engine what to do. Create a text file containing the following lines in the *canova-cli* directory (you might name the file vec_conf.txt):
 
@@ -71,7 +125,7 @@ output.directory=/tmp/iris_unit_test_sample.txt
 output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat
 ```
 
-## Run Canova From the Command Line
+#### Run Canova From the Command Line
 
 Now we're going to take this [sample](https://github.com/deeplearning4j/Canova/blob/master/canova-cli/src/test/resources/csv/data/uci_iris_sample.txt) of [UCI's Iris dataset](https://archive.ics.uci.edu/ml/machine-learning-databases/iris/iris.data).
 
@@ -96,6 +150,7 @@ We transform it into the svmLight format from the command line like this
 ./bin/canova vectorize -conf [my_conf_file]
 ```
 
+#### CLI Output
 The output in your command prompt should look like
 
 ```
@@ -121,15 +176,10 @@ If you cd into /tmp and open *iris_svmlight.txt*, you'll see something like this
 2.0 1:0.6666666666666666 2:0.5 3:0.9148936170212765 4:0.6956521739130436
 ```
 
-## Execution
-
-Runs as both a local serial process and a MapReduce (MR engine on the roadmap) scale-out process with no code changes.
-
-## Targetted Vector Formats
-* svmLight
-* libsvm
-* Metronome
-* ARFF
-
-## Built-In General Functionality
-* Understands how to take general text and convert it into vectors with stock techniques such as kernel hashing and TF-IDF [TODO]
+---
+## Contribute
+1. Check for open issues or open a fresh issue to start a discussion around a feature idea or a bug. 
+2. If you feel uncomfortable or uncertain about an issue or your changes, feel free to contact us on Gitter using the link above.
+3. Fork [the repository](https://github.com/deeplearning4j/Canova.git) on GitHub to start making your changes to the **master** branch (or branch off of it).
+4. Write a test which shows that the bug was fixed or that the feature works as expected.
+5. Send a pull request and bug us on Gitter until it gets merged and published. 

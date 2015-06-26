@@ -18,18 +18,30 @@
  *
  */
 
-package org.canova.cli.subcommands;
+package org.canova.api.io.converters;
+
+import org.canova.api.io.WritableConverter;
+import org.canova.api.io.data.IntWritable;
+import org.canova.api.writable.Writable;
+
+import java.util.List;
 
 /**
- * A subcommand used for handling input
+ * Convert a label in to an index based on the
+ *
  *
  * @author Adam Gibson
  */
-public interface SubCommand {
+public class LabelWriterConverter implements WritableConverter {
+    private List<String> labels;
 
-    /**
-     * Execute the input
-     */
-    void execute() throws Exception;
+    public LabelWriterConverter(List<String> labels) {
+        this.labels = labels;
+    }
 
+    @Override
+    public Writable convert(Writable writable) throws WritableConverterException {
+        String label = writable.toString();
+        return new IntWritable(labels.indexOf(label));
+    }
 }

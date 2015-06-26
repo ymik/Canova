@@ -20,18 +20,19 @@
 
 package org.canova.api.util;
 
-
-
 import org.canova.api.berkeley.Pair;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * Created by agibsonccc on 4/29/14.
  */
 public class MultiDimensionalSet<K,V> implements Set<Pair<K,V>> {
-
 
     private Set<Pair<K,V>> backedSet;
 
@@ -40,19 +41,15 @@ public class MultiDimensionalSet<K,V> implements Set<Pair<K,V>> {
     }
 
     public static <K,V> MultiDimensionalSet<K,V> hashSet() {
-        return new MultiDimensionalSet<K,V>(new HashSet<Pair<K,V>>());
+        return new MultiDimensionalSet<>(new HashSet<Pair<K,V>>());
     }
-
 
     public static <K,V> MultiDimensionalSet<K,V> treeSet() {
-        return new MultiDimensionalSet<K,V>(new TreeSet<Pair<K,V>>());
+        return new MultiDimensionalSet<>(new TreeSet<Pair<K,V>>());
     }
 
-
-
-
     public static <K,V> MultiDimensionalSet<K,V> concurrentSkipListSet() {
-        return new MultiDimensionalSet<K,V>(new ConcurrentSkipListSet<Pair<K,V>>());
+        return new MultiDimensionalSet<>(new ConcurrentSkipListSet<Pair<K,V>>());
     }
 
     /**
@@ -351,8 +348,6 @@ public class MultiDimensionalSet<K,V> implements Set<Pair<K,V>> {
     public void clear() {
        backedSet.clear();
     }
-
-
 
     public boolean contains(K k, V v) {
         return contains(new Pair<>(k,v));

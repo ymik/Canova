@@ -5,6 +5,8 @@ import java.util.Collection;
 
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.writable.Writable;
+import org.canova.cli.shuffle.Shuffler;
+import org.canova.cli.subcommands.Vectorize;
 import org.canova.cli.transforms.image.NormalizeTransform;
 
 import com.google.common.base.Strings;
@@ -33,8 +35,6 @@ public class ImageVectorizationEngine extends VectorizationEngine {
 	@Override
 	public void execute() throws IOException {
 
-		System.out.println( "ImageVectorizationEngine > execute() [ START ]" );
-		
 		NormalizeTransform normalizer = new NormalizeTransform();
 		
 		// 1. collect stats for normalize
@@ -59,22 +59,63 @@ public class ImageVectorizationEngine extends VectorizationEngine {
 		
 		// 3. transform data
 		
-		//int x = 0;
-        while (reader.hasNext()) {
-            
-        	// get the record from the input format
-        	Collection<Writable> w = reader.next();
-        	normalizer.transform(w);
-        	
-        	// the reader did the work for us here
-        	writer.write(w);
- 
-        }
+	      if (shuffleOn) {
+	    	  
+	    	  Shuffler shuffle = new Shuffler();
+			
+			
+			//int x = 0;
+	        while (reader.hasNext()) {
+	            
+	        	// get the record from the input format
+	        	Collection<Writable> w = reader.next();
+	        	if (false == normalizeData) {
+	        		
+	        	} else {
+	        		normalizer.transform(w);
+	        	}
+	        	
+	        	// the reader did the work for us here
+	        	//writer.write(w);
+	        	shuffle.addRecord(w);
+	 
+	        }
+	        
+	        // now write the shuffled data out
+	        
+			while (shuffle.hasNext()) {
+				
+				Collection<Writable> shuffledRecord = shuffle.next();
+				writer.write( shuffledRecord );
+				
+			}	  
+	        
 
+	      } else {
+	    	  
+
+		        while (reader.hasNext()) {
+		            
+		        	// get the record from the input format
+		        	Collection<Writable> w = reader.next();
+		        	if (false == normalizeData) {
+		        		
+		        	} else {
+		        		normalizer.transform(w);
+		        	}
+		        	
+		        	// the reader did the work for us here
+		        	writer.write(w);
+		 
+		        }
+
+	    	  
+	      }
+	      
         reader.close();
         writer.close();		
 		
-		System.out.println( "ImageVectorizationEngine > execute() [ END ]" );
+	//	System.out.println( "ImageVectorizationEngine > execute() [ END ]" );
         
 		
 	}

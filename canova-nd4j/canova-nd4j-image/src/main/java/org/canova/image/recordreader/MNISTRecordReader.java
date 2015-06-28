@@ -153,7 +153,8 @@ public class MNISTRecordReader implements RecordReader {
      * 
      * 
      * 
-     *  
+     *  LABEL
+     *  	-	added as last value
      * 
      */
     @Override

@@ -20,6 +20,12 @@ import org.canova.cli.transforms.Transform;
  * 	-	are we able to do this in a way that will parallelize well later?
  * 			-	probably not, most likely requires a v2 refactor for MR
  * 
+ * Label Semantics
+ * 		- NOTE: dont normalize the LABEL!
+ * 			1.	Image: 	ImageInputFormat		> 	{ [array of doubles], directoryLabelID }		// image data, then the directory indexed as an ID int
+ * 
+ * 
+ * 
  * @author josh
  *
  */
@@ -32,6 +38,8 @@ public class NormalizeTransform implements Transform {
 	/**
 	 * Transform a specific incoming vector in place
 	 * 
+	 * TODO: is the label getting normalized here???
+	 * 
 	 */
 	@Override
 	public void transform( Collection<Writable> vector ) {
@@ -42,18 +50,30 @@ public class NormalizeTransform implements Transform {
 		}
 		
 		Iterator<Writable> iter = vector.iterator();
+		boolean isLabelEntry = false;
 	
 		while (iter.hasNext()) {
 			
 			DoubleWritable val = (DoubleWritable) iter.next();
 
-			double range = this.maxValue - this.minValue;
-			double normalizedOut = ( val.get() - this.minValue ) / range;
+			// if we hit the last entry, its the label -- dont normalize it!
+			if (false == iter.hasNext()) {
+				isLabelEntry = true;
+			}
 			
-			if (0.0 == range) {
-				val.set( 0.0 );
+			if (isLabelEntry) {
+				
 			} else {
-				val.set( normalizedOut );
+				
+				double range = this.maxValue - this.minValue;
+				double normalizedOut = ( val.get() - this.minValue ) / range;
+				
+				if (0.0 == range) {
+					val.set( 0.0 );
+				} else {
+					val.set( normalizedOut );
+				}
+				
 			}
 
 			
@@ -99,6 +119,12 @@ public class NormalizeTransform implements Transform {
 			}			
 			
 		}		
+		
+	}
+
+	@Override
+	public void evaluateStatistics() {
+		// TODO Auto-generated method stub
 		
 	}
 

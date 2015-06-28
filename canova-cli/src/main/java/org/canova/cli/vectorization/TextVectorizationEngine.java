@@ -3,12 +3,16 @@ package org.canova.cli.vectorization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.records.reader.impl.FileRecordReader;
 import org.canova.api.writable.Writable;
+import org.canova.cli.shuffle.Shuffler;
+import org.canova.cli.subcommands.Vectorize;
+import org.canova.cli.transforms.text.nlp.TfidfTextVectorizerTransform;
 import org.canova.nd4j.nlp.vectorizer.TfidfVectorizer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
@@ -35,81 +39,101 @@ public class TextVectorizationEngine extends VectorizationEngine {
 	@Override
 	public void execute() throws IOException {
 
-		System.out.println( "TextVectorizationEngine > execute() [ START ]" );
+
+		
+	//	System.out.println( "TextVectorizationEngine > execute() [ START ]" );
+		
+		TfidfTextVectorizerTransform tfidfTransform = new TfidfTextVectorizerTransform();
+		conf.setInt( TfidfTextVectorizerTransform.MIN_WORD_FREQUENCY, 1 );
+	//	conf.set(TfidfTextVectorizerTransform.TOKENIZER, "org.canova.nlp.tokenization.tokenizerfactory.PosUimaTokenizerFactory");
+		tfidfTransform.initialize(conf);
+		
+		int recordsSeen = 0;
 		
 		
-		
-        TfidfVectorizer vectorizer = new TfidfVectorizer();
-     //   Configuration conf = new Configuration();
-        conf.setInt(TfidfVectorizer.MIN_WORD_FREQUENCY, 1);
-        conf.setBoolean(RecordReader.APPEND_LABEL, true);
-        vectorizer.initialize(conf);        
-		
-        INDArray tfIdfVectors = null;
-        
-        FileRecordReader ref = (FileRecordReader)this.reader;
-        
-        List<String> labels = ref.getLabels();
-        for ( int x = 0; x < labels.size(); x++ ) {
-        	
-        	System.out.println( "label: " + labels.get(x) );
-        	
-        }
-        
-        
-		
-        if (reader.hasNext()) {
+		// 1. collect stats for normalize
+        while (reader.hasNext()) {
             
         	// get the record from the input format
-//        	Collection<Writable> w = reader.next();
-        	
-        	//w.size()
-        	
- //       	System.out.println( "writeable: " + w.size() );
-        	
-        	tfIdfVectors = vectorizer.fitTransform(reader);
-        	
-            //number of vocab words is 3
- //           assertEquals(3,n.columns());
-            //number of records is 2
- //           assertEquals(2,n.rows());        	
-        	
-        	// the reader did the work for us here
-//        	writer.write(w);
- /*       	if (x > 10) {
-        		break;
-        	}
-        	x++;
-        	*/
-        }
-        
-        Collection<Writable> outputVector = new ArrayList<>();
-        
-        System.out.println( "TF-IDF Rows: " + tfIdfVectors.rows() );
-        System.out.println( "TF-IDF Cols: " + tfIdfVectors.columns() );
-        
-        for (int x = 0; x < tfIdfVectors.rows(); x++ ) {
-        	
-        	for (int col = 0; col < tfIdfVectors.columns(); col++ ) {
-        
-        		DoubleWritable d = new DoubleWritable();
-        		d.set( tfIdfVectors.getDouble(x, col) );
-        		outputVector.add( d );
-        		
-        		
-        	}
-        	
-        	writer.write(outputVector);
-        		
-        	outputVector.clear();
-        	
-        }
+        	Collection<Writable> w = reader.next();
+        	tfidfTransform.collectStatistics(w);
+        	recordsSeen++;
 
+        }
+        
+        if (this.printStats) {
+
+	        System.out.println( "Total Records: " + recordsSeen );
+	        System.out.println( "Total Labels: " + tfidfTransform.getNumberOfLabelsSeen() );
+	        System.out.println( "Vocabulary Size of Corpus: " + tfidfTransform.getVocabularySize() );
+	        tfidfTransform.debugPrintVocabList();
+	        
+        }
+        
+		// 2. reset reader
+        
         reader.close();
-        writer.close();				
+        //RecordReader reader = null;
+		try {
+			this.reader = inputFormat.createReader(split, conf);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// 3. transform data
+		
+	      if (shuffleOn) {
+	    	  
+	    	  Shuffler shuffle = new Shuffler();
+	    	  
+
+	    	  // collect the writables into the shuffler
+	    	  
+		        while (reader.hasNext()) {
+		            
+		        	// get the record from the input format
+		        	Collection<Writable> w = reader.next();
+		        	tfidfTransform.transform(w);
+		        	
+		        	shuffle.addRecord(w);
+		 
+		        }
+
+
+	    	  
+	    	  // now send the shuffled data out 
+	    	  
+				while (shuffle.hasNext()) {
+					
+					Collection<Writable> shuffledRecord = shuffle.next();
+					writer.write( shuffledRecord );
+					
+				}	  
+				
+		        reader.close();
+		        writer.close();				
+				
+
+	      } else {
+		
+		        while (reader.hasNext()) {
+		            
+		        	// get the record from the input format
+		        	Collection<Writable> w = reader.next();
+		        	tfidfTransform.transform(w);
+		        	
+		        	// the reader did the work for us here
+		        	writer.write(w);
+		 
+		        }
 		
 		
-		System.out.println( "TextVectorizationEngine > execute() [ END ]" );
+		        reader.close();
+		        writer.close();				
+
+	      }
+		
 		
 	}
 	

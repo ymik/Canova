@@ -10,6 +10,7 @@ import org.canova.api.formats.output.OutputFormat;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.split.InputSplit;
+import org.canova.cli.subcommands.Vectorize;
 
 public abstract class VectorizationEngine {
 	
@@ -21,6 +22,9 @@ public abstract class VectorizationEngine {
 	protected Properties configProps = null;
 	protected String outputFilename = null;
 	protected Configuration conf = null;
+	protected boolean shuffleOn = false;
+	protected boolean normalizeData = true;
+	protected boolean printStats = false;
 	
 	public void initialize( InputSplit split, InputFormat inputFormat, OutputFormat outputFormat, RecordReader reader, RecordWriter writer, Properties configProps, String outputFilename, Configuration conf) {
 		
@@ -32,6 +36,44 @@ public abstract class VectorizationEngine {
 		this.outputFormat = outputFormat;
 		this.outputFilename = outputFilename;
 		this.conf = conf;
+		
+
+	      if (null == this.configProps.get(Vectorize.SHUFFLE_DATA_FLAG)) {
+	      	// default to false
+	      } else {
+	    	  
+	      	String shuffleValue = (String) this.configProps.get(Vectorize.SHUFFLE_DATA_FLAG);
+	      	if ("true".equals(shuffleValue)) {
+	      		shuffleOn = true;
+	      	}
+	      	
+	      	System.out.println( "Shuffle was turned on for this dataset." );
+	      }		
+	      
+			
+			
+			
+	        if (null == this.configProps.get(Vectorize.NORMALIZE_DATA_FLAG)) {
+	        	// default to true
+	        } else {
+	        	String normalizeValue = (String) this.configProps.get(Vectorize.NORMALIZE_DATA_FLAG);
+	        	if ("false".equals(normalizeValue)) {
+	        		normalizeData = false;
+	        	}
+	        	
+	        	System.out.println( "Normalization was turned off for this dataset." );
+	        }
+			
+	        if (null != this.configProps.get(Vectorize.PRINT_STATS_FLAG)) {
+	            String printSchema = (String) this.configProps.get(Vectorize.PRINT_STATS_FLAG);
+	            if ("true".equals(printSchema.trim().toLowerCase())) {
+	                //this.debugLoadedConfProperties();
+	                //this.inputSchema.debugPringDatasetStatistics();
+	            	this.printStats = true;
+	            }
+	        }
+	        
+	      
 		
 	}
 	

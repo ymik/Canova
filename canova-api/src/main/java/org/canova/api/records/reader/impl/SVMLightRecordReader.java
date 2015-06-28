@@ -34,8 +34,11 @@ import java.util.StringTokenizer;
 /**
  * Adapted from the weka svmlight reader
  *
+ *	June 2015
+ *		-	adapted to understand HDFS-style block splits
  *
  * @author Adam Gibson
+ * @author Josh Patterson
  */
 public class SVMLightRecordReader extends LineRecordReader {
     private static Logger log = LoggerFactory.getLogger(SVMLightRecordReader.class);

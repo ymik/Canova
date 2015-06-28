@@ -15,8 +15,8 @@ public class AudioVectorizationEngine extends VectorizationEngine {
 	public void execute() throws IOException {
 
 		System.out.println( "AudioVectorizationEngine > execute() [ START ]" );
-		/*
-		int x = 0;
+		
+		
         while (reader.hasNext()) {
             
         	// get the record from the input format
@@ -25,7 +25,7 @@ public class AudioVectorizationEngine extends VectorizationEngine {
         	// the reader did the work for us here
         	writer.write(w);
          }
-	*/
+	
 
         reader.close();
         writer.close();		

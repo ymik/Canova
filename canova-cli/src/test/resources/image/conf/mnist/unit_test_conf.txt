@@ -1,16 +1,18 @@
 
-conf.print=true
+canova.conf.print=true
 
-input.header.skip=false
-input.statistics.debug.print=false
+canova.input.header.skip=false
+canova.input.statistics.debug.print=false
 
-input.data.type=image
+canova.input.data.type=image
 
-input.format=org.canova.image.format.MNISTInputFormat
+canova.input.format=org.canova.image.format.MNISTInputFormat
+canova.input.vectorization.normalize=false;
 
-input.directory=/tmp/MNIST/images-idx1-ubyte
+canova.input.directory=/tmp/MNIST/images-idx1-ubyte
+canova.input.vectorization.normalize=false
 
-output.vector.format=svmlight
-output.directory=/tmp/mnist_to_svmlight_unit_test.txt
+canova.output.vector.format=svmlight
+canova.output.directory=/tmp/mnist_to_svmlight_unit_test.txt
 
-output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat
+canova.output.format=org.canova.api.formats.output.impl.SVMLightOutputFormat

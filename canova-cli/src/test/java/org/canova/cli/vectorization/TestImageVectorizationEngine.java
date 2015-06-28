@@ -24,7 +24,7 @@ import org.springframework.core.io.ClassPathResource;
 public class TestImageVectorizationEngine {
 
 	
-	
+	/*
 	@Test
 	public void testInputFormatWithImageEngine() throws IOException, InterruptedException {
 
@@ -56,12 +56,6 @@ public class TestImageVectorizationEngine {
         	System.out.println( "The images file DOES NOT exist locally unzipped!" );
         }		
 		
-		/*
-        RecordReader reader = new ImageRecordReader(28,28,false);
-        ClassPathResource res = new ClassPathResource("/test.jpg");
-        reader.initialize(new InputStreamInputSplit(res.getInputStream(), res.getURI()));
-        assertTrue(reader.hasNext());
-		*/
         
         RecordReader reader = new MNISTRecordReader();
         
@@ -86,19 +80,11 @@ public class TestImageVectorizationEngine {
 		
 
         String datasetInputPath = "";
-        /*
-        File inputFile = new File(datasetInputPath);
-        InputSplit split = new FileSplit(inputFile);
-        InputFormat inputFormat = this.createInputFormat();
-
-        RecordReader reader = inputFormat.createReader(split);
-*/
-        		
         
         engine.execute();
 
         // check out many records are in the output
 		
 	}
-
+*/
 }

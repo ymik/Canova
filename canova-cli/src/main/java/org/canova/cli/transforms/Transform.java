@@ -8,6 +8,8 @@ public interface Transform {
 	
 	public void collectStatistics( Collection<Writable> vector );
 	
+	public void evaluateStatistics();
+	
 	public void transform( Collection<Writable> vector );
 
 }

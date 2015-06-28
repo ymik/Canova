@@ -20,7 +20,7 @@ We have several options to work with Canova. The most common way would be to dow
 
 ## Tarball
 
-Download our latest release at: http://something.something/foo.tar.gz
+Download our latest release at: [ Coming Soon ]
 
 ## Clone from the Github Repository
 

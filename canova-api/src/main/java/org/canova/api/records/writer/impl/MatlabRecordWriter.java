@@ -21,6 +21,7 @@
 package org.canova.api.records.writer.impl;
 
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.writable.Writable;
 
 import java.io.File;
@@ -30,11 +31,23 @@ import java.util.Collection;
 
 /**
  * Write matlab records
+ *
+ * @author Adam Gibson
  */
 public class MatlabRecordWriter extends FileRecordWriter {
+    public MatlabRecordWriter() {
+    }
 
-  public MatlabRecordWriter(File path) throws FileNotFoundException {
+    public MatlabRecordWriter(File path) throws FileNotFoundException {
         super(path);
+    }
+
+    public MatlabRecordWriter(File path, boolean append) throws FileNotFoundException {
+        super(path, append);
+    }
+
+    public MatlabRecordWriter(Configuration conf) throws FileNotFoundException {
+        super(conf);
     }
 
     @Override

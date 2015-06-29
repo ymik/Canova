@@ -18,34 +18,14 @@
  *
  */
 
-package org.canova.api.records.writer;
-
-
-
-import org.canova.api.conf.Configurable;
-import org.canova.api.writable.Writable;
-
-import java.io.Closeable;
-import java.io.IOException;
-import java.util.Collection;
+package org.canova.api.records.reader;
 
 /**
- *  Record writer
- *  @author Adam Gibson
+ * @author Adam Gibson
  */
-public interface RecordWriter extends Closeable,Configurable {
-    String APPEND = "org.canova.api.record.writer.append";
+public interface LibSvm {
 
-    /**
-     * Write a record
-     * @param record the record to write
-     */
-    void write(Collection<Writable> record) throws IOException;
+    String CLASSIFICATION = "libsvm.classification";
 
-
-    /**
-     * Close the recod reader
-     */
-    void close();
 
 }

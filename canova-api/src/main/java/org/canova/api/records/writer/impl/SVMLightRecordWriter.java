@@ -21,6 +21,7 @@
 package org.canova.api.records.writer.impl;
 
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.writable.Writable;
 
 import java.io.*;
@@ -37,6 +38,8 @@ import java.util.List;
  *
  */
 public class SVMLightRecordWriter extends FileRecordWriter {
+    public SVMLightRecordWriter() {
+    }
 
     public SVMLightRecordWriter(File path) throws FileNotFoundException {
         super(path);
@@ -44,6 +47,11 @@ public class SVMLightRecordWriter extends FileRecordWriter {
     public SVMLightRecordWriter(File path,boolean append) throws FileNotFoundException {
         super(path,append);
     }
+
+    public SVMLightRecordWriter(Configuration conf) throws FileNotFoundException {
+        super(conf);
+    }
+
     @Override
     public void write(Collection<Writable> record) throws IOException {
         if(!record.isEmpty()) {

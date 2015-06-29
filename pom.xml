@@ -33,6 +33,7 @@
         <module>canova-nd4j</module>
         <module>canova-data</module>
 	<module>canova-cli</module>
+	<module>canova-hadoop</module>
     </modules>
     <name>Canova</name>
 

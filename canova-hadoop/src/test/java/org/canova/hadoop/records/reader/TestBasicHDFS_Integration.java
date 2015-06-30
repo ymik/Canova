@@ -24,7 +24,15 @@ import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.TaskAttemptContext;
 import org.junit.Test;
 
-
+/**
+ * Notes
+ * 
+ * https://linuxjunkies.wordpress.com/2011/11/21/a-hdfsclient-for-hadoop-using-the-native-java-api-a-tutorial/
+ * 
+ * 
+ * @author josh
+ *
+ */
 public class TestBasicHDFS_Integration {
 
 	private static JobConf defaultConf = new JobConf();

@@ -53,8 +53,10 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 
   private static final Logger log = LoggerFactory.getLogger(CSVVectorizationEngine.class);
 
+  public static final String SKIP_HEADER_KEY = "canova.input.header.skip";
 
   private CSVInputSchema inputSchema = null;
+  private boolean skipHeader = false;
   //private CSVVectorizationEngine vectorizer = null;
   
 
@@ -64,6 +66,17 @@ public class CSVVectorizationEngine extends VectorizationEngine {
       this.inputSchema = new CSVInputSchema();
       this.inputSchema.parseSchemaFile(schemaFilePath);
   //    this.vectorizer = new CSVVectorizationEngine();
+      
+      if (null != this.configProps.get( SKIP_HEADER_KEY )) {
+          String headerSkipString = (String) this.configProps.get( SKIP_HEADER_KEY );
+          if ("true".equals(headerSkipString.trim().toLowerCase())) {
+              this.skipHeader = true;
+          } else {
+        	  this.skipHeader = false;
+          }
+      }
+
+      
   }
 
   /**
@@ -99,16 +112,25 @@ public class CSVVectorizationEngine extends VectorizationEngine {
       // 1. Do a pre-pass to collect dataset statistics
       while (reader.hasNext()) {
     	  
-    	  recordsRead++;
+    	  
           Collection<Writable> w = reader.next();
 
-          // TODO: this will end up processing key-value pairs
-          try {
-              this.inputSchema.evaluateInputRecord(w.toArray()[0].toString());
-          } catch (Exception e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
+          if (this.skipHeader && recordsRead == 0) {
+        	  
+        	  System.out.println("Skipping Header: " + w.toArray()[0].toString());
+        	  
+          } else {
+
+        	  try {
+		          this.inputSchema.evaluateInputRecord(w.toArray()[0].toString());
+		      } catch (Exception e) {
+		          // TODO Auto-generated catch block
+		          e.printStackTrace();
+		      }
+        	  
           }
+          
+          recordsRead++;
 
       }
 
@@ -143,27 +165,43 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 
       Configuration conf = new Configuration();
       conf.set( OutputFormat.OUTPUT_PATH, this.outputFilename );
+      boolean skippedHeaderYet = false;
 
       if (shuffleOn) {
     	  
     	  Shuffler shuffle = new Shuffler();
     	  
 	      RecordWriter writer = outputFormat.createWriter(conf); //new SVMLightRecordWriter(tmpOutSVMLightFile,true);
-	  	
+
+	      
+	      
 	      while (reader.hasNext()) {
 	    	  
-	    	  recordsWritten++;
-	          Collection<Writable> w = reader.next();
-	
-	          String line = w.toArray()[0].toString();
+	          if (this.skipHeader && false == skippedHeaderYet) {
+	        	  
+	        	  skippedHeaderYet = true;
+		          Collection<Writable> w = reader.next();
 
-	          // TODO: we need to be re-using objects here for heap churn purposes
-	          
-	          if (!Strings.isNullOrEmpty(line)) {
-	          //    writer.write(this.vectorizeToWritable("", line, this.inputSchema));
-	        	  shuffle.addRecord( this.vectorizeToWritable("", line, this.inputSchema) );
-	          }
+	        	  
+	          } else {
+
+		    	  
+		    	  
+		          Collection<Writable> w = reader.next();
+		
+		          String line = w.toArray()[0].toString();
 	
+		          // TODO: we need to be re-using objects here for heap churn purposes
+		          
+		          if (!Strings.isNullOrEmpty(line)) {
+		          //    writer.write(this.vectorizeToWritable("", line, this.inputSchema));
+		        	  shuffle.addRecord( this.vectorizeToWritable("", line, this.inputSchema) );
+		          }
+		          
+		          recordsWritten++;
+		          
+	          }
+		
 	      }
 	      
 			while (shuffle.hasNext()) {
@@ -184,19 +222,30 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 	
 	      while (reader.hasNext()) {
 	    	  
-	    	  recordsWritten++;
-	          Collection<Writable> w = reader.next();
+	          if (this.skipHeader && false == skippedHeaderYet) {
+	        	  
+	        	  skippedHeaderYet = true;
+	        	  Collection<Writable> w = reader.next();
+	        	  
+	          } else {
 	
-	          String line = w.toArray()[0].toString();
-	          // TODO: this will end up processing key-value pairs
-	
-	          // TODO: this is where the transform system would live (example: execute the filter transforms, etc, here)
-	          
-	          // this outputVector needs to be ND4J
-	          // TODO: we need to be re-using objects here for heap churn purposes
-	          //INDArray outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
-	          if (!Strings.isNullOrEmpty(line)) {
-	              writer.write(this.vectorizeToWritable("", line, this.inputSchema));
+		    	  
+		          Collection<Writable> w = reader.next();
+		
+		          String line = w.toArray()[0].toString();
+		          // TODO: this will end up processing key-value pairs
+		
+		          // TODO: this is where the transform system would live (example: execute the filter transforms, etc, here)
+		          
+		          // this outputVector needs to be ND4J
+		          // TODO: we need to be re-using objects here for heap churn purposes
+		          //INDArray outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
+		          if (!Strings.isNullOrEmpty(line)) {
+		              writer.write(this.vectorizeToWritable("", line, this.inputSchema));
+		          }
+		          
+		          recordsWritten++;
+		          
 	          }
 	
 	      }

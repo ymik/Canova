@@ -76,15 +76,20 @@ public class CSVVectorizationEngine extends VectorizationEngine {
    */
   public void execute() throws CanovaException, IOException, InterruptedException {
 	  
-	  
+	  long recordsRead = 0;
+	  long recordsWritten = 0;
 
 	  try {
 		this.loadInputSchemaFile();
 	} catch (Exception e1) {
 		// TODO Auto-generated catch block
 		//e1.printStackTrace();
-		log.error("No schema loaded for CSV transforms.");
-		return;
+		//System.out.println("There were issues with loading and parsing the vector schema: ");
+		//System.out.println( e1 );
+		
+		throw new CanovaException(e1.toString());
+		
+		//return;
 	}
 	  
 	  
@@ -94,6 +99,7 @@ public class CSVVectorizationEngine extends VectorizationEngine {
       // 1. Do a pre-pass to collect dataset statistics
       while (reader.hasNext()) {
     	  
+    	  recordsRead++;
           Collection<Writable> w = reader.next();
 
           // TODO: this will end up processing key-value pairs
@@ -146,6 +152,7 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 	  	
 	      while (reader.hasNext()) {
 	    	  
+	    	  recordsWritten++;
 	          Collection<Writable> w = reader.next();
 	
 	          String line = w.toArray()[0].toString();
@@ -177,6 +184,7 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 	
 	      while (reader.hasNext()) {
 	    	  
+	    	  recordsWritten++;
 	          Collection<Writable> w = reader.next();
 	
 	          String line = w.toArray()[0].toString();
@@ -198,6 +206,8 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 	      
       }
       
+      System.out.println( "CSV Lines Read: " + recordsRead );
+      System.out.println( "Vector Records Written: " + recordsWritten );
       
       
       

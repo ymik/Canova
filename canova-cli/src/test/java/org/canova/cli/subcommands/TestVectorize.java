@@ -103,6 +103,15 @@ public class TestVectorize {
         	System.out.println( "The images file exists locally unzipped!" );
         } else {
         	System.out.println( "The images file DOES NOT exist locally unzipped!" );
+        	System.out.println("Downloading and unzipping the MNIST dataset locally to: " + MNIST_ROOT );
+            try {
+				//new MnistFetcher().downloadAndUntar();
+            	downloadAndUntar();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        	
         }		
 		
 	}
@@ -396,6 +405,19 @@ public class TestVectorize {
 		assertEquals(12, count);
 	}	
 
+	@Test
+	public void testExecuteCSVConversionWorkflow_SkipHeader() throws Exception {
+		
+		String[] args = { "-conf", "src/test/resources/csv/confs/unit_test_csv_conf_skip_header.txt" };		
+		Vectorize vecCommand = new Vectorize( args );
+		
+		vecCommand.execute();
+		
+		// now check the output
+		int count = checkNumberOfRecordsInSVMLightOutput( vecCommand.outputVectorFilename );
+		assertEquals(12, count);
+	}	
+	
 	
 	@Test
 	public void testExecuteImageCustomMNISTInputFormatConversionWorkflow() throws Exception {

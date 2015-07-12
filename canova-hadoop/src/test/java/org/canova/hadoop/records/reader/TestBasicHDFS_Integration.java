@@ -24,7 +24,26 @@ import org.apache.hadoop.mapred.InputSplit;
 import org.apache.hadoop.mapred.TaskAttemptContext;
 import org.junit.Test;
 
-
+/**
+ * Notes
+ * 
+ * https://linuxjunkies.wordpress.com/2011/11/21/a-hdfsclient-for-hadoop-using-the-native-java-api-a-tutorial/
+ * 
+ * 
+ * 
+ * Spark Notes on input formats
+		When Spark reads a file from HDFS, it creates a single partition for a single input split. 
+		Input split is set by the Hadoop InputFormat used to read this file. For instance, 
+		if you use textFile() it would be TextInputFormat in Hadoop, 
+		which would return you a single partition for a single block of 
+		HDFS (but the split between partitions would be done on line split, not the exact block split), 
+		unless you have a compressed text file. 
+		In case of compressed file you would get a single partition for a single 
+		file (as compressed text files are not splittable).
+ * 
+ * @author josh
+ *
+ */
 public class TestBasicHDFS_Integration {
 
 	private static JobConf defaultConf = new JobConf();

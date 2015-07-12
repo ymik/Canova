@@ -134,4 +134,11 @@ public class SVMLightRecordReader extends LineRecordReader {
             numAttributes = conf.getInt(NUM_ATTRIBUTES,-1);
 
     }
+
+    @Override
+    public void setConf(Configuration conf) {
+        super.setConf(conf);
+        if(conf.get(NUM_ATTRIBUTES) != null)
+            numAttributes = conf.getInt(NUM_ATTRIBUTES,-1);
+    }
 }

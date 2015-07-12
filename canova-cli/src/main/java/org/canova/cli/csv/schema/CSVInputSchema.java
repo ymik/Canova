@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 */
 public class CSVInputSchema {
 
-  private static final Logger log = LoggerFactory.getLogger(CSVInputSchema.class);
+	private static final Logger log = LoggerFactory.getLogger(CSVInputSchema.class);
 
 	public String relation = "";
 	public String delimiter = "";
@@ -56,16 +56,16 @@ public class CSVInputSchema {
 	}
 
 	private boolean validateRelationLine( String[] lineParts ) {
-    return lineParts.length == 2;
-  }
+		return lineParts.length == 2;
+	}
 
 	private boolean validateDelimiterLine( String[] lineParts ) {
-    return lineParts.length == 2;
-  }
+		return lineParts.length == 2;
+	}
 
 	private boolean validateAttributeLine( String[] lineParts ) {
-    return lineParts.length == 4;
-  }
+		return lineParts.length == 4;
+	}
 
 	private boolean validateSchemaLine( String line ) {
 
@@ -127,9 +127,9 @@ public class CSVInputSchema {
 		String columnTransform = parts[3];
 
 		CSVSchemaColumn.ColumnType colTypeEnum =
-        CSVSchemaColumn.ColumnType.valueOf(columnType.toUpperCase());
+				CSVSchemaColumn.ColumnType.valueOf(columnType.toUpperCase());
 		CSVSchemaColumn.TransformType colTransformEnum =
-        CSVSchemaColumn.TransformType.valueOf(columnTransform.toUpperCase().substring(1));
+				CSVSchemaColumn.TransformType.valueOf(columnTransform.toUpperCase().substring(1));
 
 		return new CSVSchemaColumn( columnName, colTypeEnum, colTransformEnum );
 	}
@@ -142,12 +142,12 @@ public class CSVInputSchema {
 
 		if ( parts[ 0 ].toLowerCase().equals("@relation") ) {
 
-		//	return this.validateRelationLine(parts);
+			//	return this.validateRelationLine(parts);
 			this.relation = parts[1];
 
 		} else if ( parts[ 0 ].toLowerCase().equals("@delimiter") ) {
 
-		//	return this.validateDelimiterLine(parts);
+			//	return this.validateDelimiterLine(parts);
 			this.delimiter = parts[1];
 
 		} else if ( parts[ 0 ].toLowerCase().equals("@attribute") ) {
@@ -161,17 +161,17 @@ public class CSVInputSchema {
 
 	public void parseSchemaFile(String schemaPath) throws Exception {
 		try (BufferedReader br = new BufferedReader(new FileReader(schemaPath))) {
-		    for (String line; (line = br.readLine()) != null; ) {
-		        // process the line.
-		    	if (!this.validateSchemaLine(line) ) {
-		    		throw new Exception("Bad Schema for CSV Data");
-		    	}
+			for (String line; (line = br.readLine()) != null; ) {
+				// process the line.
+				if (!this.validateSchemaLine(line) ) {
+					throw new Exception("Bad Schema for CSV Data");
+				}
 
-		    	// now add it to the schema cache
-		    	this.addSchemaLine(line);
+				// now add it to the schema cache
+				this.addSchemaLine(line);
 
-		    }
-		    // line is not visible here.
+			}
+			// line is not visible here.
 		}
 	}
 
@@ -219,12 +219,12 @@ public class CSVInputSchema {
 
 
 			String colKey = entry.getKey();
-		    CSVSchemaColumn colSchemaEntry = entry.getValue();
+			CSVSchemaColumn colSchemaEntry = entry.getValue();
 
-		    // now work with key and value...
-		    colSchemaEntry.evaluateColumnValue( columns[ colIndex ] );
+			// now work with key and value...
+			colSchemaEntry.evaluateColumnValue( columns[ colIndex ] );
 
-		    colIndex++;
+			colIndex++;
 
 		}
 
@@ -247,29 +247,29 @@ public class CSVInputSchema {
 		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
 
 			String key = entry.getKey();
-      CSVSchemaColumn value = entry.getValue();
+			CSVSchemaColumn value = entry.getValue();
 
-		  // now work with key and value...
+			// now work with key and value...
 
-		  log.info("> " + value.name + ", " + value.columnType + ", " + value.transform);
+			log.info("> " + value.name + ", " + value.columnType + ", " + value.transform);
 
-		  if ( value.transform == TransformType.LABEL ) {
+			if ( value.transform == TransformType.LABEL ) {
 
-			  log.info("\t> Label > Class Balance Report ");
+				log.info("\t> Label > Class Balance Report ");
 
-			  for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
+				for (Map.Entry<String, Pair<Integer,Integer>> label : value.recordLabels.entrySet()) {
 
-			  	// value.recordLabels.size()
-			  	log.info("\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond());
+					// value.recordLabels.size()
+					log.info("\t\t " + label.getKey() + ": " + label.getValue().getFirst() + ", " + label.getValue().getSecond());
 
-			  }
+				}
 
-      } else {
+			} else {
 
-			    log.info("\t\tmin: {}", value.minValue);
-			    log.info("\t\tmax: {}", value.maxValue);
+				log.info("\t\tmin: {}", value.minValue);
+				log.info("\t\tmax: {}", value.maxValue);
 
-		    }
+			}
 
 		}
 
@@ -282,11 +282,11 @@ public class CSVInputSchema {
 		for (Map.Entry<String, CSVSchemaColumn> entry : this.columnSchemas.entrySet()) {
 
 			String key = entry.getKey();
-		    CSVSchemaColumn value = entry.getValue();
+			CSVSchemaColumn value = entry.getValue();
 
-		    // now work with key and value...
+			// now work with key and value...
 
-		    log.debug("> {} , {} , {}", value.name, value.columnType, value.transform);
+			log.debug("> {} , {} , {}", value.name, value.columnType, value.transform);
 
 		}
 

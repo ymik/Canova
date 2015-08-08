@@ -2,20 +2,14 @@ package org.canova.cli.transforms.text.nlp;
 
 public class NLPUtils {
 
-	
-
 	  /**
 	   * Calc the IDF component
 	   * 
 	   */
 	  public static double idf(double totalDocumentsInCorpus, double numberOfDocsTheTermAppearsIn) {
-		  
 		  if ( totalDocumentsInCorpus > 0 ) {
-		
 			  return Math.log10( 1 + (totalDocumentsInCorpus / numberOfDocsTheTermAppearsIn) );
-		
 		  }
-		  
 		  return 0;
 	  }
 
@@ -25,15 +19,10 @@ public class NLPUtils {
 	   *
 	   */
 	  public static double tf(int termFreqInSpecificDocuments) {
-		  
 		  if (termFreqInSpecificDocuments > 0) {
-			  
-			  return Math.log10( 1 + termFreqInSpecificDocuments);
-			  
+			  return Math.log10(1 + termFreqInSpecificDocuments);
 		  }
-		  
 		  return 0;
-		  
 	  }
 
 	  /**

@@ -25,26 +25,19 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import com.google.common.base.Strings;
 import org.canova.api.conf.Configuration;
 import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
 import org.canova.api.formats.output.OutputFormat;
 import org.canova.api.records.reader.RecordReader;
-import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
-import org.canova.api.writable.Writable;
-import org.canova.cli.csv.schema.CSVInputSchema;
-import org.canova.cli.vectorization.CSVVectorizationEngine;
 import org.canova.cli.vectorization.VectorizationEngine;
 import org.canova.image.recordreader.ImageRecordReader;
-import org.canova.nd4j.nlp.vectorizer.TfidfVectorizer;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
@@ -137,15 +130,13 @@ public class Vectorize implements SubCommand {
             this.configProps.load(in);
         }
 
-        if (null == this.configProps.get(NORMALIZE_DATA_FLAG)) {
-        	// default to true
-        } else {
+        if (null != this.configProps.get(NORMALIZE_DATA_FLAG)) {
         	String normalizeValue = (String) this.configProps.get(NORMALIZE_DATA_FLAG);
         	if ("false".equals(normalizeValue)) {
         		this.normalizeData = false;
         	}
         }
-        
+
         if (null == this.configProps.get(OUTPUT_FILENAME_KEY)) {
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             this.outputVectorFilename = "/tmp/canova_vectors_" + dateFormat.format(new Date()) + ".txt";
@@ -372,7 +363,7 @@ public class Vectorize implements SubCommand {
     /**
      * Creates an input format
      *
-     * @return
+     * @return {@link VectorizationEngine}
      */
     public VectorizationEngine createVectorizationEngine() {
 
@@ -381,30 +372,27 @@ public class Vectorize implements SubCommand {
     	// so this quick lookup is not the coolest way to do this, but for now we'll do it
     	
     	String inputDataType = (String)this.configProps.get("canova.input.data.type");
-    	
-    	if ("csv".equals(inputDataType)) {
 
-    		clazz = "org.canova.cli.vectorization.CSVVectorizationEngine";
-
-    	} else if ("text".equals(inputDataType)) {
-
-    		clazz = "org.canova.cli.vectorization.TextVectorizationEngine";
-    		
-    	} else if ("audio".equals(inputDataType)) {
-
-    		clazz = "org.canova.cli.vectorization.AudioVectorizationEngine";
-
-    	} else if ("image".equals(inputDataType)) {
-
-    		clazz = "org.canova.cli.vectorization.ImageVectorizationEngine";
-
-    	} else if ("video".equals(inputDataType)) {
-
-    		clazz = "org.canova.cli.vectorization.VideoVectorizationEngine";
-
-    	} else {
-    		// stick to default --- should blow up (?)
-    	}
+        switch (inputDataType) {
+            case "csv":
+                clazz = "org.canova.cli.vectorization.CSVVectorizationEngine";
+                break;
+            case "text":
+                clazz = "org.canova.cli.vectorization.TextVectorizationEngine";
+                break;
+            case "audio":
+                clazz = "org.canova.cli.vectorization.AudioVectorizationEngine";
+                break;
+            case "image":
+                clazz = "org.canova.cli.vectorization.ImageVectorizationEngine";
+                break;
+            case "video":
+                clazz = "org.canova.cli.vectorization.VideoVectorizationEngine";
+                break;
+            default:
+                // stick to default --- should blow up (?)
+                throw new IllegalArgumentException("Invalid input Data Type" + inputDataType);
+        }
     	
         
 /*

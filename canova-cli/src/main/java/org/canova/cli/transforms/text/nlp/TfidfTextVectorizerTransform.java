@@ -135,12 +135,10 @@ public class TfidfTextVectorizerTransform implements Transform {
             @Override
             public String preProcess(String token) {
                 //token = token.toLowerCase();
-            	if (token.startsWith("http://")) {
-            		
-            	} else {
-            		token = token.replaceAll("[^a-zA-Z ]", "").toLowerCase();
-            	}
-                String base = preProcessor.preProcess(token);
+				if (!token.startsWith("http://")) {
+                    token = token.replaceAll("[^a-zA-Z ]", "").toLowerCase();
+                }
+				String base = preProcessor.preProcess(token);
                 base = base.replaceAll("\\d", "d");
                 if (base.endsWith("ly") || base.endsWith("ing"))
                     System.out.println();
@@ -166,7 +164,7 @@ public class TfidfTextVectorizerTransform implements Transform {
         
         Counter<String> ret = new Counter<>();
         
-        String token = "";
+        String token;
         
         while(tokenizer.hasMoreTokens()) {
         
@@ -237,8 +235,8 @@ public class TfidfTextVectorizerTransform implements Transform {
 	@Override
 	public void collectStatistics(Collection<Writable> vector) {
 
-		String label = null;
-		String sentence = null;
+		String label;
+		String sentence;
 		
 		
 		// 1. extract label and sentence from vector
@@ -327,10 +325,10 @@ public class TfidfTextVectorizerTransform implements Transform {
 	@Override
 	public void transform(Collection<Writable> vector) {
 		
-		String label = null;
-		Integer labelID = null;
+		String label;
+		Integer labelID;
 		
-		String textRecord = null;
+		String textRecord;
 		
 		// 1. extract label and sentence from vector
 		

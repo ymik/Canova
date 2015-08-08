@@ -259,19 +259,11 @@ public class LineRecordReader extends FileRecordReader  {
 
     @Override
     public boolean hasNext() {
+		return null != this.textFileScanner &&
+				this.textFileScanner.hasNextLine() ||
+				iter != null && iter.hasNext();
 
-    	if (null != this.textFileScanner && this.textFileScanner.hasNextLine()) {
-    		return true;
-    	}
-    	
-    	
-    	if ( iter != null && iter.hasNext() == true ) {
-    		return true;
-    	}
-    	    	
-    	return false;
-    	
-    }
+	}
     
     public String getCurrentDirectoryLabelPath() {
         //return labels.indexOf(currentFile.getParentFile().getName());

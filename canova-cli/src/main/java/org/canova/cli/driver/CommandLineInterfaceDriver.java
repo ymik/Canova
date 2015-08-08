@@ -20,8 +20,6 @@
 
 package org.canova.cli.driver;
 
-import java.util.Arrays;
-
 import org.canova.cli.subcommands.Vectorize;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -57,11 +55,7 @@ public class CommandLineInterfaceDriver {
             parser.parseArgument(args);
             action.execute();
         } catch( CmdLineException e ) {
-
         	printUsage();
-        	
-            //System.err.println(e.getMessage());
-            return;
         }
     }
     

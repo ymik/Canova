@@ -44,7 +44,7 @@ public class NormalizeTransform implements Transform {
 	@Override
 	public void transform( Collection<Writable> vector ) {
 
-		if ( Double.NaN == this.minValue || Double.NaN == this.maxValue ) {
+		if (Double.NaN == this.minValue) {
 			// throw exception?
 			return;
 		}
@@ -57,27 +57,24 @@ public class NormalizeTransform implements Transform {
 			DoubleWritable val = (DoubleWritable) iter.next();
 
 			// if we hit the last entry, its the label -- dont normalize it!
-			if (false == iter.hasNext()) {
+			if (!iter.hasNext()) {
 				isLabelEntry = true;
 			}
-			
-			if (isLabelEntry) {
-				
-			} else {
-				
+
+			if (!isLabelEntry) {
+
 				double range = this.maxValue - this.minValue;
 				double normalizedOut = ( val.get() - this.minValue ) / range;
-				
+
 				if (0.0 == range) {
 					val.set( 0.0 );
 				} else {
 					val.set( normalizedOut );
 				}
-				
+
 			}
 
-			
-			
+
 		}
 		
 
@@ -92,7 +89,7 @@ public class NormalizeTransform implements Transform {
 		
 		Iterator<Writable> iter = vector.iterator();
 		
-		double tmpVal = 0;
+		double tmpVal;
 		
 		while (iter.hasNext()) {
 			

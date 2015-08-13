@@ -33,6 +33,10 @@ import org.canova.common.RecordConverter;
 import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.spi.IIORegistry;
+import javax.imageio.spi.ImageReaderSpi;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -61,6 +65,16 @@ public class ImageRecordReader implements RecordReader {
     private Configuration conf;
     public final static String WIDTH = NAME_SPACE + ".width";
     public final static String HEIGHT = NAME_SPACE + ".width";
+
+    static {
+        ImageIO.scanForPlugins();
+        IIORegistry.getDefaultInstance().registerServiceProvider(new com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageReaderSpi());
+        IIORegistry.getDefaultInstance().registerServiceProvider(new com.twelvemonkeys.imageio.plugins.jpeg.JPEGImageWriterSpi());
+        IIORegistry.getDefaultInstance().registerServiceProvider(new com.twelvemonkeys.imageio.plugins.psd.PSDImageReaderSpi());
+        IIORegistry.getDefaultInstance().registerServiceProvider(Arrays.asList(new com.twelvemonkeys.imageio.plugins.bmp.BMPImageReaderSpi(),
+                new com.twelvemonkeys.imageio.plugins.bmp.CURImageReaderSpi(),
+                new com.twelvemonkeys.imageio.plugins.bmp.ICOImageReaderSpi()));
+    }
 
     public ImageRecordReader() {
     }

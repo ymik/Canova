@@ -34,6 +34,13 @@ Compile the project:
 
     $ cd canova && mvn clean install -DskipTests -Dmaven.javadoc.skip=true
 
+
+## Use Maven Central Repository
+
+    Search for [canova](https://search.maven.org/#search%7Cga%7C1%7CCanova) to get a list of jars you can use
+
+    Add the dependency information into your pom.xml
+
 Add the local compiled file dependencies to your pom.xml file like the following example:
 
 	<dependency>
@@ -41,12 +48,6 @@ Add the local compiled file dependencies to your pom.xml file like the following
 	    <artifactId>canova-api-SNAPSHOT</artifactId>
 	    <version>0.0.0.3</version>
 	</dependency>
-
-## Use Maven Central Repository
-
-    Search for [canova](https://search.maven.org/#search%7Cga%7C1%7CCanova) to get a list of jars you can use
-
-    Add the dependency information into your pom.xml
 
 
 # Example Uses

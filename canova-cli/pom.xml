@@ -23,7 +23,7 @@
     <parent>
         <artifactId>canova-parent</artifactId>
         <groupId>org.nd4j</groupId>
-        <version>0.0.0.5-SNAPSHOT</version>
+        <version>0.0.0.5</version>
     </parent>
     <packaging>jar</packaging>
     <modelVersion>4.0.0</modelVersion>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-api</artifactId>
-            <version>${nd4j.version}</version>
+            <version>0.4-rc0</version>
         </dependency>
 
         <dependency>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>org.nd4j</groupId>
             <artifactId>nd4j-jblas</artifactId>
-            <version>${nd4j.version}</version>
+            <version>0.4-rc0</version>
             <scope>test</scope>
         </dependency>
 

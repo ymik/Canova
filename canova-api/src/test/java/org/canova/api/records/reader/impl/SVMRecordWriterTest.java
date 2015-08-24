@@ -25,6 +25,7 @@ import static org.junit.Assert.*;
 
 import org.apache.commons.io.IOUtils;
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.records.writer.impl.SVMLightRecordWriter;
@@ -63,16 +64,13 @@ public class SVMRecordWriterTest {
         RecordReader reader = new CSVRecordReader();
         List<Collection<Writable>> records = new ArrayList<>();
         reader.initialize(split);
-        int count = 0;
         while(reader.hasNext()) {
             Collection<Writable> record = reader.next();
-            records.add(record);
             assertEquals(5, record.size());
             records.add(record);
-            count++;
         }
 
-        assertEquals(150,count);
+        assertEquals(150,records.size());
         File out = new File("iris_out.txt");
         out.deleteOnExit();
         RecordWriter writer = new SVMLightRecordWriter(out,true);
@@ -80,6 +78,7 @@ public class SVMRecordWriterTest {
             writer.write(record);
 
         writer.close();
+        records.clear();
 
         RecordReader svmReader = new SVMLightRecordReader();
         InputSplit svmSplit = new FileSplit(out);
@@ -87,15 +86,21 @@ public class SVMRecordWriterTest {
         assertTrue(svmReader.hasNext());
         while(svmReader.hasNext()) {
             Collection<Writable> record = svmReader.next();
-            records.add(record);
             assertEquals(5, record.size());
             records.add(record);
-            count++;
         }
+        assertEquals(150,records.size());
+    }
 
-
-
-
+    @Test
+    public void testSparseData() throws Exception {
+        RecordReader svmLightRecordReader = new SVMLightRecordReader();
+        Configuration conf = new Configuration();
+        conf.set(SVMLightRecordReader.NUM_ATTRIBUTES,"784");
+        svmLightRecordReader.initialize(conf, new FileSplit(new ClassPathResource("mnist_svmlight.txt").getFile()));
+        assertTrue(svmLightRecordReader.hasNext());
+        Collection<Writable> record = svmLightRecordReader.next();
+        assertEquals(785,record.size());
     }
 
 

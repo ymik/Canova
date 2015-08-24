@@ -21,6 +21,7 @@
 package org.canova.api.records.writer.impl;
 
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.Text;
 import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.writable.Writable;
@@ -29,7 +30,14 @@ import java.io.*;
 import java.util.Collection;
 
 /**
- * Write to files
+ * Write to files.
+ *
+ * To set the path and configuration via configuration:
+ * writeTo: org.canova.api.records.writer.path
+ *
+ * This is the path used to write to
+ *
+ *
  * @author Adam Gibson
  */
 public  class FileRecordWriter implements RecordWriter {
@@ -38,14 +46,35 @@ public  class FileRecordWriter implements RecordWriter {
     protected DataOutputStream out;
     public final static String NEW_LINE = "\n";
     private boolean append;
+    public final static String PATH = "org.canova.api.records.writer.path";
+
+    protected Configuration conf;
+
+    public FileRecordWriter() {
+    }
+
     public FileRecordWriter(File path) throws FileNotFoundException {
         this.writeTo = path;
         out = new DataOutputStream(new FileOutputStream(writeTo,append));
     }
+
+
     public FileRecordWriter(File path,boolean append) throws FileNotFoundException {
         this.writeTo = path;
         this.append = append;
         out = new DataOutputStream(new FileOutputStream(writeTo,append));
+    }
+
+
+    /**
+     * Initialized based on configuration
+     * Set the following attributes in the conf:
+     *
+     * @param conf the configuration to use
+     * @throws FileNotFoundException
+     */
+    public FileRecordWriter(Configuration conf) throws FileNotFoundException {
+        setConf(conf);
     }
 
     @Override
@@ -67,5 +96,23 @@ public  class FileRecordWriter implements RecordWriter {
             }
 
         }
+    }
+
+    @Override
+    public void setConf(Configuration conf) {
+        this.conf = conf;
+        this.writeTo = new File(conf.get(PATH,"input.txt"));
+        append = conf.getBoolean(APPEND,true);
+        try {
+            out = new DataOutputStream(new FileOutputStream(writeTo,append));
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
+    @Override
+    public Configuration getConf() {
+        return conf;
     }
 }

@@ -207,13 +207,16 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
 
     private Properties properties;
     private Properties overlay;
-    private ClassLoader classLoader;
+    private transient ClassLoader classLoader;
     {
         classLoader = Thread.currentThread().getContextClassLoader();
         if (classLoader == null) {
             classLoader = Configuration.class.getClassLoader();
         }
     }
+
+
+
 
     /** A new configuration. */
     public Configuration() {

@@ -21,12 +21,15 @@
 package org.canova.api.records.reader.impl;
 
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.io.data.Text;
+import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
@@ -34,12 +37,16 @@ import java.util.StringTokenizer;
 /**
  * Adapted from the weka svmlight reader
  *
+ *	June 2015
+ *		-	adapted to understand HDFS-style block splits
  *
  * @author Adam Gibson
+ * @author Josh Patterson
  */
 public class SVMLightRecordReader extends LineRecordReader {
     private static Logger log = LoggerFactory.getLogger(SVMLightRecordReader.class);
-
+    private int numAttributes = -1;
+    public final static String NUM_ATTRIBUTES = SVMLightRecordReader.class.getName() + ".numattributes";
     public SVMLightRecordReader() {
     }
 
@@ -78,7 +85,7 @@ public class SVMLightRecordReader extends LineRecordReader {
 
             // 1. class
             double classVal = Double.parseDouble(tok.nextToken());
-
+            int numAttributesAdded = 0;
             // 2. attributes
             while (tok.hasMoreTokens()) {
                 col  = tok.nextToken();
@@ -89,9 +96,26 @@ public class SVMLightRecordReader extends LineRecordReader {
                 if (col.startsWith("qid:"))
                     continue;
                 // actual value
-                index = Integer.parseInt(col.substring(0, col.indexOf(":")));
+                index = Integer.parseInt(col.substring(0, col.indexOf(":"))) - 1;
+                if(index > numAttributesAdded) {
+                    int totalDiff = Math.abs(numAttributesAdded - index);
+                    for(int i = numAttributesAdded; i < index; i++) {
+                        ret.add(new DoubleWritable(0.0));
+
+                    }
+                    numAttributesAdded += totalDiff;
+                }
                 value = Double.parseDouble(col.substring(col.indexOf(":") + 1));
                 ret.add(new DoubleWritable(value));
+                numAttributesAdded++;
+            }
+
+            if(numAttributes >= 1 && ret.size() < numAttributes) {
+                int totalDiff = Math.abs(ret.size() - numAttributes);
+                for(int i = 0; i < totalDiff; i++) {
+                    ret.add(new DoubleWritable(0.0));
+
+                }
             }
 
             ret.add(new DoubleWritable(classVal));
@@ -103,6 +127,18 @@ public class SVMLightRecordReader extends LineRecordReader {
         return ret;
     }
 
+    @Override
+    public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
+        super.initialize(conf, split);
+        if(conf.get(NUM_ATTRIBUTES) != null)
+            numAttributes = conf.getInt(NUM_ATTRIBUTES,-1);
 
+    }
 
+    @Override
+    public void setConf(Configuration conf) {
+        super.setConf(conf);
+        if(conf.get(NUM_ATTRIBUTES) != null)
+            numAttributes = conf.getInt(NUM_ATTRIBUTES,-1);
+    }
 }

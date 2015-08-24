@@ -25,47 +25,75 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-import com.google.common.base.Strings;
 import org.canova.api.conf.Configuration;
 import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
 import org.canova.api.formats.output.OutputFormat;
 import org.canova.api.records.reader.RecordReader;
-import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
-import org.canova.api.writable.Writable;
-import org.canova.cli.csv.schema.CSVInputSchema;
-import org.canova.cli.csv.vectorization.CSVVectorizationEngine;
+import org.canova.cli.vectorization.VectorizationEngine;
+import org.canova.image.recordreader.ImageRecordReader;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+//import org.springframework.core.io.ClassPathResource;
 
 /**
  * Vectorize Command.
  * Based on an input and output format
  * transforms data
+ * 
+ * 
+ * Design Notes
+ * 		-	current version has some artifacts from previous iterations; we're not quite ready to have a unified set of interfaces for the 
+ * 			vectorization pipelines
+ * 		-	we've still yet to add the timeseries class of pipelines: { timeseries, audio, video }
+ * 		-	we've still yet to add the parallelization mechanics to support yarn/spark
+ * 		-	after we add the timeseries and parallelization mechaincs, we can refactor into a new inheritance setup
+ * 
+ * Label / RecordReader semantics
+ * 		-	the record reader system is designed like the Hadoop RR system; it doenst know anything about contents of files
+ * 		-	down the road we may want to change to a system where the label is treated specifically separately from the raw Collection<Writable> vector
+ * 			-	this would be a cleaner design, but in v1 (w the impending book) we dont have time for this semantics change
+ * 		-	it might be pragmatic to use a flexible vector schema, ala CSV's vector schema system, for other data types. not sure yet. 
+ * 
+ * 		-	Current breakdown for each pipeline
+ * 			n.	Type:	Input Format			>	Label Mechanics in Collection<Writable>			// notes
+ * 			1.	Image: 	ImageInputFormat		> 	{ [array of doubles], directoryLabelID }		// image data, then the directory indexed as an ID int
+ * 			2.	CSV:	LineInputFormat			>	{ string }										// label is defined in vector schema
+ * 			3.	Text:	(cli's) TextInputFormat	>	{ string, dirLabelString }						// label is second string in Collection<Writable>
+ * 			4.	MNIST:	MnistInputFormat		>	{ [array of doubles], classIndexID }			// image data, then the class indexed as an ID int
+ * 
+ * 
+ * 
  *
- * @author jp
+ * @author Josh Patterson
  * @author Adam Gibson
  */
 public class Vectorize implements SubCommand {
 
     private static final Logger log = LoggerFactory.getLogger(Vectorize.class);
 
-    public static final String OUTPUT_FILENAME_KEY = "output.directory";
-    public static final String INPUT_FORMAT = "input.format";
+    public static final String OUTPUT_FILENAME_KEY = "canova.output.directory";
+    public static final String INPUT_FORMAT = "canova.input.format";
     public static final String DEFAULT_INPUT_FORMAT_CLASSNAME = "org.canova.api.formats.input.impl.LineInputFormat";
-    public static final String OUTPUT_FORMAT = "output.format";
+    public static final String OUTPUT_FORMAT = "canova.output.format";
     public static final String DEFAULT_OUTPUT_FORMAT_CLASSNAME = "org.canova.api.formats.output.impl.SVMLightOutputFormat";
 
+    public static final String VECTORIZATION_ENGINE = "canova.input.vectorization.engine";
+    public static final String DEFAULT_VECTORIZATION_ENGINE_CLASSNAME = "org.canova.cli.csv.vectorization.CSVVectorizationEngine";
+
+    public static final String NORMALIZE_DATA_FLAG = "canova.input.vectorization.normalize";
+    public static final String SHUFFLE_DATA_FLAG = "canova.output.shuffle";
+    public static final String PRINT_STATS_FLAG = "canova.input.statistics.debug.print";
+    
     protected String[] args;
 
     public boolean validCommandLineParameters = true;
@@ -75,14 +103,15 @@ public class Vectorize implements SubCommand {
 
     public Properties configProps = null;
     public String outputVectorFilename = "";
+    public boolean normalizeData = true;
 
-    private CSVInputSchema inputSchema = null;
-    private CSVVectorizationEngine vectorizer = null;
+//    private CSVInputSchema inputSchema = null;
+//    private CSVVectorizationEngine vectorizer = null;
 
     public Vectorize() {
 
     }
-
+/*
     // this picks up the input schema file from the properties file and loads it
     private void loadInputSchemaFile() throws Exception {
         String schemaFilePath = (String) this.configProps.get("input.vector.schema");
@@ -90,7 +119,7 @@ public class Vectorize implements SubCommand {
         this.inputSchema.parseSchemaFile(schemaFilePath);
         this.vectorizer = new CSVVectorizationEngine();
     }
-
+*/
     // picked up in the command line parser flags (-conf=<foo.txt>)
     public void loadConfigFile() throws IOException {
 
@@ -99,6 +128,13 @@ public class Vectorize implements SubCommand {
         //Properties prop = new Properties();
         try (InputStream in = new FileInputStream(this.configurationFile)) {
             this.configProps.load(in);
+        }
+
+        if (null != this.configProps.get(NORMALIZE_DATA_FLAG)) {
+        	String normalizeValue = (String) this.configProps.get(NORMALIZE_DATA_FLAG);
+        	if ("false".equals(normalizeValue)) {
+        		this.normalizeData = false;
+        	}
         }
 
         if (null == this.configProps.get(OUTPUT_FILENAME_KEY)) {
@@ -115,6 +151,13 @@ public class Vectorize implements SubCommand {
                 // file path does not exist
 
                 File yourFile = new File(this.outputVectorFilename);
+                
+                //File targetFile = new File("foo/bar/phleem.css");
+                File parent = yourFile.getParentFile();
+                if(!parent.exists() && !parent.mkdirs()){
+                    throw new IllegalStateException("Couldn't create dir: " + parent);
+                }                
+                
                 if (!yourFile.exists()) {
                     yourFile.createNewFile();
                 }
@@ -127,24 +170,44 @@ public class Vectorize implements SubCommand {
                 } else {
                     // if a file already exists
                     (new File(this.outputVectorFilename)).delete();
-                    log.info("File path already exists, deleting the old file before proceeding...");
+                    System.out.println("File path already exists, deleting the old file before proceeding...");
                 }
             }
         }
     }
 
+    /**
+     * Dont change print stuff, its part of application console output UI
+     * 
+     */
     public void debugLoadedConfProperties() {
         Properties props = this.configProps; //System.getProperties();
         Enumeration e = props.propertyNames();
 
-        log.info("\n--- Start Canova Configuration ---");
+        System.out.println("\n--- Start Canova Configuration ---");
 
         while (e.hasMoreElements()) {
             String key = (String) e.nextElement();
             System.out.println(key + " -- " + props.getProperty(key));
         }
 
-        log.info("---End Canova Configuration ---\n");
+        System.out.println("---End Canova Configuration ---\n");
+    }
+    
+    public static void printUsage() {
+    	
+    	System.out.println( "Canova: Vectorization Engine" );
+    	System.out.println( "" );
+    	System.out.println( "\tUsage:" );
+    	System.out.println( "\t\tcanova vectorize -conf <conf_file>" );
+    	System.out.println( "" );
+    	System.out.println( "\tConfiguration File:" );
+    	System.out.println( "\t\tContains a list of property entries that describe the vectorization process" );
+    	System.out.println( "" );
+    	System.out.println( "\tExample:" );
+    	System.out.println( "\t\tcanova vectorize -conf /tmp/iris_conf.txt " );
+    	
+    	
     }
 
 
@@ -152,41 +215,31 @@ public class Vectorize implements SubCommand {
     // 2, load schema file
     // 3. transform csv -> output format
     public void execute() throws Exception  {
+    	
+    	if ("".equals(this.configurationFile)) {
+    		printUsage();
+    		return;
+    	}
 
+    	//System.out.println( "Vectorize > execute() [ START ]");
+    	
         if (!this.validCommandLineParameters) {
             log.error("Vectorize function is not configured properly, stopping.");
             return;
         }
 
-        boolean schemaLoaded;
+        //boolean schemaLoaded;
         // load stuff (conf, schema) --> CSVInputSchema
 
         this.loadConfigFile();
 
-        if (null != this.configProps.get("conf.print")) {
-            String print = (String) this.configProps.get("conf.print");
+        if (null != this.configProps.get("canova.conf.print")) {
+            String print = (String) this.configProps.get("canova.conf.print");
             if ("true".equals(print.trim().toLowerCase())) {
                 this.debugLoadedConfProperties();
             }
         }
 
-
-        try {
-            this.loadInputSchemaFile();
-            schemaLoaded = true;
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            schemaLoaded = false;
-        }
-
-        if (!schemaLoaded) {
-
-            // if we did not load the schema then we cannot proceed with conversion
-
-        }
-
-        // setup input / output formats
 
 
         // collect dataset statistics --> CSVInputSchema
@@ -194,77 +247,56 @@ public class Vectorize implements SubCommand {
         // [ first dataset pass ]
         // for each row in CSV Dataset
 
-        String datasetInputPath = (String) this.configProps.get("input.directory");
+        String datasetInputPath = (String) this.configProps.get("canova.input.directory");
+        String inputDataType = (String)this.configProps.get("canova.input.data.type");
+        
+        if ( null == inputDataType ) {
+        	
+        	// yeah cant do this, kick out
+        	throw new IllegalStateException("Can't operate without input.data.type being set in the configuration file.");
+        	
+        }
+
+        // ###########
+        // THIS is where we end general vectorization and hit pipeline specific stuff
+        // ###########
+        Configuration conf = new Configuration();
+        conf.set( OutputFormat.OUTPUT_PATH, this.outputVectorFilename );
+        // hard set this on for images for now
+        conf.setBoolean( ImageRecordReader.APPEND_LABEL, true);
+
+        
         File inputFile = new File(datasetInputPath);
         InputSplit split = new FileSplit(inputFile);
         InputFormat inputFormat = this.createInputFormat();
+        
+        
+        
+        //System.out.println( "input file: " + datasetInputPath );
 
-        RecordReader reader = inputFormat.createReader(split);
+        RecordReader reader = inputFormat.createReader(split, conf);
 
-        // TODO: replace this with an { input-format, record-reader }
-//		try (BufferedReader br = new BufferedReader( new FileReader( datasetInputPath ) )) {
 
-        while (reader.hasNext()) {
-            Collection<Writable> w = reader.next();
-            //for (String line; (line = br.readLine()) != null; ) {
-
-            // TODO: this will end up processing key-value pairs
-            try {
-                this.inputSchema.evaluateInputRecord(w.toArray()[0].toString());
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-
+        VectorizationEngine engine = this.createVectorizationEngine();
+        engine.initialize(split, inputFormat, this.createOutputFormat(), reader, this.createOutputFormat().createWriter(conf), this.configProps, this.outputVectorFilename, conf );
+        
+        boolean vectorizationComplete = true;
+        String failureString = "";
+        
+        try {
+        	engine.execute();
+        } catch (CanovaException ce) {
+        	vectorizationComplete = false;
+        	failureString = ce.toString();
         }
-
-        reader.close();
-
-        // generate dataset report --> DatasetSummaryStatistics
-
-        this.inputSchema.computeDatasetStatistics();
-
-        String schema_print_key = "input.statistics.debug.print";
-        if (null != this.configProps.get(schema_print_key)) {
-            String printSchema = (String) this.configProps.get(schema_print_key);
-            if ("true".equals(printSchema.trim().toLowerCase())) {
-                //this.debugLoadedConfProperties();
-                this.inputSchema.debugPringDatasetStatistics();
-            }
+        
+        if (!vectorizationComplete) {
+        	
+        	System.out.println( "Vectorization failed due to: \n" + failureString );
+        	
+        } else {
+        	System.out.println( "Output vectors written to: " + this.outputVectorFilename );
         }
-
-
-        // produce converted/vectorized output based on statistics --> Transforms + CSVInputSchema + Rows
-
-        // [ second dataset pass ]
-
-        reader = inputFormat.createReader(split);
-
-        OutputFormat outputFormat = this.createOutputFormat();
-
-        Configuration conf = new Configuration();
-        conf.set(OutputFormat.OUTPUT_PATH, this.outputVectorFilename);
-
-        RecordWriter writer = outputFormat.createWriter(conf); //new SVMLightRecordWriter(tmpOutSVMLightFile,true);
-
-        while (reader.hasNext()) {
-            Collection<Writable> w = reader.next();
-
-            String line = w.toArray()[0].toString();
-            // TODO: this will end up processing key-value pairs
-
-            // this outputVector needs to be ND4J
-            // TODO: we need to be re-using objects here for heap churn purposes
-            //INDArray outputVector = this.vectorizer.vectorize( "", line, this.inputSchema );
-            if (!Strings.isNullOrEmpty(line)) {
-                writer.write(vectorizer.vectorizeToWritable("", line, this.inputSchema));
-            }
-
-        }
-
-        reader.close();
-        writer.close();
-        log.info("Output vectors written to: " + this.outputVectorFilename);
     }
 
 
@@ -292,8 +324,6 @@ public class Vectorize implements SubCommand {
      * @return
      */
     public InputFormat createInputFormat() {
-
-        //System.out.println( "> Loading Input Format: " + (String) this.configProps.get( INPUT_FORMAT ) );
 
         String clazz = (String) this.configProps.get(INPUT_FORMAT);
 
@@ -326,5 +356,62 @@ public class Vectorize implements SubCommand {
             throw new RuntimeException(e);
         }
     }
+    
+    
+    
+
+    /**
+     * Creates an input format
+     *
+     * @return {@link VectorizationEngine}
+     */
+    public VectorizationEngine createVectorizationEngine() {
+
+    	String clazz = DEFAULT_VECTORIZATION_ENGINE_CLASSNAME; //(String) this.configProps.get( VECTORIZATION_ENGINE );
+    	
+    	// so this quick lookup is not the coolest way to do this, but for now we'll do it
+    	
+    	String inputDataType = (String)this.configProps.get("canova.input.data.type");
+
+        switch (inputDataType) {
+            case "csv":
+                clazz = "org.canova.cli.vectorization.CSVVectorizationEngine";
+                break;
+            case "text":
+                clazz = "org.canova.cli.vectorization.TextVectorizationEngine";
+                break;
+            case "audio":
+                clazz = "org.canova.cli.vectorization.AudioVectorizationEngine";
+                break;
+            case "image":
+                clazz = "org.canova.cli.vectorization.ImageVectorizationEngine";
+                break;
+            case "video":
+                clazz = "org.canova.cli.vectorization.VideoVectorizationEngine";
+                break;
+            default:
+                // stick to default --- should blow up (?)
+                throw new IllegalArgumentException("Invalid input Data Type" + inputDataType);
+        }
+    	
+        
+/*
+        if (null == clazz) {
+            clazz = DEFAULT_VECTORIZATION_ENGINE_CLASSNAME;
+        }
+*/
+    	
+    //	log.debug("Running the " + clazz + " vectorization engine.");
+    	
+        try {
+            Class<? extends VectorizationEngine> vecEngineClazz = (Class<? extends VectorizationEngine>) Class.forName(clazz);
+            return vecEngineClazz.newInstance();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }    
+    
+    
 
 }

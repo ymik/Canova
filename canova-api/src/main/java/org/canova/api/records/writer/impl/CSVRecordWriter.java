@@ -21,6 +21,7 @@
 package org.canova.api.records.writer.impl;
 
 
+import org.canova.api.conf.Configuration;
 import org.canova.api.writable.Writable;
 
 import java.io.*;
@@ -33,9 +34,19 @@ import java.util.Collection;
  */
 public class CSVRecordWriter extends FileRecordWriter {
 
+    public CSVRecordWriter() {
+    }
 
     public CSVRecordWriter(File path) throws FileNotFoundException {
         super(path);
+    }
+
+    public CSVRecordWriter(File path, boolean append) throws FileNotFoundException {
+        super(path, append);
+    }
+
+    public CSVRecordWriter(Configuration conf) throws FileNotFoundException {
+        super(conf);
     }
 
     @Override

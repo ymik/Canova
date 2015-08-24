@@ -20,8 +20,6 @@
 
 package org.canova.cli.driver;
 
-import java.util.Arrays;
-
 import org.canova.cli.subcommands.Vectorize;
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
@@ -57,9 +55,23 @@ public class CommandLineInterfaceDriver {
             parser.parseArgument(args);
             action.execute();
         } catch( CmdLineException e ) {
-            System.err.println(e.getMessage());
-            return;
+        	printUsage();
         }
+    }
+    
+    public static void printUsage() {
+    	
+    	System.out.println( "Canova: Vectorization System" );
+    	System.out.println( "" );
+    	System.out.println( "\tUsage:" );
+    	System.out.println( "\t\tcanova <command> <flags>" );
+    	System.out.println( "" );
+    	System.out.println( "\tCommands:" );
+    	System.out.println( "\t\tvectorize\t\tVectorization engine for text, csv, image, and custom data vectorization" );
+    	System.out.println( "" );
+    	System.out.println( "\tExample:" );
+    	System.out.println( "\t\tcanova vectorize -conf /tmp/iris_conf.txt " );
+    	
     }
 
 

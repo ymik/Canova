@@ -22,6 +22,7 @@ package org.canova.api.records.writer;
 
 
 
+import org.canova.api.conf.Configurable;
 import org.canova.api.writable.Writable;
 
 import java.io.Closeable;
@@ -32,8 +33,8 @@ import java.util.Collection;
  *  Record writer
  *  @author Adam Gibson
  */
-public interface RecordWriter extends Closeable {
-
+public interface RecordWriter extends Closeable,Configurable {
+    String APPEND = "org.canova.api.record.writer.append";
 
     /**
      * Write a record
@@ -42,7 +43,9 @@ public interface RecordWriter extends Closeable {
     void write(Collection<Writable> record) throws IOException;
 
 
-
+    /**
+     * Close the recod reader
+     */
     void close();
 
 }

@@ -45,11 +45,13 @@ TODO:
 		render: Histograms and box plots
 
 
+	
+
 
 */
 public class CSVSchemaColumn {
 	
-	public enum ColumnType { NUMERIC, DATE, NOMINAL, STRING }
+	public enum ColumnType { NUMERIC, DATE, NOMINAL }
 	public enum TransformType { COPY, SKIP, BINARIZE, NORMALIZE, LABEL }
 
 	public String name = ""; // the name of the attribute/column
@@ -94,12 +96,14 @@ public class CSVSchemaColumn {
 	 * @throws Exception 
 	 */
 	public void evaluateColumnValue(String value) throws Exception {
-		
-	//	System.out.println( "# evalColValue() => " + value );
-		
-		
-		
-		if ( ColumnType.NUMERIC == this.columnType &&  TransformType.LABEL != this.transform  ) {
+
+		/*
+		 * Need to get stats for the following transforms here:
+		 * 1. normalize
+		 * 2. binarize
+		 * 
+		 */
+		if ( ColumnType.NUMERIC == this.columnType   ) {
 			
 			// then we want to look at min/max values
 			
@@ -131,7 +135,11 @@ public class CSVSchemaColumn {
 				
 			}
 			
-		} else if ( TransformType.LABEL == this.transform ) {
+		} else if ( ColumnType.NOMINAL == this.columnType   ) {
+			
+			// now we are dealing w a set of categories of a label
+			
+		//} else if ( TransformType.LABEL == this.transform ) {
 			
 		//	System.out.println( "> label '" + value + "' " );
 			
@@ -197,7 +205,7 @@ public class CSVSchemaColumn {
 		
 		}
 		
-		return null;
+		return 0;
 		
 	}
 
@@ -238,7 +246,26 @@ public class CSVSchemaColumn {
 	
 
 	public double copy(String inputColumnValue) {
-		return Double.parseDouble(inputColumnValue);
+		
+		double return_value = 0;
+		
+		if (this.columnType == ColumnType.NUMERIC) {
+			
+			return_value = Double.parseDouble( inputColumnValue );
+			
+		} else {
+			
+			// In the prep-pass all of the different strings are indexed
+			// copies the label index over as-is as a floating point value (1.0, 2.0, 3.0, ... N)
+			
+			String key = inputColumnValue.trim();
+			
+			return_value = this.getLabelID( key );
+			
+			
+		}
+		
+		return return_value;
 	}
 
 	/*
@@ -269,16 +296,38 @@ public class CSVSchemaColumn {
 	 */
 	public double normalize(String inputColumnValue) {
 
-		double val = Double.parseDouble(inputColumnValue);
+		double return_value = 0;
 		
-		double range = this.maxValue - this.minValue;
-		double normalizedOut = ( val - this.minValue ) / range;
+		if (this.columnType == ColumnType.NUMERIC) {
 		
-		if (0.0 == range) {
-			return 0.0;
+			double val = Double.parseDouble(inputColumnValue);
+			
+			double range = this.maxValue - this.minValue;
+			double normalizedOut = ( val - this.minValue ) / range;
+			
+			if (0.0 == range) {
+				return_value = 0.0;
+			} else {
+				return_value = normalizedOut;
+			}
+			
+		} else {
+			
+			// we have a normalized list of labels
+			
+			String key = inputColumnValue.trim();
+			
+			double totalLabels = this.recordLabels.size();
+			double labelIndex = this.getLabelID( key ) + 1.0;
+			
+			//System.out.println("Index Label: " + labelIndex); 
+			
+			return_value = labelIndex / totalLabels;
+			
+			
 		}
 		
-		return normalizedOut;		
+		return return_value;		
 		
 	}
 
@@ -288,16 +337,26 @@ public class CSVSchemaColumn {
 	 */
 	public double label(String inputColumnValue) {
 
-		//this.recordLabels.
+		double return_value = 0;
+
+		if (this.columnType == ColumnType.NUMERIC) {
+			
+			// In this case, same thing as !COPY --- uses input column numbers as the floating point label value
+			return_value = Double.parseDouble(inputColumnValue);
+			
+		} else {
+
+			// its a nominal value in the indexed list -> pull the index, return it as a double
+			
+			// TODO: how do get a numeric index from a list of labels? 
+			Integer ID = this.getLabelID( inputColumnValue.trim() );
+			
+			return_value = ID;
+			
+		}
 		
-	//	System.out.println( ".lable() => '" + inputColumnValue.trim() + "' --- class count: " + this.recordLabels.size() );
 		
-		// TODO: how do get a numeric index from a list of labels? 
-		Integer ID = this.getLabelID( inputColumnValue.trim() );
-		
-	//	System.out.println("#### Label: " + ID );
-		
-		return ID;
+		return return_value;
 		
 	}
 	

@@ -22,6 +22,7 @@ package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
+import com.google.common.primitives.Ints;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -35,7 +36,8 @@ import java.awt.image.WritableRaster;
 import java.io.*;
 
 /**
- * Image loader for taking images and converting them to matrices
+ * Image loader for taking images
+ * and converting them to matrices
  * @author Adam Gibson
  *
  */
@@ -43,6 +45,7 @@ public class ImageLoader implements Serializable {
 
     private int width = -1;
     private int height = -1;
+    private int channels = -1;
 
     static {
         IIORegistry registry = IIORegistry.getDefaultInstance();
@@ -67,6 +70,22 @@ public class ImageLoader implements Serializable {
         this.height = height;
     }
 
+
+    /**
+     * Instantiate an image with the given
+     * width and height
+     *
+     * @param width  the width to load
+     * @param height the height to load
+     * @param channels the number of channels for the image
+     */
+    public ImageLoader(int width, int height,int channels) {
+        super();
+        this.width = width;
+        this.height = height;
+        this.channels = channels;
+    }
+
     /**
      * Convert a file to a row vector
      *
@@ -75,7 +94,10 @@ public class ImageLoader implements Serializable {
      * @throws Exception
      */
     public INDArray asRowVector(File f) throws Exception {
-        return ArrayUtil.toNDArray(flattenedImageFromFile(f));
+        if(channels == 3) {
+            return toRaveledTensor(f);
+        }
+        return ArrayUtil.toNDArray( flattenedImageFromFile(f));
     }
 
     /**
@@ -161,7 +183,7 @@ public class ImageLoader implements Serializable {
                 for (int j = 0; j < image.getHeight(); j++) {
                     int[] vals = getPixelData(image,i,j);
                     for(int k = 0; k < vals.length; k++) {
-                        ret.putScalar(new int[]{i,j,k},vals[i]);
+                        ret.putScalar(new int[]{k,i,j},vals[k]);
                     }
                 }
             }
@@ -191,6 +213,8 @@ public class ImageLoader implements Serializable {
      * @return the input stream to convert
      */
     public INDArray asMatrix(InputStream inputStream) {
+       if(channels == 3)
+           return toRgb(inputStream);
         try {
             BufferedImage image  = ImageIO.read(inputStream);
             if (height > 0 && width > 0)
@@ -272,6 +296,31 @@ public class ImageLoader implements Serializable {
         return ret;
     }
 
+    /**
+     * Load a rastered image from file
+     * @param file the file to load
+     * @return the rastered image
+     * @throws IOException
+     */
+    public int[][][] fromFileMultipleChannels(File file) throws IOException {
+        BufferedImage image = ImageIO.read(file);
+        if (height > 0 && width > 0)
+            image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+        Raster raster = image.getData();
+        int w = raster.getWidth(), h = raster.getHeight();
+        int[][][] ret = new int[w][h][channels];
+        for (int i = 0; i < w; i++)
+            for (int j = 0; j < h; j++) {
+                Color color = new Color(image.getRGB(i,j));
+                ret[i][j][0] = color.getRed();
+                ret[i][j][1] = color.getBlue();
+                ret[i][j][2] = color.getGreen();
+
+            }
+
+        return ret;
+    }
+
 
     /**
      * Convert a matrix in to a buffereed image
@@ -310,8 +359,7 @@ public class ImageLoader implements Serializable {
      * @param img The Image to be converted
      * @return The converted BufferedImage
      */
-    public static BufferedImage toBufferedImage(Image img)
-    {
+    public static BufferedImage toBufferedImage(Image img) {
         if (img instanceof BufferedImage)
         {
             return (BufferedImage) img;
@@ -373,4 +421,6 @@ public class ImageLoader implements Serializable {
             throw new RuntimeException("Unable to load image", e);
         }
     }
+
+
 }

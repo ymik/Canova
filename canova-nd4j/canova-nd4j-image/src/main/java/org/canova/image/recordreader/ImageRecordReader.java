@@ -65,6 +65,7 @@ public class ImageRecordReader implements RecordReader {
     private Configuration conf;
     public final static String WIDTH = NAME_SPACE + ".width";
     public final static String HEIGHT = NAME_SPACE + ".width";
+    public final static String CHANNELS = NAME_SPACE + ".channels";
 
     static {
         ImageIO.scanForPlugins();
@@ -78,6 +79,42 @@ public class ImageRecordReader implements RecordReader {
 
     public ImageRecordReader() {
     }
+
+
+    /**
+     * Load the record reader with the given width and height
+     * @param width the width load
+     * @param height the height to load
+     */
+    public ImageRecordReader(int width, int height,int channels,List<String> labels) {
+        this(width, height,channels,false);
+        this.labels = labels;
+
+    }
+
+    public ImageRecordReader(int width, int height,int channels,boolean appendLabel,List<String> labels) {
+        this.appendLabel = appendLabel;
+        imageLoader = new ImageLoader(width,height,channels);
+        this.labels = labels;
+
+    }
+
+    /**
+     * Load the record reader with the given width and height
+     * @param width the width load
+     * @param height the height to load
+     */
+    public ImageRecordReader(int width, int height,int channels) {
+        this(width, height,channels,false);
+
+    }
+
+    public ImageRecordReader(int width, int height,int channels,boolean appendLabel) {
+        this.appendLabel = appendLabel;
+        imageLoader = new ImageLoader(width,height,channels);
+
+    }
+
 
     /**
      * Load the record reader with the given width and height
@@ -163,7 +200,7 @@ public class ImageRecordReader implements RecordReader {
             InputStreamInputSplit split2 = (InputStreamInputSplit) split;
             InputStream is =  split2.getIs();
             URI[] locations = split2.locations();
-            INDArray load = imageLoader.asMatrix(is);
+            INDArray load = imageLoader.asRowVector(is);
             record = RecordConverter.toRecord(load);
             if(appendLabel) {
                 Path path = Paths.get(locations[0]);
@@ -183,7 +220,7 @@ public class ImageRecordReader implements RecordReader {
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
         this.appendLabel = conf.getBoolean(APPEND_LABEL,false);
         this.labels = new ArrayList<>(conf.getStringCollection(LABELS));
-        imageLoader = new ImageLoader(conf.getInt(WIDTH,28),conf.getInt(HEIGHT,28));
+        imageLoader = new ImageLoader(conf.getInt(WIDTH,28),conf.getInt(HEIGHT,28),conf.getInt(CHANNELS,1));
         this.conf = conf;
         initialize(split);
     }

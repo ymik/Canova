@@ -177,12 +177,15 @@ public class ImageLoader implements Serializable {
             BufferedImage image = ImageIO.read(inputStream);
             if (height > 0 && width > 0)
                 image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+            int width = image.getWidth();
+            int height = image.getHeight();
             INDArray ret = Nd4j.create(3, height, width);
-            for (int i = 0; i < image.getWidth(); i++) {
-                for (int j = 0; j < image.getHeight(); j++) {
-                    int[] vals = getPixelData(image,i,j);
-                    for(int k = 0; k < vals.length; k++) {
-                        ret.putScalar(new int[]{k,i,j},vals[k]);
+            int bands = image.getSampleModel().getNumBands();
+            WritableRaster raster = image.getRaster();
+            for(int i = 0; i < height; i++) {
+                for(int j = 0; j < width; j++) {
+                    for(int k = 0; k<bands; k++) {
+                        ret.putScalar(new int[]{i,j,k},raster.getSample(j,i,k));
                     }
                 }
             }

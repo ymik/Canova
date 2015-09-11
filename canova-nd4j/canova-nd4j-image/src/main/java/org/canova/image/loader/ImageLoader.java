@@ -175,36 +175,11 @@ public class ImageLoader implements Serializable {
         try {
             BufferedImage image = ImageIO.read(inputStream);
             image = scalingIfNeed(image);
-            int width = image.getWidth();
-            int height = image.getHeight();
-            int bands = image.getSampleModel().getNumBands() - 1;
-            INDArray ret = Nd4j.create(bands,height, width);
+            return toINDArrayRGB(image);
 
-            WritableRaster raster = image.getRaster();
-            for(int i = 0; i < height; i++) {
-                for(int j = 0; j < width; j++) {
-                    for(int k = 0; k < bands; k++) {
-                        ret.putScalar(new int[]{k,i,j},raster.getSample(j,i,k));
-                    }
-                }
-            }
-
-            return ret;
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image", e);
         }
-
-    }
-
-    private int[] getPixelData(BufferedImage img, int x, int y) {
-        int argb = img.getRGB(x, y);
-
-        return  new int[] {
-                (argb >> 16) & 0xff, //red
-                (argb >> 8) & 0xff, //green
-                (argb) & 0xff  //blue
-        };
-
 
     }
 
@@ -346,11 +321,6 @@ public class ImageLoader implements Serializable {
         return ret;
     }
 
-
-
-
-
-
     /**
      * Converts a given Image into a BufferedImage
      *
@@ -402,20 +372,27 @@ public class ImageLoader implements Serializable {
     public INDArray toRaveledTensor(BufferedImage image) {
         try {
             image = scalingIfNeed(image);
-            INDArray ret = Nd4j.create(3, height, width);
-            for (int i = 0; i < image.getWidth(); i++) {
-                for (int j = 0; j < image.getHeight(); j++) {
-                    int[] vals = getPixelData(image,i,j);
-                    for(int k = 0; k < vals.length; k++) {
-                        ret.putScalar(new int[]{i,j,k},vals[i]);
-                    }
-                }
-            }
-
-            return ret.ravel();
+            return toINDArrayRGB(image).ravel();
         } catch (Exception e) {
             throw new RuntimeException("Unable to load image", e);
         }
+    }
+
+    private INDArray toINDArrayRGB(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int bands = image.getSampleModel().getNumBands() - 1;
+        INDArray ret = Nd4j.create(bands, height, width);
+
+        WritableRaster raster = image.getRaster();
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                for (int k = 0; k < bands; k++) {
+                    ret.putScalar(new int[]{k, i, j}, raster.getSample(j, i, k));
+                }
+            }
+        }
+        return ret;
     }
 
     private BufferedImage scalingIfNeed(BufferedImage image) {

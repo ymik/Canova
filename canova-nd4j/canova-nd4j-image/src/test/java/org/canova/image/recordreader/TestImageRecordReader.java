@@ -64,4 +64,16 @@ public class TestImageRecordReader {
         assertEquals(784 * 3,record.size());
     }
 
+    @Test
+    public void testGetLabel() throws Exception {
+        RecordReader reader = new ImageNameRecordReader(28,28,3,true);
+        // keeps needlessly blowing up
+        ClassPathResource res = new ClassPathResource("/test-1.jpg");
+        reader.initialize(new InputStreamInputSplit(res.getInputStream(), res.getURI()));
+        assertTrue(reader.hasNext());
+        Collection<Writable> record = reader.next();
+        assertEquals(784 * 3 + 1, record.size());
+    }
+
+
 }

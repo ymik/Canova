@@ -179,13 +179,14 @@ public class ImageLoader implements Serializable {
                 image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
             int width = image.getWidth();
             int height = image.getHeight();
-            INDArray ret = Nd4j.create(3, height, width);
-            int bands = image.getSampleModel().getNumBands();
+            int bands = image.getSampleModel().getNumBands() - 1;
+            INDArray ret = Nd4j.create(bands,height, width);
+
             WritableRaster raster = image.getRaster();
             for(int i = 0; i < height; i++) {
                 for(int j = 0; j < width; j++) {
-                    for(int k = 0; k<bands; k++) {
-                        ret.putScalar(new int[]{i,j,k},raster.getSample(j,i,k));
+                    for(int k = 0; k < bands; k++) {
+                        ret.putScalar(new int[]{k,i,j},raster.getSample(j,i,k));
                     }
                 }
             }

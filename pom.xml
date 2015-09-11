@@ -32,15 +32,15 @@
         <module>canova-api</module>
         <module>canova-nd4j</module>
         <module>canova-data</module>
-	<module>canova-cli</module>
-	<module>canova-hadoop</module>
+        <module>canova-cli</module>
+        <module>canova-hadoop</module>
     </modules>
     <name>Canova</name>
 
     <url>http://nd4j.org</url>
 
     <description>Vectorization Rosetta Stone for the JVM</description>
- 
+
     <developers>
         <developer>
             <id>agibsonccc</id>
@@ -57,9 +57,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.7</slf4j.version>
-        <nd4j.version>0.4-rc2.2-SNAPSHOT</nd4j.version>
+        <nd4j.version>0.4-rc3.2-SNAPSHOT</nd4j.version>
     </properties>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>sonatype-nexus-snapshots</id>

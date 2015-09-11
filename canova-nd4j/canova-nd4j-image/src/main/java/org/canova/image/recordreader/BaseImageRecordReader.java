@@ -187,6 +187,10 @@ public abstract class BaseImageRecordReader implements RecordReader {
                         iter = Collections.singletonList(curr).iterator();
                 }
             }
+
+            //remove the root directory
+            FileSplit split1 = (FileSplit) split;
+            labels.remove(split1.getRootDir());
         }
 
 

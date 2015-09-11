@@ -151,8 +151,7 @@ public class ImageLoader implements Serializable {
         if(arr.rank() < 3)
             throw new IllegalArgumentException("Arr must be 3d");
 
-        if (arr.size(-2) > 0 && arr.size(-1) > 0)
-            image = toBufferedImage(image.getScaledInstance(arr.size(-2),arr.size(-1), Image.SCALE_SMOOTH));
+        image = scalingIfNeed(image, arr.size(-2), arr.size(-1));
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 int r = arr.slice(0).getInt(i,j);
@@ -175,8 +174,7 @@ public class ImageLoader implements Serializable {
     public INDArray toRgb(InputStream inputStream) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
-            if (height > 0 && width > 0)
-                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+            image = scalingIfNeed(image);
             int width = image.getWidth();
             int height = image.getHeight();
             int bands = image.getSampleModel().getNumBands() - 1;
@@ -220,8 +218,7 @@ public class ImageLoader implements Serializable {
            return toRgb(inputStream);
         try {
             BufferedImage image  = ImageIO.read(inputStream);
-            if (height > 0 && width > 0)
-                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+            image = scalingIfNeed(image);
             Raster raster = image.getData();
             int w = raster.getWidth(), h = raster.getHeight();
             int[][] ret = new int[w][h];
@@ -287,8 +284,7 @@ public class ImageLoader implements Serializable {
      */
     public int[][] fromFile(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
-        if (height > 0 && width > 0)
-            image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+        image = scalingIfNeed(image);
         Raster raster = image.getData();
         int w = raster.getWidth(), h = raster.getHeight();
         int[][] ret = new int[w][h];
@@ -307,8 +303,7 @@ public class ImageLoader implements Serializable {
      */
     public int[][][] fromFileMultipleChannels(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
-        if (height > 0 && width > 0)
-            image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+        image = scalingIfNeed(image);
         Raster raster = image.getData();
         int w = raster.getWidth(), h = raster.getHeight();
         int[][][] ret = new int[w][h][channels];
@@ -387,8 +382,7 @@ public class ImageLoader implements Serializable {
      * representation of the image
      */
     public INDArray asRowVector(BufferedImage image) {
-        if (height > 0 && width > 0)
-            image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+        image = scalingIfNeed(image);
         Raster raster = image.getData();
         int w = raster.getWidth(), h = raster.getHeight();
         int[][] ret = new int[w][h];
@@ -407,8 +401,7 @@ public class ImageLoader implements Serializable {
      */
     public INDArray toRaveledTensor(BufferedImage image) {
         try {
-            if (height > 0 && width > 0)
-                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
+            image = scalingIfNeed(image);
             INDArray ret = Nd4j.create(3, height, width);
             for (int i = 0; i < image.getWidth(); i++) {
                 for (int j = 0; j < image.getHeight(); j++) {
@@ -422,6 +415,18 @@ public class ImageLoader implements Serializable {
             return ret.ravel();
         } catch (Exception e) {
             throw new RuntimeException("Unable to load image", e);
+        }
+    }
+
+    private BufferedImage scalingIfNeed(BufferedImage image) {
+        return scalingIfNeed(image, height, width);
+    }
+
+    private BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth) {
+        if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth))  {
+            return toBufferedImage(image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH));
+        } else {
+            return image;
         }
     }
 

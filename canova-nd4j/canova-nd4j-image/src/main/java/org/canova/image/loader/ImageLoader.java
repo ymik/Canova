@@ -194,20 +194,16 @@ public class ImageLoader implements Serializable {
         try {
             BufferedImage image  = ImageIO.read(inputStream);
             image = scalingIfNeed(image);
-            Raster raster = image.getData();
-            int w = raster.getWidth(), h = raster.getHeight();
-            int[][] ret = new int[w][h];
-            for (int i = 0; i < w; i++)
-                for (int j = 0; j < h; j++)
-                    ret[i][j] = raster.getSample(i, j, 0);
-            INDArray newRet = Nd4j.create(w, h);
-            for(int i = 0; i < ret.length; i++) {
-                for(int j = 0; j < ret[i].length; j++) {
-                    newRet.putScalar(new int[]{i,j},ret[i][j]);
+            int w = image.getWidth();
+            int h = image.getHeight();
+            INDArray ret = Nd4j.create(h, w);
+
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < w; j++) {
+                    ret.putScalar(new int[]{i, j}, image.getRGB(i, j));
                 }
             }
-
-            return newRet;
+            return ret;
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image",e);
         }

@@ -260,14 +260,7 @@ public class ImageLoader implements Serializable {
     public int[][] fromFile(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
         image = scalingIfNeed(image);
-        Raster raster = image.getData();
-        int w = raster.getWidth(), h = raster.getHeight();
-        int[][] ret = new int[w][h];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++)
-                ret[i][j] = raster.getSample(i, j, 0);
-
-        return ret;
+        return toIntArrayArray(image);
     }
 
     /**
@@ -353,13 +346,7 @@ public class ImageLoader implements Serializable {
      */
     public INDArray asRowVector(BufferedImage image) {
         image = scalingIfNeed(image);
-        Raster raster = image.getData();
-        int w = raster.getWidth(), h = raster.getHeight();
-        int[][] ret = new int[w][h];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++)
-                ret[i][j] = raster.getSample(i, j, 0);
-
+        int[][] ret = toIntArrayArray(image);
         return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
     }
 
@@ -376,6 +363,15 @@ public class ImageLoader implements Serializable {
         } catch (Exception e) {
             throw new RuntimeException("Unable to load image", e);
         }
+    }
+
+    private int[][] toIntArrayArray(BufferedImage image) {
+        int w = image.getWidth(), h = image.getHeight();
+        int[][] ret = new int[w][h];
+        for (int i = 0; i < w; i++)
+            for (int j = 0; j < h; j++)
+                ret[i][j] = image.getRGB(i, j);
+        return ret;
     }
 
     private INDArray toINDArrayRGB(BufferedImage image) {

@@ -51,6 +51,7 @@ import java.util.*;
 public abstract class BaseImageRecordReader implements RecordReader {
     protected Iterator<File> iter;
     protected ImageLoader imageLoader;
+    protected File currentFile;
     protected List<String> labels  = new ArrayList<>();
     protected boolean appendLabel = false;
     protected Collection<Writable> record;
@@ -228,6 +229,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
         if(iter != null) {
             List<Writable> ret = new ArrayList<>();
             File image = iter.next();
+            currentFile = image;
             if(image.isDirectory())
                 return next();
             try {
@@ -310,5 +312,11 @@ public abstract class BaseImageRecordReader implements RecordReader {
             labels.add(name);
     }
 
+    public File getCurrentFile() {
+        return currentFile;
+    }
 
+    public void setCurrentFile(File currentFile) {
+        this.currentFile = currentFile;
+    }
 }

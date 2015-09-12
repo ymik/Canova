@@ -373,13 +373,15 @@ public class ImageLoader implements Serializable {
     private INDArray toINDArrayRGB(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        int bands = channels;
-        INDArray ret = Nd4j.create(bands, height, width);
+        int bands = image.getSampleModel().getNumBands();;
+        INDArray ret = Nd4j.create(channels, height, width);
 
         WritableRaster raster = image.getRaster();
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                for (int k = 0; k < bands; k++) {
+                for (int k = 0; k < channels; k++) {
+                    if(k >= bands)
+                        break;
                     ret.putScalar(new int[]{k, i, j}, raster.getSample(j, i, k));
                 }
             }

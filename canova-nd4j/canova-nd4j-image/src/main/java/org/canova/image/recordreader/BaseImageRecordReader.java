@@ -204,7 +204,15 @@ public abstract class BaseImageRecordReader implements RecordReader {
             if(appendLabel) {
                 Path path = Paths.get(locations[0]);
                 String parent = path.getParent().toString();
-                record.add(new DoubleWritable(labels.indexOf(parent)));
+                //could have been a uri
+                if(parent.contains("/")) {
+                    parent = parent.substring(parent.lastIndexOf('/') + 1);
+                }
+                int label = labels.indexOf(parent);
+                if(label >= 0)
+                    record.add(new DoubleWritable(labels.indexOf(parent)));
+                else
+                    throw new IllegalStateException("Illegal label " + parent);
             }
 
             is.close();

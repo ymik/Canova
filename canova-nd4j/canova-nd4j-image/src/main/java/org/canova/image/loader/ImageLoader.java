@@ -174,6 +174,8 @@ public class ImageLoader implements Serializable {
     public INDArray toRgb(InputStream inputStream) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
+            if(image == null)
+                throw new IllegalStateException("Unable to load image");
             image = scalingIfNeed(image);
             return toINDArrayRGB(image);
 
@@ -373,7 +375,7 @@ public class ImageLoader implements Serializable {
     private INDArray toINDArrayRGB(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
-        int bands = image.getSampleModel().getNumBands();;
+        int bands = image.getSampleModel().getNumBands();
         INDArray ret = Nd4j.create(channels, height, width);
 
         WritableRaster raster = image.getRaster();

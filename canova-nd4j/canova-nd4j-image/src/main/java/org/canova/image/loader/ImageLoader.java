@@ -22,6 +22,7 @@ package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
+import org.nd4j.linalg.api.buffer.IntBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -30,7 +31,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+import java.awt.image.DataBufferInt;
 import java.awt.image.WritableRaster;
 import java.io.*;
 
@@ -151,7 +152,7 @@ public class ImageLoader implements Serializable {
         if(arr.rank() < 3)
             throw new IllegalArgumentException("Arr must be 3d");
 
-        image = scalingIfNeed(image, arr.size(-2), arr.size(-1));
+        image = scalingIfNeed(image, arr.size(-2), arr.size(-1), true);
         for (int i = 0; i < image.getWidth(); i++) {
             for (int j = 0; j < image.getHeight(); j++) {
                 int r = arr.slice(0).getInt(i,j);
@@ -176,7 +177,7 @@ public class ImageLoader implements Serializable {
             BufferedImage image = ImageIO.read(inputStream);
             if(image == null)
                 throw new IllegalStateException("Unable to load image");
-            image = scalingIfNeed(image);
+            image = scalingIfNeed(image, false);
             return toINDArrayRGB(image);
 
         } catch (IOException e) {
@@ -195,7 +196,7 @@ public class ImageLoader implements Serializable {
            return toRgb(inputStream);
         try {
             BufferedImage image  = ImageIO.read(inputStream);
-            image = scalingIfNeed(image);
+            image = scalingIfNeed(image, true);
             int w = image.getWidth();
             int h = image.getHeight();
             INDArray ret = Nd4j.create(h, w);
@@ -257,7 +258,7 @@ public class ImageLoader implements Serializable {
      */
     public int[][] fromFile(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
-        image = scalingIfNeed(image);
+        image = scalingIfNeed(image, true);
         return toIntArrayArray(image);
     }
 
@@ -269,19 +270,20 @@ public class ImageLoader implements Serializable {
      */
     public int[][][] fromFileMultipleChannels(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
-        image = scalingIfNeed(image);
+        image = scalingIfNeed(image, channels > 3);
 
         int w = image.getWidth(), h = image.getHeight();
         int bands = image.getSampleModel().getNumBands();
         int[][][] ret = new int[channels][h][w];
-        Raster raster = image.getData();
+        int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 for (int k = 0; k < channels; k++) {
                     if(k >= bands)
                         break;
-                    ret[k][i][j] = raster.getSample(j, i, k);
+
+                    ret[k][i][j] = getSplittedChannel(pixels[i * w + j], channels, k);
                 }
             }
         }
@@ -319,16 +321,17 @@ public class ImageLoader implements Serializable {
      * Converts a given Image into a BufferedImage
      *
      * @param img The Image to be converted
+     * @param type The color model of BufferedImage
      * @return The converted BufferedImage
      */
-    public static BufferedImage toBufferedImage(Image img) {
+    public static BufferedImage toBufferedImage(Image img, int type) {
         if (img instanceof BufferedImage)
         {
             return (BufferedImage) img;
         }
 
         // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), type);
 
         // Draw the image on to the buffered image
         Graphics2D bGr = bimage.createGraphics();
@@ -346,7 +349,7 @@ public class ImageLoader implements Serializable {
      * representation of the image
      */
     public INDArray asRowVector(BufferedImage image) {
-        image = scalingIfNeed(image);
+        image = scalingIfNeed(image, true);
         int[][] ret = toIntArrayArray(image);
         return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
     }
@@ -359,7 +362,7 @@ public class ImageLoader implements Serializable {
      */
     public INDArray toRaveledTensor(BufferedImage image) {
         try {
-            image = scalingIfNeed(image);
+            image = scalingIfNeed(image, false);
             return toINDArrayRGB(image).ravel();
         } catch (Exception e) {
             throw new RuntimeException("Unable to load image", e);
@@ -379,33 +382,46 @@ public class ImageLoader implements Serializable {
         int width = image.getWidth();
         int height = image.getHeight();
         int bands = image.getSampleModel().getNumBands();
-        INDArray ret = Nd4j.create(channels, height, width);
 
-        WritableRaster raster = image.getRaster();
+        int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+        int[] shape = new int[]{channels, height, width};
+        int[] ret = new int[channels * height * width];
+
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 for (int k = 0; k < channels; k++) {
                     if(k >= bands)
                         break;
-                    ret.putScalar(new int[]{k, i, j}, raster.getSample(j, i, k));
+
+                    int index = k * height * width + i * width + j;
+                    ret[index] = getSplittedChannel(pixels[i * width + j], channels, k);
                 }
             }
         }
-        return ret;
+        return Nd4j.create(new IntBuffer(ret), shape);
     }
 
-    private BufferedImage scalingIfNeed(BufferedImage image) {
-        return scalingIfNeed(image, height, width);
+    private int getSplittedChannel(int compactedColor, int channelLength, int channel) {
+        return (compactedColor >> (8 * (channelLength - channel -1))) & 0xff;
     }
 
-    private BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth) {
+    private BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
+        return scalingIfNeed(image, height, width, needAlpha);
+    }
+
+    private BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth, boolean needAlpha) {
         if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
-            int type = image.getType();
-            if (type != BufferedImage.TYPE_INT_ARGB || type != BufferedImage.TYPE_INT_RGB){
-                return toBufferedImage(image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH));
+            Image scaled = image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH);
+            boolean hasAlpha = image.getColorModel().hasAlpha();
+
+            if (needAlpha && (image.getType() == BufferedImage.TYPE_INT_ARGB || hasAlpha)) {
+                return toBufferedImage(scaled, BufferedImage.TYPE_INT_ARGB);
+            } else {
+                return toBufferedImage(scaled, BufferedImage.TYPE_INT_RGB);
             }
+        } else {
+            return image;
         }
-        return image;
     }
 
 

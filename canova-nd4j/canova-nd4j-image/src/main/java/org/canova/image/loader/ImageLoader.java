@@ -364,10 +364,10 @@ public class ImageLoader implements Serializable {
 
     private int[][] toIntArrayArray(BufferedImage image) {
         int w = image.getWidth(), h = image.getHeight();
-        int[][] ret = new int[w][h];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++)
-                ret[i][j] = image.getRGB(i, j);
+        int[][] ret = new int[h][w];
+        for (int i = 0; i < h; i++)
+            for (int j = 0; j < w; j++)
+                ret[i][j] = image.getRGB(j, i);
         return ret;
     }
 

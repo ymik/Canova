@@ -100,6 +100,22 @@ public class ImageLoader implements Serializable {
         return ArrayUtil.toNDArray( flattenedImageFromFile(f));
     }
 
+    public INDArray asRowVector(InputStream inputStream) {
+        return asMatrix(inputStream).ravel();
+    }
+
+    /**
+     * Convert an image in to a row vector
+     * @param image the image to convert
+     * @return the row vector based on a rastered
+     * representation of the image
+     */
+    public INDArray asRowVector(BufferedImage image) {
+        image = scalingIfNeed(image, true);
+        int[][] ret = toIntArrayArray(image);
+        return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
+    }
+
     /**
      * Changes the input stream in to an
      * rgb based raveled(flattened) vector
@@ -127,6 +143,21 @@ public class ImageLoader implements Serializable {
     }
 
     /**
+     * Convert an image in to a raveled tensor of
+     * the rgb values of the image
+     * @param image the image to parse
+     * @return the raveled tensor of rgb values
+     */
+    public INDArray toRaveledTensor(BufferedImage image) {
+        try {
+            image = scalingIfNeed(image, false);
+            return toINDArrayRGB(image).ravel();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load image", e);
+        }
+    }
+
+    /**
      * Convert an input stream to an rgb spectrum image
      *
      * @param file the file to convert
@@ -141,29 +172,6 @@ public class ImageLoader implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Convert the given image to an rgb image
-     * @param arr the array to use
-     * @param image the iamge to set
-     */
-    public void toBufferedImageRGB(INDArray arr,BufferedImage image) {
-        if(arr.rank() < 3)
-            throw new IllegalArgumentException("Arr must be 3d");
-
-        image = scalingIfNeed(image, arr.size(-2), arr.size(-1), true);
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
-                int r = arr.slice(0).getInt(i,j);
-                int g = arr.slice(1).getInt(i,j);
-                int b = arr.slice(2).getInt(i,j);
-                int a = 1;
-                int col = (a << 24) | (r << 16) | (g << 8) | b;
-                image.setRGB(i,j,col);
-            }
-        }
-
     }
 
     /**
@@ -183,7 +191,17 @@ public class ImageLoader implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image", e);
         }
+    }
 
+    /**
+     * Convert an image file
+     * in to a matrix
+     * @param f the file to convert
+     * @return a 2d matrix of a rastered version of the image
+     * @throws IOException
+     */
+    public INDArray asMatrix(File f) throws IOException {
+        return ArrayUtil.toNDArray(fromFile(f));
     }
 
     /**
@@ -210,11 +228,6 @@ public class ImageLoader implements Serializable {
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image",e);
         }
-
-    }
-
-    public INDArray asRowVector(InputStream inputStream) {
-        return asMatrix(inputStream).ravel();
     }
 
     /**
@@ -232,18 +245,6 @@ public class ImageLoader implements Serializable {
         }catch(Exception e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    /**
-     * Convert an image file
-     * in to a matrix
-     * @param f the file to convert
-     * @return a 2d matrix of a rastered version of the image
-     * @throws IOException
-     */
-    public INDArray asMatrix(File f) throws IOException {
-        return ArrayUtil.toNDArray(fromFile(f));
     }
 
     public int[] flattenedImageFromFile(File f) throws Exception {
@@ -290,7 +291,6 @@ public class ImageLoader implements Serializable {
         return ret;
     }
 
-
     /**
      * Convert a matrix in to a buffereed image
      * @param matrix the
@@ -303,7 +303,6 @@ public class ImageLoader implements Serializable {
         for(int i = 0; i < equiv.length; i++) {
             equiv[i] = (int) matrix.getDouble(i);
         }
-
 
         r.setDataElements(0,0,matrix.rows(),matrix.columns(),equiv);
         return img;
@@ -318,6 +317,28 @@ public class ImageLoader implements Serializable {
     }
 
     /**
+     * Convert the given image to an rgb image
+     * @param arr the array to use
+     * @param image the iamge to set
+     */
+    public void toBufferedImageRGB(INDArray arr,BufferedImage image) {
+        if(arr.rank() < 3)
+            throw new IllegalArgumentException("Arr must be 3d");
+
+        image = scalingIfNeed(image, arr.size(-2), arr.size(-1), true);
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                int r = arr.slice(0).getInt(i,j);
+                int g = arr.slice(1).getInt(i,j);
+                int b = arr.slice(2).getInt(i,j);
+                int a = 1;
+                int col = (a << 24) | (r << 16) | (g << 8) | b;
+                image.setRGB(i,j,col);
+            }
+        }
+    }
+
+    /**
      * Converts a given Image into a BufferedImage
      *
      * @param img The Image to be converted
@@ -325,8 +346,7 @@ public class ImageLoader implements Serializable {
      * @return The converted BufferedImage
      */
     public static BufferedImage toBufferedImage(Image img, int type) {
-        if (img instanceof BufferedImage)
-        {
+        if (img instanceof BufferedImage) {
             return (BufferedImage) img;
         }
 
@@ -340,33 +360,6 @@ public class ImageLoader implements Serializable {
 
         // Return the buffered image
         return bimage;
-    }
-
-    /**
-     * Convert an image in to a row vector
-     * @param image the image to convert
-     * @return the row vector based on a rastered
-     * representation of the image
-     */
-    public INDArray asRowVector(BufferedImage image) {
-        image = scalingIfNeed(image, true);
-        int[][] ret = toIntArrayArray(image);
-        return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
-    }
-
-    /**
-     * Convert an image in to a raveled tensor of
-     * the rgb values of the image
-     * @param image the image to parse
-     * @return the raveled tensor of rgb values
-     */
-    public INDArray toRaveledTensor(BufferedImage image) {
-        try {
-            image = scalingIfNeed(image, false);
-            return toINDArrayRGB(image).ravel();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to load image", e);
-        }
     }
 
     private int[][] toIntArrayArray(BufferedImage image) {
@@ -423,6 +416,5 @@ public class ImageLoader implements Serializable {
             return image;
         }
     }
-
 
 }

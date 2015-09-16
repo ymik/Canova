@@ -399,11 +399,13 @@ public class ImageLoader implements Serializable {
     }
 
     private BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth) {
-        if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth))  {
-            return toBufferedImage(image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH));
-        } else {
-            return image;
+        if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
+            int type = image.getType();
+            if (type != BufferedImage.TYPE_INT_ARGB || type != BufferedImage.TYPE_INT_RGB){
+                return toBufferedImage(image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH));
+            }
         }
+        return image;
     }
 
 

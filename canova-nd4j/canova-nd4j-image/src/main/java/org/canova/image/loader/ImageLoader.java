@@ -270,18 +270,21 @@ public class ImageLoader implements Serializable {
     public int[][][] fromFileMultipleChannels(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
         image = scalingIfNeed(image);
+
+        int w = image.getWidth(), h = image.getHeight();
+        int bands = image.getSampleModel().getNumBands();
+        int[][][] ret = new int[channels][h][w];
         Raster raster = image.getData();
-        int w = raster.getWidth(), h = raster.getHeight();
-        int[][][] ret = new int[w][h][channels];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++) {
-                Color color = new Color(image.getRGB(i,j));
-                ret[i][j][0] = color.getRed();
-                ret[i][j][1] = color.getBlue();
-                ret[i][j][2] = color.getGreen();
 
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                for (int k = 0; k < channels; k++) {
+                    if(k >= bands)
+                        break;
+                    ret[k][i][j] = raster.getSample(j, i, k);
+                }
             }
-
+        }
         return ret;
     }
 

@@ -399,12 +399,12 @@ public class ImageLoader implements Serializable {
     }
 
     protected BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
-        return scalingIfNeed(image, height, width, needAlpha);
+        return scalingIfNeed(image, width, height, needAlpha);
     }
 
-    protected BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth, boolean needAlpha) {
+    protected BufferedImage scalingIfNeed(BufferedImage image, int dstWidth, int dstHeight, boolean needAlpha) {
         if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
-            Image scaled = image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH);
+            Image scaled = image.getScaledInstance(dstWidth, dstHeight, Image.SCALE_SMOOTH);
             boolean hasAlpha = image.getColorModel().hasAlpha();
 
             if (needAlpha && (image.getType() == BufferedImage.TYPE_INT_ARGB || hasAlpha)) {

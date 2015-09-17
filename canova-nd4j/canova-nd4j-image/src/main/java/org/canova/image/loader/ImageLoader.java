@@ -362,7 +362,7 @@ public class ImageLoader implements Serializable {
         return bimage;
     }
 
-    private int[][] toIntArrayArray(BufferedImage image) {
+    protected int[][] toIntArrayArray(BufferedImage image) {
         int w = image.getWidth(), h = image.getHeight();
         int[][] ret = new int[h][w];
         for (int i = 0; i < h; i++)
@@ -371,7 +371,7 @@ public class ImageLoader implements Serializable {
         return ret;
     }
 
-    private INDArray toINDArrayRGB(BufferedImage image) {
+    protected INDArray toINDArrayRGB(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
         int bands = image.getSampleModel().getNumBands();
@@ -394,15 +394,15 @@ public class ImageLoader implements Serializable {
         return Nd4j.create(new IntBuffer(ret), shape);
     }
 
-    private int getSplittedChannel(int compactedColor, int channelLength, int channel) {
+    protected int getSplittedChannel(int compactedColor, int channelLength, int channel) {
         return (compactedColor >> (8 * (channelLength - channel -1))) & 0xff;
     }
 
-    private BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
+    protected BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
         return scalingIfNeed(image, height, width, needAlpha);
     }
 
-    private BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth, boolean needAlpha) {
+    protected BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth, boolean needAlpha) {
         if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
             Image scaled = image.getScaledInstance(dstHeight, dstWidth, Image.SCALE_SMOOTH);
             boolean hasAlpha = image.getColorModel().hasAlpha();

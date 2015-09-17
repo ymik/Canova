@@ -4,7 +4,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.nd4j.linalg.api.buffer.BaseDataBuffer;
 import org.nd4j.linalg.api.buffer.DataBuffer;
-import java.lang.UnsupportedOperationException;
 
 public class ImageByteBuffer extends BaseDataBuffer {
 
@@ -13,29 +12,49 @@ public class ImageByteBuffer extends BaseDataBuffer {
         this.elementSize = 1;
     }
 
+    public ImageByteBuffer(int i) {
+        super(i);
+    }
+
+    public ImageByteBuffer(double[] doubles) {
+        super(doubles);
+    }
+
+    public ImageByteBuffer(float[] floats) {
+        super(floats);
+    }
+
+    public ImageByteBuffer(int[] ints) {
+        super(ints);
+    }
+
+    public ImageByteBuffer(ByteBuf byteBuf, int i) {
+        super(byteBuf, i);
+    }
+
     @Override
     protected DataBuffer create(int i) {
-        throw new UnsupportedOperationException();
+        return new ImageByteBuffer(i);
     }
 
     @Override
     public DataBuffer create(double[] doubles) {
-        throw new UnsupportedOperationException();
+        return new ImageByteBuffer(doubles);
     }
 
     @Override
     public DataBuffer create(float[] floats) {
-        throw new UnsupportedOperationException();
+        return new ImageByteBuffer(floats);
     }
 
     @Override
     public DataBuffer create(int[] ints) {
-        throw new UnsupportedOperationException();
+        return new ImageByteBuffer(ints);
     }
 
     @Override
     public DataBuffer create(ByteBuf byteBuf, int i) {
-        throw new UnsupportedOperationException();
+        return new ImageByteBuffer(byteBuf, i);
     }
 
     @Override

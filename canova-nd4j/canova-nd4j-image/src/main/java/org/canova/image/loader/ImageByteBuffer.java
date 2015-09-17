@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.nd4j.linalg.api.buffer.BaseDataBuffer;
 import org.nd4j.linalg.api.buffer.DataBuffer;
-import java.lang.UnsupportedClassVersionError;
+import java.lang.UnsupportedOperationException;
 
 public class ImageByteBuffer extends BaseDataBuffer {
 
@@ -15,27 +15,27 @@ public class ImageByteBuffer extends BaseDataBuffer {
 
     @Override
     protected DataBuffer create(int i) {
-        throw new UnsupportedClassVersionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DataBuffer create(double[] doubles) {
-        throw new UnsupportedClassVersionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DataBuffer create(float[] floats) {
-        throw new UnsupportedClassVersionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DataBuffer create(int[] ints) {
-        throw new UnsupportedClassVersionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public DataBuffer create(ByteBuf byteBuf, int i) {
-        throw new UnsupportedClassVersionError();
+        throw new UnsupportedOperationException();
     }
 
     @Override

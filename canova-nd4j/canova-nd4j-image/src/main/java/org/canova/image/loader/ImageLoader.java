@@ -31,7 +31,7 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.*;
 
@@ -97,7 +97,7 @@ public class ImageLoader implements Serializable {
         if(channels == 3) {
             return toRaveledTensor(f);
         }
-        return ArrayUtil.toNDArray( flattenedImageFromFile(f));
+        return ArrayUtil.toNDArray(flattenedImageFromFile(f));
     }
 
     public INDArray asRowVector(InputStream inputStream) {
@@ -118,9 +118,9 @@ public class ImageLoader implements Serializable {
 
     /**
      * Changes the input stream in to an
-     * rgb based raveled(flattened) vector
+     * bgr based raveled(flattened) vector
      * @param file the input stream to convert
-     * @return  the raveled rgb values for this input stream
+     * @return  the raveled bgr values for this input stream
      */
     public INDArray toRaveledTensor(File file) {
         try {
@@ -134,39 +134,39 @@ public class ImageLoader implements Serializable {
     }
     /**
      * Changes the input stream in to an
-     * rgb based raveled(flattened) vector
+     * bgr based raveled(flattened) vector
      * @param is the input stream to convert
-     * @return  the raveled rgb values for this input stream
+     * @return  the raveled bgr values for this input stream
      */
     public INDArray toRaveledTensor(InputStream is) {
-        return toRgb(is).ravel();
+        return toBgr(is).ravel();
     }
 
     /**
      * Convert an image in to a raveled tensor of
-     * the rgb values of the image
+     * the bgr values of the image
      * @param image the image to parse
-     * @return the raveled tensor of rgb values
+     * @return the raveled tensor of bgr values
      */
     public INDArray toRaveledTensor(BufferedImage image) {
         try {
             image = scalingIfNeed(image, false);
-            return toINDArrayRGB(image).ravel();
+            return toINDArrayBGR(image).ravel();
         } catch (Exception e) {
             throw new RuntimeException("Unable to load image", e);
         }
     }
 
     /**
-     * Convert an input stream to an rgb spectrum image
+     * Convert an input stream to an bgr spectrum image
      *
      * @param file the file to convert
      * @return the input stream to convert
      */
-    public INDArray toRgb(File file) {
+    public INDArray toBgr(File file) {
         try {
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-            INDArray ret = toRgb(bis);
+            INDArray ret = toBgr(bis);
             bis.close();
             return ret;
         } catch (IOException e) {
@@ -175,18 +175,18 @@ public class ImageLoader implements Serializable {
     }
 
     /**
-     * Convert an input stream to an rgb spectrum image
+     * Convert an input stream to an bgr spectrum image
      *
      * @param inputStream the input stream to convert
      * @return the input stream to convert
      */
-    public INDArray toRgb(InputStream inputStream) {
+    public INDArray toBgr(InputStream inputStream) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
             if(image == null)
                 throw new IllegalStateException("Unable to load image");
             image = scalingIfNeed(image, false);
-            return toINDArrayRGB(image);
+            return toINDArrayBGR(image);
 
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image", e);
@@ -211,7 +211,7 @@ public class ImageLoader implements Serializable {
      */
     public INDArray asMatrix(InputStream inputStream) {
        if(channels == 3)
-           return toRgb(inputStream);
+           return toBgr(inputStream);
         try {
             BufferedImage image  = ImageIO.read(inputStream);
             image = scalingIfNeed(image, true);
@@ -276,15 +276,14 @@ public class ImageLoader implements Serializable {
         int w = image.getWidth(), h = image.getHeight();
         int bands = image.getSampleModel().getNumBands();
         int[][][] ret = new int[channels][h][w];
-        int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
+        byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
 
         for (int i = 0; i < h; i++) {
             for (int j = 0; j < w; j++) {
                 for (int k = 0; k < channels; k++) {
                     if(k >= bands)
                         break;
-
-                    ret[k][i][j] = getSplittedChannel(pixels[i * w + j], channels, k);
+                    ret[k][i][j] = pixels[channels * w * i + channels * j + k];
                 }
             }
         }
@@ -371,31 +370,15 @@ public class ImageLoader implements Serializable {
         return ret;
     }
 
-    protected INDArray toINDArrayRGB(BufferedImage image) {
+    protected INDArray toINDArrayBGR(BufferedImage image) {
         int width = image.getWidth();
         int height = image.getHeight();
         int bands = image.getSampleModel().getNumBands();
 
-        int[] pixels = ((DataBufferInt)image.getRaster().getDataBuffer()).getData();
-        int[] shape = new int[]{channels, height, width};
-        int[] ret = new int[channels * height * width];
-
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                for (int k = 0; k < channels; k++) {
-                    if(k >= bands)
-                        break;
-
-                    int index = k * height * width + i * width + j;
-                    ret[index] = getSplittedChannel(pixels[i * width + j], channels, k);
-                }
-            }
-        }
-        return Nd4j.create(new IntBuffer(ret), shape);
-    }
-
-    protected int getSplittedChannel(int compactedColor, int channelLength, int channel) {
-        return (compactedColor >> (8 * (channelLength - channel -1))) & 0xff;
+        byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+        int[] shape = new int[]{height, width, channels};
+        INDArray ret = Nd4j.create(new ImageByteBuffer(pixels, pixels.length), shape);
+        return ret.permute(2, 0, 1);
     }
 
     protected BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
@@ -405,15 +388,21 @@ public class ImageLoader implements Serializable {
     protected BufferedImage scalingIfNeed(BufferedImage image, int dstWidth, int dstHeight, boolean needAlpha) {
         if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
             Image scaled = image.getScaledInstance(dstWidth, dstHeight, Image.SCALE_SMOOTH);
-            boolean hasAlpha = image.getColorModel().hasAlpha();
 
-            if (needAlpha && (image.getType() == BufferedImage.TYPE_INT_ARGB || hasAlpha)) {
-                return toBufferedImage(scaled, BufferedImage.TYPE_INT_ARGB);
+            if (needAlpha && image.getColorModel().hasAlpha()) {
+                return toBufferedImage(scaled, BufferedImage.TYPE_4BYTE_ABGR);
             } else {
-                return toBufferedImage(scaled, BufferedImage.TYPE_INT_RGB);
+                return toBufferedImage(scaled, BufferedImage.TYPE_3BYTE_BGR);
             }
         } else {
-            return image;
+            if (image.getType() == BufferedImage.TYPE_4BYTE_ABGR || image.getType() == BufferedImage.TYPE_3BYTE_BGR) {
+                return image;
+            } else if (needAlpha && image.getColorModel().hasAlpha()) {
+                return toBufferedImage(image, BufferedImage.TYPE_4BYTE_ABGR);
+            } else {
+                return toBufferedImage(image, BufferedImage.TYPE_3BYTE_BGR);
+
+            }
         }
     }
 

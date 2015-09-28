@@ -22,6 +22,7 @@ package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
+import org.nd4j.linalg.api.buffer.IntBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -30,12 +31,13 @@ import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
+import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.*;
 
 /**
- * Image loader for taking images and converting them to matrices
+ * Image loader for taking images
+ * and converting them to matrices
  * @author Adam Gibson
  *
  */
@@ -43,6 +45,7 @@ public class ImageLoader implements Serializable {
 
     private int width = -1;
     private int height = -1;
+    private int channels = -1;
 
     static {
         IIORegistry registry = IIORegistry.getDefaultInstance();
@@ -67,6 +70,22 @@ public class ImageLoader implements Serializable {
         this.height = height;
     }
 
+
+    /**
+     * Instantiate an image with the given
+     * width and height
+     *
+     * @param width  the width to load
+     * @param height the height to load
+     * @param channels the number of channels for the image
+     */
+    public ImageLoader(int width, int height,int channels) {
+        super();
+        this.width = width;
+        this.height = height;
+        this.channels = channels;
+    }
+
     /**
      * Convert a file to a row vector
      *
@@ -75,14 +94,33 @@ public class ImageLoader implements Serializable {
      * @throws Exception
      */
     public INDArray asRowVector(File f) throws Exception {
+        if(channels == 3) {
+            return toRaveledTensor(f);
+        }
         return ArrayUtil.toNDArray(flattenedImageFromFile(f));
+    }
+
+    public INDArray asRowVector(InputStream inputStream) {
+        return asMatrix(inputStream).ravel();
+    }
+
+    /**
+     * Convert an image in to a row vector
+     * @param image the image to convert
+     * @return the row vector based on a rastered
+     * representation of the image
+     */
+    public INDArray asRowVector(BufferedImage image) {
+        image = scalingIfNeed(image, true);
+        int[][] ret = toIntArrayArray(image);
+        return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
     }
 
     /**
      * Changes the input stream in to an
-     * rgb based raveled(flattened) vector
+     * bgr based raveled(flattened) vector
      * @param file the input stream to convert
-     * @return  the raveled rgb values for this input stream
+     * @return  the raveled bgr values for this input stream
      */
     public INDArray toRaveledTensor(File file) {
         try {
@@ -96,24 +134,39 @@ public class ImageLoader implements Serializable {
     }
     /**
      * Changes the input stream in to an
-     * rgb based raveled(flattened) vector
+     * bgr based raveled(flattened) vector
      * @param is the input stream to convert
-     * @return  the raveled rgb values for this input stream
+     * @return  the raveled bgr values for this input stream
      */
     public INDArray toRaveledTensor(InputStream is) {
-        return toRgb(is).ravel();
+        return toBgr(is).ravel();
     }
 
     /**
-     * Convert an input stream to an rgb spectrum image
+     * Convert an image in to a raveled tensor of
+     * the bgr values of the image
+     * @param image the image to parse
+     * @return the raveled tensor of bgr values
+     */
+    public INDArray toRaveledTensor(BufferedImage image) {
+        try {
+            image = scalingIfNeed(image, false);
+            return toINDArrayBGR(image).ravel();
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to load image", e);
+        }
+    }
+
+    /**
+     * Convert an input stream to an bgr spectrum image
      *
      * @param file the file to convert
      * @return the input stream to convert
      */
-    public INDArray toRgb(File file) {
+    public INDArray toBgr(File file) {
         try {
             BufferedInputStream bis = new BufferedInputStream(new FileInputStream(file));
-            INDArray ret = toRgb(bis);
+            INDArray ret = toBgr(bis);
             bis.close();
             return ret;
         } catch (IOException e) {
@@ -122,67 +175,33 @@ public class ImageLoader implements Serializable {
     }
 
     /**
-     * Convert the given image to an rgb image
-     * @param arr the array to use
-     * @param image the iamge to set
-     */
-    public void toBufferedImageRGB(INDArray arr,BufferedImage image) {
-        if(arr.rank() < 3)
-            throw new IllegalArgumentException("Arr must be 3d");
-
-        if (arr.size(-2) > 0 && arr.size(-1) > 0)
-            image = toBufferedImage(image.getScaledInstance(arr.size(-2),arr.size(-1), Image.SCALE_SMOOTH));
-        for (int i = 0; i < image.getWidth(); i++) {
-            for (int j = 0; j < image.getHeight(); j++) {
-                int r = arr.slice(0).getInt(i,j);
-                int g = arr.slice(1).getInt(i,j);
-                int b = arr.slice(2).getInt(i,j);
-                int a = 1;
-                int col = (a << 24) | (r << 16) | (g << 8) | b;
-                image.setRGB(i,j,col);
-            }
-        }
-
-    }
-
-    /**
-     * Convert an input stream to an rgb spectrum image
+     * Convert an input stream to an bgr spectrum image
      *
      * @param inputStream the input stream to convert
      * @return the input stream to convert
      */
-    public INDArray toRgb(InputStream inputStream) {
+    public INDArray toBgr(InputStream inputStream) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
-            if (height > 0 && width > 0)
-                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
-            INDArray ret = Nd4j.create(3, height, width);
-            for (int i = 0; i < image.getWidth(); i++) {
-                for (int j = 0; j < image.getHeight(); j++) {
-                    int[] vals = getPixelData(image,i,j);
-                    for(int k = 0; k < vals.length; k++) {
-                        ret.putScalar(new int[]{i,j,k},vals[i]);
-                    }
-                }
-            }
+            if(image == null)
+                throw new IllegalStateException("Unable to load image");
+            image = scalingIfNeed(image, false);
+            return toINDArrayBGR(image);
 
-            return ret;
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image", e);
         }
-
     }
 
-    private int[] getPixelData(BufferedImage img, int x, int y) {
-        int argb = img.getRGB(x, y);
-
-        return  new int[] {
-                (argb >> 16) & 0xff, //red
-                (argb >> 8) & 0xff, //green
-                (argb) & 0xff  //blue
-        };
-
-
+    /**
+     * Convert an image file
+     * in to a matrix
+     * @param f the file to convert
+     * @return a 2d matrix of a rastered version of the image
+     * @throws IOException
+     */
+    public INDArray asMatrix(File f) throws IOException {
+        return ArrayUtil.toNDArray(fromFile(f));
     }
 
     /**
@@ -191,32 +210,24 @@ public class ImageLoader implements Serializable {
      * @return the input stream to convert
      */
     public INDArray asMatrix(InputStream inputStream) {
+       if(channels == 3)
+           return toBgr(inputStream);
         try {
             BufferedImage image  = ImageIO.read(inputStream);
-            if (height > 0 && width > 0)
-                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
-            Raster raster = image.getData();
-            int w = raster.getWidth(), h = raster.getHeight();
-            int[][] ret = new int[w][h];
-            for (int i = 0; i < w; i++)
-                for (int j = 0; j < h; j++)
-                    ret[i][j] = raster.getSample(i, j, 0);
-            INDArray newRet = Nd4j.create(w, h);
-            for(int i = 0; i < ret.length; i++) {
-                for(int j = 0; j < ret[i].length; j++) {
-                    newRet.putScalar(new int[]{i,j},ret[i][j]);
+            image = scalingIfNeed(image, true);
+            int w = image.getWidth();
+            int h = image.getHeight();
+            INDArray ret = Nd4j.create(h, w);
+
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < w; j++) {
+                    ret.putScalar(new int[]{i, j}, image.getRGB(i, j));
                 }
             }
-
-            return newRet;
+            return ret;
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image",e);
         }
-
-    }
-
-    public INDArray asRowVector(InputStream inputStream) {
-        return asMatrix(inputStream).ravel();
     }
 
     /**
@@ -234,18 +245,6 @@ public class ImageLoader implements Serializable {
         }catch(Exception e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    /**
-     * Convert an image file
-     * in to a matrix
-     * @param f the file to convert
-     * @return a 2d matrix of a rastered version of the image
-     * @throws IOException
-     */
-    public INDArray asMatrix(File f) throws IOException {
-        return ArrayUtil.toNDArray(fromFile(f));
     }
 
     public int[] flattenedImageFromFile(File f) throws Exception {
@@ -260,18 +259,36 @@ public class ImageLoader implements Serializable {
      */
     public int[][] fromFile(File file) throws IOException {
         BufferedImage image = ImageIO.read(file);
-        if (height > 0 && width > 0)
-            image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
-        Raster raster = image.getData();
-        int w = raster.getWidth(), h = raster.getHeight();
-        int[][] ret = new int[w][h];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++)
-                ret[i][j] = raster.getSample(i, j, 0);
-
-        return ret;
+        image = scalingIfNeed(image, true);
+        return toIntArrayArray(image);
     }
 
+    /**
+     * Load a rastered image from file
+     * @param file the file to load
+     * @return the rastered image
+     * @throws IOException
+     */
+    public int[][][] fromFileMultipleChannels(File file) throws IOException {
+        BufferedImage image = ImageIO.read(file);
+        image = scalingIfNeed(image, channels > 3);
+
+        int w = image.getWidth(), h = image.getHeight();
+        int bands = image.getSampleModel().getNumBands();
+        int[][][] ret = new int[channels][h][w];
+        byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+
+        for (int i = 0; i < h; i++) {
+            for (int j = 0; j < w; j++) {
+                for (int k = 0; k < channels; k++) {
+                    if(k >= bands)
+                        break;
+                    ret[k][i][j] = pixels[channels * w * i + channels * j + k];
+                }
+            }
+        }
+        return ret;
+    }
 
     /**
      * Convert a matrix in to a buffereed image
@@ -286,7 +303,6 @@ public class ImageLoader implements Serializable {
             equiv[i] = (int) matrix.getDouble(i);
         }
 
-
         r.setDataElements(0,0,matrix.rows(),matrix.columns(),equiv);
         return img;
     }
@@ -299,26 +315,42 @@ public class ImageLoader implements Serializable {
         return ret;
     }
 
+    /**
+     * Convert the given image to an rgb image
+     * @param arr the array to use
+     * @param image the iamge to set
+     */
+    public void toBufferedImageRGB(INDArray arr,BufferedImage image) {
+        if(arr.rank() < 3)
+            throw new IllegalArgumentException("Arr must be 3d");
 
-
-
-
+        image = scalingIfNeed(image, arr.size(-2), arr.size(-1), true);
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                int r = arr.slice(0).getInt(i,j);
+                int g = arr.slice(1).getInt(i,j);
+                int b = arr.slice(2).getInt(i,j);
+                int a = 1;
+                int col = (a << 24) | (r << 16) | (g << 8) | b;
+                image.setRGB(i,j,col);
+            }
+        }
+    }
 
     /**
      * Converts a given Image into a BufferedImage
      *
      * @param img The Image to be converted
+     * @param type The color model of BufferedImage
      * @return The converted BufferedImage
      */
-    public static BufferedImage toBufferedImage(Image img)
-    {
-        if (img instanceof BufferedImage)
-        {
+    public static BufferedImage toBufferedImage(Image img, int type) {
+        if (img instanceof BufferedImage) {
             return (BufferedImage) img;
         }
 
         // Create a buffered image with transparency
-        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), type);
 
         // Draw the image on to the buffered image
         Graphics2D bGr = bimage.createGraphics();
@@ -329,48 +361,49 @@ public class ImageLoader implements Serializable {
         return bimage;
     }
 
-    /**
-     * Convert an image in to a row vector
-     * @param image the image to convert
-     * @return the row vector based on a rastered
-     * representation of the image
-     */
-    public INDArray asRowVector(BufferedImage image) {
-        if (height > 0 && width > 0)
-            image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
-        Raster raster = image.getData();
-        int w = raster.getWidth(), h = raster.getHeight();
-        int[][] ret = new int[w][h];
-        for (int i = 0; i < w; i++)
-            for (int j = 0; j < h; j++)
-                ret[i][j] = raster.getSample(i, j, 0);
-
-        return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
+    protected int[][] toIntArrayArray(BufferedImage image) {
+        int w = image.getWidth(), h = image.getHeight();
+        int[][] ret = new int[h][w];
+        for (int i = 0; i < h; i++)
+            for (int j = 0; j < w; j++)
+                ret[i][j] = image.getRGB(j, i);
+        return ret;
     }
 
-    /**
-     * Convert an image in to a raveled tensor of
-     * the rgb values of the image
-     * @param image the image to parse
-     * @return the raveled tensor of rgb values
-     */
-    public INDArray toRaveledTensor(BufferedImage image) {
-        try {
-            if (height > 0 && width > 0)
-                image = toBufferedImage(image.getScaledInstance(height, width, Image.SCALE_SMOOTH));
-            INDArray ret = Nd4j.create(3, height, width);
-            for (int i = 0; i < image.getWidth(); i++) {
-                for (int j = 0; j < image.getHeight(); j++) {
-                    int[] vals = getPixelData(image,i,j);
-                    for(int k = 0; k < vals.length; k++) {
-                        ret.putScalar(new int[]{i,j,k},vals[i]);
-                    }
-                }
-            }
+    protected INDArray toINDArrayBGR(BufferedImage image) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        int bands = image.getSampleModel().getNumBands();
 
-            return ret.ravel();
-        } catch (Exception e) {
-            throw new RuntimeException("Unable to load image", e);
+        byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+        int[] shape = new int[]{height, width, channels};
+        INDArray ret = Nd4j.create(new ImageByteBuffer(pixels, pixels.length), shape);
+        return ret.permute(2, 0, 1);
+    }
+
+    protected BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
+        return scalingIfNeed(image, width, height, needAlpha);
+    }
+
+    protected BufferedImage scalingIfNeed(BufferedImage image, int dstWidth, int dstHeight, boolean needAlpha) {
+        if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
+            Image scaled = image.getScaledInstance(dstWidth, dstHeight, Image.SCALE_SMOOTH);
+
+            if (needAlpha && image.getColorModel().hasAlpha()) {
+                return toBufferedImage(scaled, BufferedImage.TYPE_4BYTE_ABGR);
+            } else {
+                return toBufferedImage(scaled, BufferedImage.TYPE_3BYTE_BGR);
+            }
+        } else {
+            if (image.getType() == BufferedImage.TYPE_4BYTE_ABGR || image.getType() == BufferedImage.TYPE_3BYTE_BGR) {
+                return image;
+            } else if (needAlpha && image.getColorModel().hasAlpha()) {
+                return toBufferedImage(image, BufferedImage.TYPE_4BYTE_ABGR);
+            } else {
+                return toBufferedImage(image, BufferedImage.TYPE_3BYTE_BGR);
+
+            }
         }
     }
+
 }

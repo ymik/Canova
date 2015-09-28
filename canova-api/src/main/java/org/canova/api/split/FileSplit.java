@@ -36,10 +36,12 @@ import java.util.Collection;
  */
 public class FileSplit extends BaseInputSplit {
 
+    private File rootDir;
     public FileSplit(File rootDir) {
         if(rootDir == null && rootDir.exists())
             throw new IllegalArgumentException("File must not be null");
 
+        this.rootDir = rootDir;
         if(rootDir.isDirectory()) {
             Collection<File> subFiles = FileUtils.listFiles(rootDir, null, true);
             locations = new URI[subFiles.size()];
@@ -81,4 +83,10 @@ public class FileSplit extends BaseInputSplit {
     public void readFields(DataInput in) throws IOException {
 
     }
+
+    public File getRootDir() {
+        return rootDir;
+    }
 }
+
+

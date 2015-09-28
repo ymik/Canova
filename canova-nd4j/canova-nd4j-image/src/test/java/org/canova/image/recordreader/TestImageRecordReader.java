@@ -45,13 +45,35 @@ public class TestImageRecordReader {
     public void testInputStream() throws Exception {
         RecordReader reader = new ImageRecordReader(28,28,false);
         // keeps needlessly blowing up
-        /*
         ClassPathResource res = new ClassPathResource("/test.jpg");
         reader.initialize(new InputStreamInputSplit(res.getInputStream(), res.getURI()));
         assertTrue(reader.hasNext());
         Collection<Writable> record = reader.next();
         assertEquals(784,record.size());
-        */
+
     }
-    
+
+    @Test
+    public void testMultipleChannels() throws Exception {
+        RecordReader reader = new ImageRecordReader(28,28,3,false);
+        // keeps needlessly blowing up
+        ClassPathResource res = new ClassPathResource("/test.jpg");
+        reader.initialize(new InputStreamInputSplit(res.getInputStream(), res.getURI()));
+        assertTrue(reader.hasNext());
+        Collection<Writable> record = reader.next();
+        assertEquals(784 * 3,record.size());
+    }
+
+    @Test
+    public void testGetLabel() throws Exception {
+        RecordReader reader = new ImageNameRecordReader(28,28,3,true);
+        // keeps needlessly blowing up
+        ClassPathResource res = new ClassPathResource("/test-1.jpg");
+        reader.initialize(new InputStreamInputSplit(res.getInputStream(), res.getURI()));
+        assertTrue(reader.hasNext());
+        Collection<Writable> record = reader.next();
+        assertEquals(784 * 3 + 1, record.size());
+    }
+
+
 }

@@ -55,11 +55,12 @@ public abstract class BaseImageRecordReader implements RecordReader {
     protected List<String> labels  = new ArrayList<>();
     protected boolean appendLabel = false;
     protected Collection<Writable> record;
-    protected final List<String> allowedFormats = Arrays.asList("tif", "jpg", "png", "jpeg", "bmp");
+    protected final List<String> allowedFormats = Arrays.asList("tif", "jpg", "png", "jpeg", "bmp", "JPEG", "JPG", "TIF", "PNG");
     protected boolean hitImage = false;
     protected Configuration conf;
+
     public final static String WIDTH = NAME_SPACE + ".width";
-    public final static String HEIGHT = NAME_SPACE + ".width";
+    public final static String HEIGHT = NAME_SPACE + ".height";
     public final static String CHANNELS = NAME_SPACE + ".channels";
 
     static {
@@ -75,25 +76,6 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public BaseImageRecordReader() {
     }
 
-
-    /**
-     * Load the record reader with the given width and height
-     * @param width the width load
-     * @param height the height to load
-     */
-    public BaseImageRecordReader(int width, int height,int channels,List<String> labels) {
-        this(width, height,channels,false);
-        this.labels = labels;
-
-    }
-
-    public BaseImageRecordReader(int width, int height,int channels,boolean appendLabel,List<String> labels) {
-        this.appendLabel = appendLabel;
-        imageLoader = new ImageLoader(width,height,channels);
-        this.labels = labels;
-
-    }
-
     /**
      * Load the record reader with the given width and height
      * @param width the width load
@@ -104,36 +86,32 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
     }
 
+    public BaseImageRecordReader(int width, int height,int channels,List<String> labels) {
+        this(width, height,channels,false);
+        this.labels = labels;
+    }
+
+    public BaseImageRecordReader(int width, int height,int channels,boolean appendLabel,List<String> labels) {
+        this(width,height,channels,appendLabel);
+        this.labels = labels;
+    }
+
     public BaseImageRecordReader(int width, int height,int channels,boolean appendLabel) {
         this.appendLabel = appendLabel;
         imageLoader = new ImageLoader(width,height,channels);
-
     }
 
-
-    /**
-     * Load the record reader with the given width and height
-     * @param width the width load
-     * @param height the height to load
-     */
     public BaseImageRecordReader(int width, int height,List<String> labels) {
         this(width, height,false);
         this.labels = labels;
-
     }
 
     public BaseImageRecordReader(int width, int height,boolean appendLabel,List<String> labels) {
         this.appendLabel = appendLabel;
         imageLoader = new ImageLoader(width,height);
         this.labels = labels;
-
     }
 
-    /**
-     * Load the record reader with the given width and height
-     * @param width the width load
-     * @param height the height to load
-     */
     public BaseImageRecordReader(int width, int height) {
         this(width, height,false);
 
@@ -145,7 +123,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
     }
 
-    protected boolean containsFormat(String format) {
+    private boolean containsFormat(String format) {
         for(String format2 : allowedFormats)
             if(format.endsWith("." + format2))
                 return true;
@@ -164,18 +142,13 @@ public abstract class BaseImageRecordReader implements RecordReader {
                         File iter = new File(location);
                         if(!iter.isDirectory() && containsFormat(iter.getAbsolutePath()))
                             allFiles.add(iter);
-                        if(appendLabel) {
+                        if(appendLabel){
                             File parentDir = iter.getParentFile();
                             String name = parentDir.getName();
                             if(!labels.contains(name))
                                 labels.add(name);
-
                         }
-
                     }
-
-
-
                     iter = allFiles.iterator();
                 }
                 else {
@@ -188,7 +161,6 @@ public abstract class BaseImageRecordReader implements RecordReader {
                         iter = Collections.singletonList(curr).iterator();
                 }
             }
-
             //remove the root directory
             FileSplit split1 = (FileSplit) split;
             labels.remove(split1.getRootDir());
@@ -201,25 +173,23 @@ public abstract class BaseImageRecordReader implements RecordReader {
             URI[] locations = split2.locations();
             INDArray load = imageLoader.asRowVector(is);
             record = RecordConverter.toRecord(load);
-            if(appendLabel) {
-                Path path = Paths.get(locations[0]);
-                String parent = path.getParent().toString();
-                //could have been a uri
-                if(parent.contains("/")) {
-                    parent = parent.substring(parent.lastIndexOf('/') + 1);
+            for(int i = 0; i < load.length(); i++) {
+                if (appendLabel) {
+                    Path path = Paths.get(locations[0]);
+                    String parent = path.getParent().toString();
+                    //could have been a uri
+                    if (parent.contains("/")) {
+                        parent = parent.substring(parent.lastIndexOf('/') + 1);
+                    }
+                    int label = labels.indexOf(parent);
+                    if (label >= 0)
+                        record.add(new DoubleWritable(labels.indexOf(parent)));
+                    else
+                        throw new IllegalStateException("Illegal label " + parent);
                 }
-                int label = labels.indexOf(parent);
-                if(label >= 0)
-                    record.add(new DoubleWritable(labels.indexOf(parent)));
-                else
-                    throw new IllegalStateException("Illegal label " + parent);
             }
-
             is.close();
         }
-
-
-
 
     }
 
@@ -235,15 +205,16 @@ public abstract class BaseImageRecordReader implements RecordReader {
     @Override
     public Collection<Writable> next() {
         if(iter != null) {
-            List<Writable> ret = new ArrayList<>();
+            Collection<Writable> ret = new ArrayList<>();
             File image = iter.next();
             currentFile = image;
+
             if(image.isDirectory())
                 return next();
+
             try {
                 INDArray row = imageLoader.asRowVector(image);
-                for(int i = 0; i < row.length(); i++)
-                    ret.add(new DoubleWritable(row.getDouble(i)));
+                ret = RecordConverter.toRecord(row);
                 if(appendLabel)
                     ret.add(new DoubleWritable(labels.indexOf(image.getParentFile().getName())));
             } catch (Exception e) {
@@ -260,20 +231,14 @@ public abstract class BaseImageRecordReader implements RecordReader {
                         e.printStackTrace();
                     }
                 }
-
             }
-
             return ret;
         }
-
         else if(record != null) {
             hitImage = true;
             return record;
         }
-
-
         throw new IllegalStateException("No more elements");
-
     }
 
     @Override

@@ -25,4 +25,14 @@ public class CSVRecordReaderTest {
             assertEquals("Last entry garbage", 1, lastEntry.getLength());
         }
     }
+
+    @Test
+    public void testEmptyEntries() throws Exception {
+        CSVRecordReader reader = new CSVRecordReader();
+        reader.initialize(new StringSplit("1,1,8.0,,,,14.0,,,,15.0,,,,,,,,,,,,"));
+        while (reader.hasNext()) {
+            Collection<Writable> vals = reader.next();
+            assertEquals("Entry count", 23, vals.size());
+        }
+    }
 }

@@ -376,7 +376,7 @@ public class ImageLoader implements Serializable {
         int bands = image.getSampleModel().getNumBands();
 
         byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
-        int[] shape = new int[]{height, width, channels};
+        int[] shape = new int[]{height, width, bands};
         INDArray ret = Nd4j.create(new ImageByteBuffer(pixels, pixels.length), shape);
         return ret.permute(2, 0, 1);
     }

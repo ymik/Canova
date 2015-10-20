@@ -64,7 +64,7 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
     public final static String NAME_SPACE = "org.canova.codec.reader";
     public final static String ROWS = NAME_SPACE + ".rows";
     public final static String COLUMNS = NAME_SPACE + ".columns";
-    public final static String START_FRAME = NAME_SPACE + ".frames";
+    public final static String START_FRAME = NAME_SPACE + ".startframe";
     public final static String TOTAL_FRAMES = NAME_SPACE + ".frames";
     public final static String TIME_SLICE = NAME_SPACE + ".time";
     public final static String RAVEL = NAME_SPACE + ".ravel";

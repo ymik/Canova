@@ -35,7 +35,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Record reader that understands the ImageNet file format
+ * Record reader that unde
+ * rstands the ImageNet file format
  *
  * Built to avoid changing api at this time. Api should change to track labels that are only referenced by id in filename
  */
@@ -234,6 +235,8 @@ public class ImageNetRecordReader implements RecordReader {
     public Configuration getConf() {
         return null;
     }
+
+    public List<String> getLabels() {return labels; }
 
 
 }

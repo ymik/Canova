@@ -85,8 +85,8 @@ public class CSVRecordReader extends LineRecordReader {
             skippedLines = true;
         }
         Text t =  (Text) super.next().iterator().next();
-        String val = new String(t.getBytes());
-        String[] split = val.split(delimiter);
+        String val = t.toString();
+        String[] split = val.split(delimiter, -1);
         List<Writable> ret = new ArrayList<>();
         for(String s : split)
             ret.add(new Text(s));

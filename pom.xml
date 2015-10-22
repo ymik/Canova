@@ -57,7 +57,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <slf4j.version>1.7.7</slf4j.version>
-        <nd4j.version>0.4-rc3.5</nd4j.version>
+        <nd4j.version>0.4-rc3.6-SNAPSHOT</nd4j.version>
     </properties>
 
     <distributionManagement>

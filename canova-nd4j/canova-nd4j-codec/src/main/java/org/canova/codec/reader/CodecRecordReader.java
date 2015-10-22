@@ -54,6 +54,7 @@ import java.util.Collection;
  * @author Adam Gibson
  */
 public class CodecRecordReader extends FileRecordReader implements SequenceRecordReader {
+    private int startFrame = 0;
     private int numFrames = -1;
     private int totalFrames = -1;
     private double framesPerSecond = -1;
@@ -64,7 +65,7 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
     public final static String NAME_SPACE = "org.canova.codec.reader";
     public final static String ROWS = NAME_SPACE + ".rows";
     public final static String COLUMNS = NAME_SPACE + ".columns";
-    public final static String START_FRAME = NAME_SPACE + ".frames";
+    public final static String START_FRAME = NAME_SPACE + ".startframe";
     public final static String TOTAL_FRAMES = NAME_SPACE + ".frames";
     public final static String TIME_SLICE = NAME_SPACE + ".time";
     public final static String RAVEL = NAME_SPACE + ".ravel";
@@ -76,7 +77,7 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
         File next = iter.next();
         Collection<Collection<Writable>> record = new ArrayList<>();
         if(numFrames >= 1) {
-            for(int i = numFrames; i < totalFrames; i++) {
+            for(int i = startFrame; i < startFrame+numFrames; i++) {
                 try {
                     BufferedImage grab = FrameGrab.getFrame(next,i + 1);
                     if(ravel)
@@ -138,7 +139,8 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
     @Override
     public void setConf(Configuration conf) {
         super.setConf(conf);
-        numFrames = conf.getInt(START_FRAME,-1);
+        startFrame = conf.getInt(START_FRAME,0);
+        numFrames = conf.getInt(TOTAL_FRAMES,-1);
         int rows = conf.getInt(ROWS,28);
         int cols = conf.getInt(COLUMNS,28);
         imageLoader = new ImageLoader(rows,cols);

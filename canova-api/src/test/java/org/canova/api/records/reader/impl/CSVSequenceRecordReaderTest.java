@@ -75,5 +75,25 @@ public class CSVSequenceRecordReaderTest {
         public void readFields(DataInput in) throws IOException {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public double toDouble(){
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public float toFloat(){
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int toInt(){
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public long toLong(){
+            throw new UnsupportedOperationException();
+        }
     }
 }

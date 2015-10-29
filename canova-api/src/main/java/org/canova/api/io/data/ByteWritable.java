@@ -89,4 +89,24 @@ public class ByteWritable implements WritableComparable {
     static {                                        // register this comparator
         WritableComparator.define(ByteWritable.class, new Comparator());
     }
+
+    @Override
+    public double toDouble(){
+        return value;
+    }
+
+    @Override
+    public float toFloat(){
+        return value;
+    }
+
+    @Override
+    public int toInt(){
+        return value;
+    }
+
+    @Override
+    public long toLong(){
+        return value;
+    }
 }

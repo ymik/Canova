@@ -97,4 +97,23 @@ public class DoubleWritable implements WritableComparable {
         WritableComparator.define(DoubleWritable.class, new Comparator());
     }
 
+    @Override
+    public double toDouble(){
+        return value;
+    }
+
+    @Override
+    public float toFloat(){
+        return (float)value;
+    }
+
+    @Override
+    public int toInt(){
+        return (int)value;
+    }
+
+    @Override
+    public long toLong(){
+        return (long)value;
+    }
 }

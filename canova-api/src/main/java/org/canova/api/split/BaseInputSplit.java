@@ -42,4 +42,23 @@ public abstract class BaseInputSplit implements InputSplit {
         return 0;
     }
 
+    @Override
+    public double toDouble(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float toFloat(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int toInt(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long toLong(){
+        throw new UnsupportedOperationException();
+    }
 }

@@ -46,4 +46,24 @@ public abstract class BaseInputFormat implements InputFormat {
     public void readFields(DataInput in) throws IOException {
 
     }
+
+    @Override
+    public double toDouble(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float toFloat(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int toInt(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long toLong(){
+        throw new UnsupportedOperationException();
+    }
 }

@@ -59,4 +59,24 @@ public class StringSplit implements InputSplit {
     public String getData() {
         return data;
     }
+
+    @Override
+    public double toDouble(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float toFloat(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int toInt(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long toLong(){
+        throw new UnsupportedOperationException();
+    }
 }

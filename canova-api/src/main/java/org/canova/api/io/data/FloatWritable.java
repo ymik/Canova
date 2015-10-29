@@ -90,4 +90,23 @@ public class FloatWritable implements WritableComparable {
         WritableComparator.define(FloatWritable.class, new Comparator());
     }
 
+    @Override
+    public double toDouble(){
+        return value;
+    }
+
+    @Override
+    public float toFloat(){
+        return value;
+    }
+
+    @Override
+    public int toInt(){
+        return (int)value;
+    }
+
+    @Override
+    public long toLong(){
+        return (long)value;
+    }
 }

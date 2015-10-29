@@ -28,10 +28,13 @@ import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
 import org.canova.image.loader.ImageLoader;
 import org.jcodec.api.FrameGrab;
+import org.jcodec.api.JCodecException;
+import org.jcodec.common.NIOUtils;
 
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -77,9 +80,18 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
         File next = iter.next();
         Collection<Collection<Writable>> record = new ArrayList<>();
         if(numFrames >= 1) {
+            FrameGrab fg;
+            try{
+                fg = new FrameGrab(NIOUtils.readableFileChannel(next));
+                if(startFrame != 0) fg.seekToFramePrecise(startFrame);
+            } catch(IOException | JCodecException e){
+                throw new RuntimeException(e);
+            }
+
+
             for(int i = startFrame; i < startFrame+numFrames; i++) {
                 try {
-                    BufferedImage grab = FrameGrab.getFrame(next,i + 1);
+                    BufferedImage grab = fg.getFrame();
                     if(ravel)
                         record.add(RecordConverter.toRecord(imageLoader.toRaveledTensor(grab)));
 

@@ -45,5 +45,4 @@ public interface InputSplit extends Writable {
      * @return
      */
     URI[] locations();
-
 }

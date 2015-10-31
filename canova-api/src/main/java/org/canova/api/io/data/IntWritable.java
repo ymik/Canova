@@ -88,4 +88,24 @@ public class IntWritable implements WritableComparable {
     static {                                        // register this comparator
         WritableComparator.define(IntWritable.class, new Comparator());
     }
+
+    @Override
+    public double toDouble(){
+        return value;
+    }
+
+    @Override
+    public float toFloat(){
+        return value;
+    }
+
+    @Override
+    public int toInt(){
+        return value;
+    }
+
+    @Override
+    public long toLong(){
+        return value;
+    }
 }

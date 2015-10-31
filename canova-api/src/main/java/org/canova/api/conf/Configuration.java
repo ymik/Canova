@@ -1448,4 +1448,23 @@ public class Configuration implements Iterable<Map.Entry<String,String>>,
     }
 
 
+    @Override
+    public double toDouble(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float toFloat(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int toInt(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long toLong(){
+        throw new UnsupportedOperationException();
+    }
 }

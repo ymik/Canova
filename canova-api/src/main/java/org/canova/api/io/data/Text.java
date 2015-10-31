@@ -598,4 +598,25 @@ public class Text extends BinaryComparable
         }
         return size;
     }
+
+
+    @Override
+    public double toDouble(){
+        return Double.parseDouble(toString());
+    }
+
+    @Override
+    public float toFloat(){
+        return Float.parseFloat(toString());
+    }
+
+    @Override
+    public int toInt(){
+        return Integer.parseInt(toString());
+    }
+
+    @Override
+    public long toLong(){
+        return Long.parseLong(toString());
+    }
 }

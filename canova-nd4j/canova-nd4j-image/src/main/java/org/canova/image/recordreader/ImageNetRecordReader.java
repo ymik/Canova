@@ -62,10 +62,12 @@ public class ImageNetRecordReader implements RecordReader {
     }
 
     public ImageNetRecordReader(int width, int height, int channels, boolean appendLabel, String labelPath) {
+        imageLoader = new ImageLoader(width, height, channels);
+        this.labelPath = labelPath;
         this.appendLabel = appendLabel;
-        new ImageNetRecordReader(width, height, channels, labelPath);
     }
 
+    public Map<String,String> getLabelsMap(){ return labelIdMap; }
 
     public int numLabels() { return labels.size(); } // 1860
 
@@ -76,7 +78,7 @@ public class ImageNetRecordReader implements RecordReader {
         return false;
     }
 
-    public void defineLabels() throws IOException {
+    private void defineLabels() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(labelPath));
         String line;
 

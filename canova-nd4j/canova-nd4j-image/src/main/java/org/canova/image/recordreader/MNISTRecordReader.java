@@ -27,11 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * Record reader that understands the MNIST file format as described here:
@@ -376,9 +372,11 @@ public class MNISTRecordReader implements RecordReader {
 		curr = new DataSet(inputs,labels);
         examples.clear();
 
-	}    
-    
-    
-    
-    
+	}
+
+    @Override
+    public Map<String,String> getLabelsMap(){ return null; }
+
+
+
 }

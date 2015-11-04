@@ -292,4 +292,8 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public void setCurrentFile(File currentFile) {
         this.currentFile = currentFile;
     }
+
+    @Override
+    public Map<String,String> getLabelsMap(){ return null; }
+
 }

@@ -35,10 +35,10 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * Record reader that unde
- * rstands the ImageNet file format
- *
+ * Record reader to handle ImageNet dataset
+ **
  * Built to avoid changing api at this time. Api should change to track labels that are only referenced by id in filename
+ * Creates a hashmap for label name to id and references that with filename to generate matching lables.
  */
 public class ImageNetRecordReader implements RecordReader {
 
@@ -53,23 +53,8 @@ public class ImageNetRecordReader implements RecordReader {
     protected final List<String> allowedFormats = Arrays.asList("jpg", "jpeg", "JPG", "JPEG");
     protected ImageLoader imageLoader;
     protected boolean hitImage = false;
-    private String labelPath;
+    private String labelPath; // "cls-loc-labels.csv"
 
-    // TODO setup to load different example types
-    public final static int NUM_TRAIN_EXAMPLES = 1281167; // DET 395918
-    public final static int NUM_VAL_EXAMPLES = 50000; // DET 20121
-    public final static  int NUM_TEST_EXAMPLES = 100000; // DET 40152
-
-//	private static final String trainingFilesFilePath = // TODO add s3 path for sample not pulled from imagenet
-//	private static final String trainingFilesFilename = // TODO add s3 path for sample not pulled from imagenet
-//    private static final String trainingFileLabelsFilePath =// TODO add s3 path for sample not pulled from imagenet
-    private static final String trainingFileLabelsFilename = "cls-loc-labels.csv";
-
-    // valid only on local machine
-    private static final String TEMP_ROOT = System.getProperty("user.home");
-    private static final String IMGNET_ROOT = TEMP_ROOT + File.separator + "IMGNET" + File.separator;
-
-    public int numLabels() { return labels.size(); } // 1860
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath) {
         imageLoader = new ImageLoader(width, height, channels);
@@ -77,11 +62,12 @@ public class ImageNetRecordReader implements RecordReader {
     }
 
     public ImageNetRecordReader(int width, int height, int channels, boolean appendLabel, String labelPath) {
-        imageLoader = new ImageLoader(width, height, channels);
         this.appendLabel = appendLabel;
-        this.labelPath = labelPath;
+        new ImageNetRecordReader(width, height, channels, labelPath);
     }
 
+
+    public int numLabels() { return labels.size(); } // 1860
 
     private boolean containsFormat(String format) {
         for(String format2 : allowedFormats)

@@ -63,7 +63,7 @@ public class LibSvmRecordWriter extends LineRecordWriter implements LibSvm {
     public void write(Collection<Writable> record) throws IOException {
         List<Writable> asList = record instanceof  List ? (List<Writable>)  record : new ArrayList<>(record);
         double response = Double.valueOf(asList.get(asList.size() - 1).toString());
-        StringBuffer write = new StringBuffer();
+        StringBuilder write = new StringBuilder();
         boolean classification = conf.getBoolean(CLASSIFICATION,true);
         if(classification) {
             write.append((int) response);

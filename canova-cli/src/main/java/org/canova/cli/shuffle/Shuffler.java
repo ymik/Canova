@@ -2,7 +2,6 @@ package org.canova.cli.shuffle;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Random;
@@ -32,12 +31,11 @@ public class Shuffler {
 	/**
 	 * We could probably infer this, but I'm lazy
 	 * 
-	 * @param nunberRecords
 	 */
 	public Shuffler() {
 		
 		//this.numRecords = numberRecords;
-		this.records = new ArrayList< Collection<Writable>>();
+		this.records = new ArrayList<>();
 		
 	}
 	
@@ -57,9 +55,8 @@ public class Shuffler {
 
 	    // nextInt is normally exclusive of the top value,
 	    // so add 1 to make it inclusive
-	    int randomNum = rand.nextInt(((this.records.size()) - min) + 1) + min;
 
-	    return randomNum;		
+		return rand.nextInt(((this.records.size()) - min) + 1) + min;
 		
 	}
 	
@@ -76,12 +73,12 @@ public class Shuffler {
 	
 	public Collection<Writable> next() {
 		
-		// cant touch it til we read, or ConcurrentModificatoinException
+		// cant touch it til we read, or ConcurrentModificationException
 		if ( null == this.iterator ) {
 			this.iterator = this.records.listIterator();
 		}
 				
-		return (Collection<Writable>) this.iterator.next();
+		return this.iterator.next();
 	}
 	
 	/*

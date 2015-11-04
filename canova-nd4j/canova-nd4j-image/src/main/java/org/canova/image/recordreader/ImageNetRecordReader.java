@@ -67,6 +67,7 @@ public class ImageNetRecordReader implements RecordReader {
         this.appendLabel = appendLabel;
     }
 
+    @Override
     public Map<String,String> getLabelsMap(){ return labelIdMap; }
 
     public int numLabels() { return labels.size(); } // 1860

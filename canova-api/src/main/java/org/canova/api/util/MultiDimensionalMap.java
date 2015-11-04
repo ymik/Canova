@@ -43,7 +43,7 @@ public class MultiDimensionalMap<K,T,V>  {
      * @return
      */
     public static <K,T,V>  MultiDimensionalMap<K,T,V> newThreadSafeTreeBackedMap() {
-        return new MultiDimensionalMap<K,T,V>(new ConcurrentSkipListMap<Pair<K,T>,V>());
+        return new MultiDimensionalMap<>(new ConcurrentSkipListMap<Pair<K,T>,V>());
     }
 
     /**
@@ -360,9 +360,8 @@ public class MultiDimensionalMap<K,T,V>  {
 
         MultiDimensionalMap that = (MultiDimensionalMap) o;
 
-        if (backedMap != null ? !backedMap.equals(that.backedMap) : that.backedMap != null) return false;
+        return !(backedMap != null ? !backedMap.equals(that.backedMap) : that.backedMap != null);
 
-        return true;
     }
 
     

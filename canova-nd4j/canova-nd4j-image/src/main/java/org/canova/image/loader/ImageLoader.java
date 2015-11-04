@@ -22,7 +22,6 @@ package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
-import org.nd4j.linalg.api.buffer.IntBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -32,6 +31,7 @@ import javax.imageio.spi.IIORegistry;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.*;
 
@@ -364,9 +364,20 @@ public class ImageLoader implements Serializable {
     protected int[][] toIntArrayArray(BufferedImage image) {
         int w = image.getWidth(), h = image.getHeight();
         int[][] ret = new int[h][w];
-        for (int i = 0; i < h; i++)
-            for (int j = 0; j < w; j++)
-                ret[i][j] = image.getRGB(j, i);
+        if(image.getRaster().getNumDataElements() == 1 ){
+            Raster raster = image.getRaster();
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < w; j++){
+                    ret[i][j] = raster.getSample(j, i, 0);
+                }
+            }
+        } else {
+            for (int i = 0; i < h; i++) {
+                for (int j = 0; j < w; j++){
+                    ret[i][j] = image.getRGB(j, i);
+                }
+            }
+        }
         return ret;
     }
 
@@ -392,7 +403,8 @@ public class ImageLoader implements Serializable {
             if (needAlpha && image.getColorModel().hasAlpha()) {
                 return toBufferedImage(scaled, BufferedImage.TYPE_4BYTE_ABGR);
             } else {
-                return toBufferedImage(scaled, BufferedImage.TYPE_3BYTE_BGR);
+                if(image.getRaster().getNumDataElements() == 1 ) return toBufferedImage(scaled, BufferedImage.TYPE_BYTE_GRAY);
+                else return toBufferedImage(scaled, BufferedImage.TYPE_3BYTE_BGR);
             }
         } else {
             if (image.getType() == BufferedImage.TYPE_4BYTE_ABGR || image.getType() == BufferedImage.TYPE_3BYTE_BGR) {
@@ -400,8 +412,8 @@ public class ImageLoader implements Serializable {
             } else if (needAlpha && image.getColorModel().hasAlpha()) {
                 return toBufferedImage(image, BufferedImage.TYPE_4BYTE_ABGR);
             } else {
-                return toBufferedImage(image, BufferedImage.TYPE_3BYTE_BGR);
-
+                if(image.getRaster().getNumDataElements() == 1 ) return toBufferedImage(image, BufferedImage.TYPE_BYTE_GRAY);
+                else return toBufferedImage(image, BufferedImage.TYPE_3BYTE_BGR);
             }
         }
     }

@@ -294,6 +294,10 @@ public abstract class BaseImageRecordReader implements RecordReader {
     }
 
     @Override
-    public Map<String,String> getLabelsMap(){ return null; }
+    public List<String> getLabels(){
+        return null; }
+
+
+
 
 }

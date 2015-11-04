@@ -29,6 +29,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -73,11 +74,10 @@ public interface RecordReader extends Closeable,Serializable,Configurable {
     boolean hasNext();
 
     /**
-     * LabelMap
+     * List of label strings
      * @return
      */
-    Map<String,String> getLabelsMap();
-
+    List<String> getLabels();
 
 
 }

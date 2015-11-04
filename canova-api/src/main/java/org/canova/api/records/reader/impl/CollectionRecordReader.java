@@ -29,6 +29,7 @@ import org.canova.api.writable.Writable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,6 +81,9 @@ public class CollectionRecordReader implements RecordReader {
     }
 
     @Override
-    public Map<String,String> getLabelsMap(){ return null; }
+    public List<String> getLabels(){
+        return null; }
+
+
 
 }

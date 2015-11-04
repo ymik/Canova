@@ -170,7 +170,5 @@ public class FileRecordReader implements RecordReader {
         return conf;
     }
 
-    @Override
-    public Map<String,String> getLabelsMap(){ return null; }
 
 }

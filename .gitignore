@@ -27,3 +27,5 @@ deeplearning4j-scaleout/deeplearning4j-aws/src/main/java/org/deeplearning4j/aws/
 .project
 .classpath
 .DS_Store
+/logs/
+canova-cli/canova_conf

@@ -104,6 +104,11 @@ public class FileRecordReader implements RecordReader {
     }
 
     @Override
+    public void initialize(String basePath, int seed, int numExamples) throws IOException {
+
+    }
+
+    @Override
     public Collection<Writable> next() {
         List<Writable> ret = new ArrayList<>();
         try {

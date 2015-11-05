@@ -129,7 +129,12 @@ public class MNISTRecordReader implements RecordReader {
     @Override
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
         initialize(split);
-    }    
+    }
+
+    @Override
+    public void initialize(String basePath, int seed, int numExamples) throws IOException {
+
+    }
 
     /**
      * Basic logic:

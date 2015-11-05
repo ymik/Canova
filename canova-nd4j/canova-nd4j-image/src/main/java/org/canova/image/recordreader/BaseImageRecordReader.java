@@ -297,6 +297,10 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public List<String> getLabels(){
         return null; }
 
+    @Override
+    public void initialize(String basePath, int seed, int numExamples) throws IOException {
+
+    }
 
 
 

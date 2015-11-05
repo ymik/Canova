@@ -125,6 +125,11 @@ public class WavFileRecordReader implements RecordReader {
     }
 
     @Override
+    public void initialize(String basePath, int seed, int numExamples) throws IOException {
+
+    }
+
+    @Override
     public Collection<Writable> next() {
         if(iter != null) {
             File next = iter.next();

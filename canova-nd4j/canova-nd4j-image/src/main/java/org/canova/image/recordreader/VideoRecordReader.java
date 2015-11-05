@@ -184,6 +184,11 @@ public class VideoRecordReader implements SequenceRecordReader {
         initialize(split);
     }
 
+    @Override
+    public void initialize(String basePath, int seed, int numExamples) throws IOException {
+
+    }
+
     private boolean containsFormat(String format) {
         for(String format2 : allowedFormats)
             if(format.endsWith("." + format2))

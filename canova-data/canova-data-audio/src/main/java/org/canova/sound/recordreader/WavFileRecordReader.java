@@ -167,4 +167,12 @@ public class WavFileRecordReader implements RecordReader {
     public Configuration getConf() {
         return conf;
     }
+
+    @Override
+    public List<String> getLabels(){
+        return null; }
+
+
+
+
 }

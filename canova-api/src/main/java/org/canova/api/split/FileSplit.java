@@ -37,13 +37,34 @@ import java.util.Collection;
 public class FileSplit extends BaseInputSplit {
 
     private File rootDir;
+    protected String[] allowFormat = null;
+    private boolean recursive = true;
+
     public FileSplit(File rootDir) {
+        this.rootDir = rootDir;
+        this.initialize();
+    }
+
+    public FileSplit(File rootDir, boolean recursive) {
+        this.recursive = recursive;
+        this.rootDir = rootDir;
+        this.initialize();
+    }
+
+    public FileSplit(File rootDir, String[] allowFormat, boolean recursive) {
+        this.allowFormat = allowFormat;
+        this.recursive = recursive;
+        this.rootDir = rootDir;
+        this.initialize();
+    }
+
+
+    private void initialize(){
         if(rootDir == null && rootDir.exists())
             throw new IllegalArgumentException("File must not be null");
 
-        this.rootDir = rootDir;
         if(rootDir.isDirectory()) {
-            Collection<File> subFiles = FileUtils.listFiles(rootDir, null, true);
+            Collection<File> subFiles = FileUtils.listFiles(rootDir, allowFormat, recursive);
             locations = new URI[subFiles.size()];
             int count = 0;
             for(File f : subFiles) {

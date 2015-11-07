@@ -45,7 +45,7 @@ public class ImageNetRecordReader implements RecordReader {
 	private static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
 
     protected List<String> labels  = new ArrayList<>();
-    protected Map<String,String> labelIdMap = new LinkedHashMap<>();
+    protected Map<String,String> labelFileIdMap = new LinkedHashMap<>();
 
     private Iterator<File> iter;
     protected Collection<Writable> record;
@@ -62,10 +62,14 @@ public class ImageNetRecordReader implements RecordReader {
     }
 
     public ImageNetRecordReader(int width, int height, int channels, boolean appendLabel, String labelPath) {
+        imageLoader = new ImageLoader(width, height, channels);
+        this.labelPath = labelPath;
         this.appendLabel = appendLabel;
-        new ImageNetRecordReader(width, height, channels, labelPath);
     }
 
+    @Override
+    public List<String> getLabels(){
+        return labels; }
 
     public int numLabels() { return labels.size(); } // 1860
 
@@ -76,15 +80,17 @@ public class ImageNetRecordReader implements RecordReader {
         return false;
     }
 
-    public void defineLabels() throws IOException {
+    private void defineLabels() throws IOException {
         BufferedReader br = new BufferedReader(new FileReader(labelPath));
         String line;
 
-        while((line = br.readLine())!=null){
-            String row[] = line.split(",");
-            labelIdMap.put(row[0], row[1]);
+        if (labelFileIdMap.isEmpty()) {
+            while ((line = br.readLine()) != null) {
+                String row[] = line.split(",");
+                labelFileIdMap.put(row[0], row[1]);
+            }
         }
-        labels = new ArrayList<>(labelIdMap.values());
+        labels = new ArrayList<>(labelFileIdMap.values());
     }
 
     @Override
@@ -134,7 +140,7 @@ public class ImageNetRecordReader implements RecordReader {
 
                     imgName = imgName.split(Pattern.quote("_"))[0];
                     // use file name WNID to find corresponding name in map and index in labels to add to list
-                    int labelId = labels.indexOf(labelIdMap.get(imgName));
+                    int labelId = labels.indexOf(labelFileIdMap.get(imgName));
                     if (labelId >= 0)
                         record.add(new DoubleWritable(labelId));
                     else
@@ -150,7 +156,6 @@ public class ImageNetRecordReader implements RecordReader {
         //no op
     }
 
-
     @Override
     public Collection<Writable> next() {
         if(iter != null) {
@@ -165,7 +170,7 @@ public class ImageNetRecordReader implements RecordReader {
                 ret = RecordConverter.toRecord(row);
                 if(appendLabel) {
                     String imgName = FilenameUtils.getBaseName(image.getName()).split(Pattern.quote("_"))[0];
-                    int labelId = labels.indexOf(labelIdMap.get(imgName));
+                    int labelId = labels.indexOf(labelFileIdMap.get(imgName));
                     if (labelId >= 0)
                         ret.add(new DoubleWritable(labelId));
                     else
@@ -222,7 +227,6 @@ public class ImageNetRecordReader implements RecordReader {
         return null;
     }
 
-    public List<String> getLabels() {return labels; }
 
 
 }

@@ -91,4 +91,11 @@ public class ComposableRecordReader implements RecordReader {
     public Configuration getConf() {
         return null;
     }
+
+    @Override
+    public List<String> getLabels(){
+        return null; }
+
+
+
 }

@@ -169,4 +169,6 @@ public class FileRecordReader implements RecordReader {
     public Configuration getConf() {
         return conf;
     }
+
+
 }

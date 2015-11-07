@@ -13,13 +13,8 @@ import org.canova.api.writable.Writable;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  * Hardcoded for serial only access (for now)
@@ -81,16 +76,12 @@ public class LineRecordReader extends FileRecordReader  {
 		this.currentFile = this.iter.next();
 		this.currentPath = this.currentFile.getAbsolutePath();
 		//this.textFileBufferedReader = new BufferedReader( new FileReader( this.currentPath ) );
-        
-        
         this.textFileScanner = new Scanner( new FileInputStream( this.currentPath ) );
-        
     }
     
     /*
     private void readNextLine() {
-    	
-    	
+
     }
     */
     
@@ -285,4 +276,6 @@ public class LineRecordReader extends FileRecordReader  {
     public Configuration getConf() {
         return conf;
     }
+
+
 }

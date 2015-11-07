@@ -60,8 +60,6 @@ public interface RecordReader extends Closeable,Serializable,Configurable {
      */
     void initialize(Configuration conf,InputSplit split) throws IOException, InterruptedException;
 
-    void initialize(String basePath, int seed, int numExamples) throws IOException;
-
     /**
      * Get the next record
      * @return

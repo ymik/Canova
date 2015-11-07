@@ -157,36 +157,6 @@ public class ImageNetRecordReader implements RecordReader {
     }
 
     @Override
-    public void initialize(String basePath, int seed, int numExamples) throws IOException {
-        // Create file iterator of randomly selected files from multile directories
-        defineLabels();
-        List<File> someFiles = new ArrayList<>();
-        Random rnd = new Random();
-        rnd.setSeed(seed);
-        int val;
-
-        File fileBase = new File(basePath);
-        File[] paths = fileBase.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                for (String form : allowedFormats) {
-                    if (pathname.toString().endsWith(form)) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        });
-
-        for(int i=0; i < numExamples; i++) {
-            val = rnd.nextInt(paths.length);
-            someFiles.add(paths[val]);
-        }
-
-        iter = someFiles.iterator();
-    }
-
-    @Override
     public Collection<Writable> next() {
         if(iter != null) {
             Collection<Writable> ret = new ArrayList<>();

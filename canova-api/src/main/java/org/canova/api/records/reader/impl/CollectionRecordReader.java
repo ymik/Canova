@@ -56,11 +56,6 @@ public class CollectionRecordReader implements RecordReader {
     }
 
     @Override
-    public void initialize(String basePath, int seed, int numExamples) throws IOException {
-
-    }
-
-    @Override
     public Collection<Writable> next() {
         return records.next();
     }

@@ -31,6 +31,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * @author Adam Gibson
@@ -38,17 +39,26 @@ import java.util.Collection;
 public class CodecReaderTest {
     @Test
     public void testCodecReader() throws Exception {
-       File file = new ClassPathResource("fire.mp4").getFile();
+       File file = new ClassPathResource("fire_lowres.mp4").getFile();
         SequenceRecordReader reader = new CodecRecordReader();
         Configuration conf = new Configuration();
-        conf.set(CodecRecordReader.RAVEL,"true");
-        conf.set(CodecRecordReader.START_FRAME,"160");
-        conf.set(CodecRecordReader.TOTAL_FRAMES,"500");
+        conf.set(CodecRecordReader.RAVEL, "true");
+        conf.set(CodecRecordReader.START_FRAME, "160");
+        conf.set(CodecRecordReader.TOTAL_FRAMES, "500");
+        conf.set(CodecRecordReader.ROWS, "80");
+        conf.set(CodecRecordReader.COLUMNS, "46");
         reader.initialize(new FileSplit(file));
         reader.setConf(conf);
         assertTrue(reader.hasNext());
         Collection<Collection<Writable>> record = reader.sequenceRecord();
         System.out.println(record.size());
+
+        Iterator<Collection<Writable>> it = record.iterator();
+        Collection<Writable> first = it.next();
+        System.out.println(first);
+
+        //Expected size: 80x46x3
+        assertEquals(80 * 46 * 3, first.size());
     }
 
 }

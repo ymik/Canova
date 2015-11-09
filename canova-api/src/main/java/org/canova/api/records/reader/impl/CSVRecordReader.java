@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simple csv record reader.
@@ -85,12 +86,13 @@ public class CSVRecordReader extends LineRecordReader {
             skippedLines = true;
         }
         Text t =  (Text) super.next().iterator().next();
-        String val = new String(t.getBytes());
-        String[] split = val.split(delimiter);
+        String val = t.toString();
+        String[] split = val.split(delimiter, -1);
         List<Writable> ret = new ArrayList<>();
         for(String s : split)
             ret.add(new Text(s));
         return ret;
 
     }
+
 }

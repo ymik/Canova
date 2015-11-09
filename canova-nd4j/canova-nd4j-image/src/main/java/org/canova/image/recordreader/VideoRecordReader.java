@@ -280,4 +280,11 @@ public class VideoRecordReader implements SequenceRecordReader {
     public Configuration getConf() {
         return conf;
     }
+
+    @Override
+    public List<String> getLabels(){
+        return null; }
+
+
+
 }

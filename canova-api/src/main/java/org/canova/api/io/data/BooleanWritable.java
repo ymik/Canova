@@ -115,4 +115,24 @@ public class BooleanWritable implements WritableComparable {
     static {
         WritableComparator.define(BooleanWritable.class, new Comparator());
     }
+
+    @Override
+    public double toDouble(){
+        return (value ? 1.0 : 0.0);
+    }
+
+    @Override
+    public float toFloat(){
+        return (value ? 1.0f : 0.0f);
+    }
+
+    @Override
+    public int toInt(){
+        return (value ? 1 : 0);
+    }
+
+    @Override
+    public long toLong(){
+        return (value ? 1L : 0L);
+    }
 }

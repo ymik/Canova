@@ -30,8 +30,6 @@ import org.canova.api.writable.Writable;
 import org.canova.cli.csv.schema.CSVInputSchema;
 import org.canova.cli.csv.schema.CSVSchemaColumn;
 import org.canova.cli.shuffle.Shuffler;
-import org.canova.cli.subcommands.Vectorize;
-import org.canova.cli.vectorization.VectorizationEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,12 +66,8 @@ public class CSVVectorizationEngine extends VectorizationEngine {
   //    this.vectorizer = new CSVVectorizationEngine();
       
       if (null != this.configProps.get( SKIP_HEADER_KEY )) {
-          String headerSkipString = (String) this.configProps.get( SKIP_HEADER_KEY );
-          if ("true".equals(headerSkipString.trim().toLowerCase())) {
-              this.skipHeader = true;
-          } else {
-        	  this.skipHeader = false;
-          }
+        String headerSkipString = (String) this.configProps.get( SKIP_HEADER_KEY );
+        this.skipHeader = "true".equals(headerSkipString.trim().toLowerCase());
       }
 
       
@@ -177,7 +171,7 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 	      
 	      while (reader.hasNext()) {
 	    	  
-	          if (this.skipHeader && false == skippedHeaderYet) {
+	          if (this.skipHeader && !skippedHeaderYet) {
 	        	  
 	        	  skippedHeaderYet = true;
 		          Collection<Writable> w = reader.next();
@@ -222,7 +216,7 @@ public class CSVVectorizationEngine extends VectorizationEngine {
 	
 	      while (reader.hasNext()) {
 	    	  
-	          if (this.skipHeader && false == skippedHeaderYet) {
+	          if (this.skipHeader && !skippedHeaderYet) {
 	        	  
 	        	  skippedHeaderYet = true;
 	        	  Collection<Writable> w = reader.next();

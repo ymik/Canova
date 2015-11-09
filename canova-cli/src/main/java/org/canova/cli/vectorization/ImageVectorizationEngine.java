@@ -69,13 +69,11 @@ public class ImageVectorizationEngine extends VectorizationEngine {
 	            
 	        	// get the record from the input format
 	        	Collection<Writable> w = reader.next();
-	        	if (false == normalizeData) {
-	        		
-	        	} else {
-	        		normalizer.transform(w);
-	        	}
-	        	
-	        	// the reader did the work for us here
+						if (normalizeData) {
+              normalizer.transform(w);
+            }
+
+						// the reader did the work for us here
 	        	//writer.write(w);
 	        	shuffle.addRecord(w);
 	 
@@ -98,13 +96,11 @@ public class ImageVectorizationEngine extends VectorizationEngine {
 		            
 		        	// get the record from the input format
 		        	Collection<Writable> w = reader.next();
-		        	if (false == normalizeData) {
-		        		
-		        	} else {
-		        		normalizer.transform(w);
-		        	}
-		        	
-		        	// the reader did the work for us here
+							if (normalizeData) {
+                normalizer.transform(w);
+              }
+
+							// the reader did the work for us here
 		        	writer.write(w);
 		 
 		        }

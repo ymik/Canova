@@ -99,4 +99,24 @@ public class InputStreamInputSplit implements InputSplit {
     public void setIs(InputStream is) {
         this.is = is;
     }
+
+    @Override
+    public double toDouble(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public float toFloat(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int toInt(){
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long toLong(){
+        throw new UnsupportedOperationException();
+    }
 }

@@ -1,0 +1,129 @@
+package org.canova.api.split;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+import java.net.URI;
+import java.util.*;
+
+/**
+ * File input split that allows limits on number of files loaded.
+ * Define total number of examples to pull from the dataset.
+ * Use numCategories to split the numExamples and pull equal number of examples per category.
+ * Use pattern and patternPosition to segment the filename that represents the category.
+ *
+ * Created by nyghtowl on 11/9/15.
+ */
+public class LimitFileSplit extends FileSplit {
+    protected int numExamples;
+    protected int numCategories;
+    protected String pattern; // Pattern to split and segment file name, pass in regex
+    protected int patternPosition = 0;
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, boolean recursive, int numExamples, int numCategories, String pattern, int patternPosition, Random random) {
+        super(rootDir, allowFormat, recursive, random, false);
+        this.numExamples = numExamples;
+        this.numCategories = numCategories;
+        this.pattern = pattern;
+        this.patternPosition = patternPosition;
+        this.initialize();
+    }
+
+    public LimitFileSplit(File rootDir, int numExamples) {
+        this(rootDir, null, true, numExamples, 1, null, 0, null);
+    }
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, boolean recursive, int numExamples) {
+        this(rootDir, allowFormat, recursive, numExamples, 1, null, 0, null);
+    }
+
+    public LimitFileSplit(File rootDir, int numExamples, String pattern) {
+        this(rootDir, null, true, numExamples, 1, pattern, 0, null);
+    }
+
+    public LimitFileSplit(File rootDir, int numExamples, int numCategories, String pattern) {
+        this(rootDir, null, true, numExamples, numCategories, pattern, 0, null);
+    }
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, int numExamples, int numCategories, String pattern) {
+        this(rootDir, allowFormat, true, numExamples, numCategories, pattern, 0, null);
+    }
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, int numExamples, int numCategories, String pattern, int patternPosition, Random random) {
+        this(rootDir, allowFormat, true, numExamples, numCategories, pattern, patternPosition, random);
+    }
+
+    public LimitFileSplit(File rootDir, int numExamples, Random random) {
+        this(rootDir, null, true, numExamples, 1, null, 0, random);
+    }
+
+    public LimitFileSplit(File rootDir, int numExamples, String pattern, Random random) {
+        this(rootDir, null, true, numExamples, 1, pattern, 0, random);
+    }
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, int numExamples, int numCategories, String pattern, Random random) {
+        this(rootDir, allowFormat, true, numExamples, numCategories, pattern, 0, random);
+    }
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, int numExamples, String pattern, Random random) {
+        this(rootDir, allowFormat, true, numExamples, 1, pattern, 0, random);
+    }
+
+    public LimitFileSplit(File rootDir, String[] allowFormat, int numExamples, String pattern, int patternPosition, Random random) {
+        this(rootDir, allowFormat, true, numExamples, 1, pattern, patternPosition, random);
+    }
+
+    @Override
+    protected void initialize() {
+        Collection<File> subFiles;
+
+        // Limits number files listed will pull set number from each directory
+        Iterator iter = FileUtils.iterateFiles(rootDir, allowFormat, recursive);
+        subFiles = new ArrayList<>();
+
+        int numExamplesPerCategory = numExamples / numCategories;
+
+        File file;
+        Map<String, Integer> fileCount = new HashMap<>();
+        String currName = "";
+        int totalCount = 0;
+
+        while (iter.hasNext()) {
+            if(totalCount >= numExamples) break;
+            file = (File) iter.next();
+            if (pattern != null) {
+                // Define filename to help track of categories
+                currName = FilenameUtils.getBaseName(file.getName()).split(pattern)[patternPosition];
+            }
+
+            if (file.isFile()){
+
+                if (!fileCount.containsKey(currName))
+                    fileCount.put(currName, 0);
+
+                int categoryCount = fileCount.get(currName);
+
+                if (categoryCount < numExamplesPerCategory) {
+                    subFiles.add(file);
+                    fileCount.put(currName, categoryCount + 1);
+                    totalCount++;
+                }
+            }
+        }
+
+        locations = new URI[subFiles.size()];
+
+        if (randomize) Collections.shuffle((List<File>) subFiles, random);
+        int count = 0;
+
+        for (File f : subFiles) {
+            if (f.getPath().startsWith("file:"))
+                locations[count++] = URI.create(f.getPath());
+            else
+                locations[count++] = f.toURI();
+            length += f.length();
+        }
+    }
+
+}

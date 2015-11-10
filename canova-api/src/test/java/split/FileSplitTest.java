@@ -28,26 +28,26 @@ public class FileSplitTest {
 
     // These cannot run on TravisCI - uncomment when checking locally
 
-//    @Rule
-//    public TemporaryFolder mainFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder mainFolder = new TemporaryFolder();
 
 
-//    @Before
-//    public void doBefore() throws IOException {
-//        file = mainFolder.newFile("myfile.txt");
-//
-//        newPath = new File(testPath);
-//
-//        newPath.mkdir();
-//
-//        file1 = File.createTempFile("myfile_1", ".jpg", newPath);
-//        file2 = File.createTempFile("myfile_2", ".txt", newPath);
-//        file3 = File.createTempFile("myfile_3", ".jpg", newPath);
-//        file4 = File.createTempFile("treehouse_4", ".csv", newPath);
-//        file5 = File.createTempFile("treehouse_5", ".csv", newPath);
-//        file6 = File.createTempFile("treehouse_6", ".jpg", newPath);
-//
-//    }
+    @Before
+    public void doBefore() throws IOException {
+        file = mainFolder.newFile("myfile.txt");
+
+        newPath = new File(testPath);
+
+        newPath.mkdir();
+
+        file1 = File.createTempFile("myfile_1", ".jpg", newPath);
+        file2 = File.createTempFile("myfile_2", ".txt", newPath);
+        file3 = File.createTempFile("myfile_3", ".jpg", newPath);
+        file4 = File.createTempFile("treehouse_4", ".csv", newPath);
+        file5 = File.createTempFile("treehouse_5", ".csv", newPath);
+        file6 = File.createTempFile("treehouse_6", ".jpg", newPath);
+
+    }
 //
 //    @Test
 //    public void testInitializeLoadSingleFile(){
@@ -73,18 +73,18 @@ public class FileSplitTest {
 //        assertEquals(split.locations()[3], split2.locations()[3]);
 //    }
 //
-//    @After
-//    public void doAfter(){
-//        mainFolder.delete();
-//        file.delete();
-//        file1.delete();
-//        file2.delete();
-//        file3.delete();
-//        file4.delete();
-//        file5.delete();
-//        file6.delete();
-//        newPath.delete();
-//
-//    }
+    @After
+    public void doAfter(){
+        mainFolder.delete();
+        file.delete();
+        file1.delete();
+        file2.delete();
+        file3.delete();
+        file4.delete();
+        file5.delete();
+        file6.delete();
+        newPath.delete();
+
+    }
 
 }

@@ -52,15 +52,21 @@ public class FileSplitTest {
     public void testInitializeLoadSingleFile(){
         InputSplit split = new FileSplit(file, allForms);
         assertEquals(split.locations()[0], file.toURI());
+
+        InputSplit split2 = new FileSplit(newPath, allForms, true);
+        assertEquals(3, split2.locations().length);
+        assertEquals(file1.toURI(), split2.locations()[0]);
+        assertEquals(file3.toURI(), split2.locations()[1]);
+
     }
 
-    @Test
-    public void testInitializeLoadMulFiles() throws IOException{
-        InputSplit split = new FileSplit(newPath, allForms, true);
-        assertEquals(3, split.locations().length);
-        assertEquals(file1.toURI(), split.locations()[0]);
-        assertEquals(file3.toURI(), split.locations()[1]);
-    }
+//    @Test
+//    public void testInitializeLoadMulFiles() throws IOException{
+//        InputSplit split = new FileSplit(newPath, allForms, true);
+//        assertEquals(3, split.locations().length);
+//        assertEquals(file1.toURI(), split.locations()[0]);
+//        assertEquals(file3.toURI(), split.locations()[1]);
+//    }
 
     @Test
     public void testInitializeMulFilesShuffle() throws IOException{

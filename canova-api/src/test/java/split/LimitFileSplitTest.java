@@ -40,35 +40,55 @@ public class LimitFileSplitTest {
 
     @Test
     public void testInitializeLimitedFiles() throws IOException{
+        // Collapsed tests to get them to work on TravisCI with folder setup
+        // Basic test to limit number of files returned
         InputSplit split = new LimitFileSplit(newPath, 4);
         assertEquals(4, split.locations().length);
         assertEquals(file1.toURI(), split.locations()[0]);
         assertEquals(file3.toURI(), split.locations()[2]);
+
+        // Limit results based on pattern
+        InputSplit split2 = new LimitFileSplit(newPath, 4, Pattern.quote("_"));
+        assertEquals(4, split2.locations().length, 0);
+        assertEquals(file1.toURI(), split2.locations()[0]);
+        assertEquals(file3.toURI(), split2.locations()[2]);
+
+        // Limit results based on pattern and split by category
+        InputSplit split3 = new LimitFileSplit(newPath, 2, 2, Pattern.quote("_"));
+        assertEquals(2, split3.locations().length);
+        assertEquals(file1.toURI(), split3.locations()[0]);
+        assertEquals(file4.toURI(), split3.locations()[1]);
+
+        // Limit results based on allowed_format and pattern and split by category
+        InputSplit split4 = new LimitFileSplit(newPath, allForms, 2, 2, Pattern.quote("_"));
+        assertEquals(2, split4.locations().length);
+        assertEquals(file1.toURI(), split4.locations()[0]);
+        assertEquals(file6.toURI(), split4.locations()[1]);
     }
 
-    @Test
-    public void testInitializeLimitedNoCategoryFilesPattern() throws IOException {
-        InputSplit split = new LimitFileSplit(newPath, 4, Pattern.quote("_"));
-        assertEquals(4, split.locations().length, 0);
-        assertEquals(file1.toURI(), split.locations()[0]);
-        assertEquals(file3.toURI(), split.locations()[2]);
-    }
-
-    @Test
-    public void testInitializeLimitedCategoryFilesPattern() throws IOException {
-        InputSplit split = new LimitFileSplit(newPath, 2, 2, Pattern.quote("_"));
-        assertEquals(2, split.locations().length);
-        assertEquals(file1.toURI(), split.locations()[0]);
-        assertEquals(file4.toURI(), split.locations()[1]);
-    }
-
-    @Test
-    public void testInitializeLimitedAllowedCategoryFilesPattern() throws IOException {
-        InputSplit split = new LimitFileSplit(newPath, allForms, 2, 2, Pattern.quote("_"));
-        assertEquals(2, split.locations().length);
-        assertEquals(file1.toURI(), split.locations()[0]);
-        assertEquals(file6.toURI(), split.locations()[1]);
-    }
+//    @Test
+//    public void testInitializeLimitedNoCategoryFilesPattern() throws IOException {
+//        InputSplit split = new LimitFileSplit(newPath, 4, Pattern.quote("_"));
+//        assertEquals(4, split.locations().length, 0);
+//        assertEquals(file1.toURI(), split.locations()[0]);
+//        assertEquals(file3.toURI(), split.locations()[2]);
+//    }
+//
+//    @Test
+//    public void testInitializeLimitedCategoryFilesPattern() throws IOException {
+//        InputSplit split = new LimitFileSplit(newPath, 2, 2, Pattern.quote("_"));
+//        assertEquals(2, split.locations().length);
+//        assertEquals(file1.toURI(), split.locations()[0]);
+//        assertEquals(file4.toURI(), split.locations()[1]);
+//    }
+//
+//    @Test
+//    public void testInitializeLimitedAllowedCategoryFilesPattern() throws IOException {
+//        InputSplit split = new LimitFileSplit(newPath, allForms, 2, 2, Pattern.quote("_"));
+//        assertEquals(2, split.locations().length);
+//        assertEquals(file1.toURI(), split.locations()[0]);
+//        assertEquals(file6.toURI(), split.locations()[1]);
+//    }
 
     // Commented out test for now because file structure works locally but not on TravisCI
 //    @Test

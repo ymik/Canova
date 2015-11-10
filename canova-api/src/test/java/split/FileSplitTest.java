@@ -34,7 +34,9 @@ public class FileSplitTest {
     @Before
     public void doBefore() throws IOException {
         file = mainFolder.newFile("myfile.txt");
+
         newPath = new File(testPath);
+
         newPath.mkdir();
 
         file1 = File.createTempFile("myfile_1", ".jpg", newPath);
@@ -63,8 +65,10 @@ public class FileSplitTest {
     @Test
     public void testInitializeMulFilesShuffle() throws IOException{
         InputSplit split = new FileSplit(newPath, new Random(123));
+        InputSplit split2 = new FileSplit(newPath, new Random(123));
         assertEquals(6, split.locations().length);
-        assertEquals(file4.toURI(), split.locations()[3]);
+        assertEquals(6, split2.locations().length);
+        assertEquals(split.locations()[3], split2.locations()[3]);
     }
 
     @After

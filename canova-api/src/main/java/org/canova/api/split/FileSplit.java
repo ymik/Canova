@@ -21,14 +21,12 @@
 package org.canova.api.split;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 
 
-import java.io.DataInput;
-import java.io.DataOutput;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
-import java.util.Collection;
+import java.util.*;
 
 /**
  * File input split. Splits up a root directory in to files.
@@ -36,36 +34,56 @@ import java.util.Collection;
  */
 public class FileSplit extends BaseInputSplit {
 
-    private File rootDir;
+    protected File rootDir;
+    // Use for Collections, pass in list of file type strings
     protected String[] allowFormat = null;
-    private boolean recursive = true;
+    protected boolean recursive = true;
+    protected Random random;
+    protected boolean randomize = false;
 
-    public FileSplit(File rootDir) {
-        this.rootDir = rootDir;
-        this.initialize();
-    }
-
-    public FileSplit(File rootDir, boolean recursive) {
-        this.recursive = recursive;
-        this.rootDir = rootDir;
-        this.initialize();
-    }
-
-    public FileSplit(File rootDir, String[] allowFormat, boolean recursive) {
+    protected FileSplit(File rootDir, String[] allowFormat, boolean recursive, Random random, boolean runMain) {
         this.allowFormat = allowFormat;
         this.recursive = recursive;
         this.rootDir = rootDir;
-        this.initialize();
+        if (random != null){
+            this.random = random;
+            this.randomize = true;
+        }
+        if (runMain) this.initialize();
+    }
+
+    public FileSplit(File rootDir) {
+        this(rootDir, null, true, null, true);
+    }
+
+    public FileSplit(File rootDir, Random rng) {
+        this(rootDir, null, true, rng, true);
+    }
+
+    public FileSplit(File rootDir, String[] allowFormat) {
+        this(rootDir, allowFormat, true,  null, true);
+    }
+
+    public FileSplit(File rootDir, String[] allowFormat, Random rng) {
+        this(rootDir, allowFormat, true, rng, true);
+    }
+
+    public FileSplit(File rootDir, String[] allowFormat, boolean recursive) {
+        this(rootDir, allowFormat, recursive, null, true);
     }
 
 
-    private void initialize(){
+    protected void initialize() {
+        Collection<File> subFiles;
+
         if(rootDir == null && rootDir.exists())
             throw new IllegalArgumentException("File must not be null");
 
         if(rootDir.isDirectory()) {
-            Collection<File> subFiles = FileUtils.listFiles(rootDir, allowFormat, recursive);
+            subFiles = FileUtils.listFiles(rootDir, allowFormat, recursive);
             locations = new URI[subFiles.size()];
+
+            if (randomize) Collections.shuffle((List<File>) subFiles, random);
             int count = 0;
             for(File f : subFiles) {
                 if(f.getPath().startsWith("file:"))
@@ -76,6 +94,7 @@ public class FileSplit extends BaseInputSplit {
             }
         }
         else {
+            // Lists one file
             String path = rootDir.getPath();
             locations = new URI[1];
             if(path.startsWith("file:"))
@@ -83,11 +102,8 @@ public class FileSplit extends BaseInputSplit {
             else
                 locations[0] = rootDir.toURI();
             length += rootDir.length();
-
         }
-
     }
-
 
     @Override
     public long length() {
@@ -109,5 +125,7 @@ public class FileSplit extends BaseInputSplit {
         return rootDir;
     }
 }
+
+
 
 

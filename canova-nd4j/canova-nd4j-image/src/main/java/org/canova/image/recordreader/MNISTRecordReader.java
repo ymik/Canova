@@ -228,12 +228,12 @@ public class MNISTRecordReader implements RecordReader {
     @Override
     public Configuration getConf() {
         return null;
-    }    
-    
-    
-    
-    
-    
+    }
+
+
+
+
+
     /**
      * Based on logic from fetcher:
      * 
@@ -378,6 +378,9 @@ public class MNISTRecordReader implements RecordReader {
     public List<String> getLabels(){
         return null; }
 
+    @Override
+    public void reset() {
+    }
 
 
 }

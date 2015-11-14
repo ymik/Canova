@@ -49,15 +49,15 @@ import java.util.*;
  * @author Adam Gibson
  */
 public abstract class BaseImageRecordReader implements RecordReader {
-    protected Iterator<File> iter;
-    protected ImageLoader imageLoader;
+    protected ListIterator<File> iter;
+    protected Configuration conf;
     protected File currentFile;
     protected List<String> labels  = new ArrayList<>();
     protected boolean appendLabel = false;
     protected Collection<Writable> record;
     protected final List<String> allowedFormats = Arrays.asList("tif", "jpg", "png", "jpeg", "bmp", "JPEG", "JPG", "TIF", "PNG");
     protected boolean hitImage = false;
-    protected Configuration conf;
+    protected ImageLoader imageLoader;
 
     public final static String WIDTH = NAME_SPACE + ".width";
     public final static String HEIGHT = NAME_SPACE + ".height";
@@ -149,16 +149,17 @@ public abstract class BaseImageRecordReader implements RecordReader {
                                 labels.add(name);
                         }
                     }
-                    iter = allFiles.iterator();
+                    iter = allFiles.listIterator();
                 }
                 else {
                     File curr = new File(locations[0]);
                     if(!curr.exists())
                         throw new IllegalArgumentException("Path " + curr.getAbsolutePath() + " does not exist!");
                     if(curr.isDirectory())
-                        iter = FileUtils.iterateFiles(curr, null, true);
+                        iter = (ListIterator) FileUtils.iterateFiles(curr, null, true);
                     else
-                        iter = Collections.singletonList(curr).iterator();
+                        iter = Collections.singletonList(curr).listIterator();
+
                 }
             }
             //remove the root directory
@@ -206,7 +207,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public Collection<Writable> next() {
         if(iter != null) {
             Collection<Writable> ret = new ArrayList<>();
-            File image = iter.next();
+            File image = (File) iter.next();
             currentFile = image;
 
             if(image.isDirectory())
@@ -226,7 +227,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
             else {
                 if(iter.hasNext()) {
                     try {
-                        ret.add(new Text(FileUtils.readFileToString(iter.next())));
+                        ret.add(new Text(FileUtils.readFileToString((File) iter.next())));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -297,5 +298,9 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public List<String> getLabels(){
         return null; }
 
-
+    @Override
+    public void reset() {
+        while (iter.hasPrevious())
+            iter.previous();
+    }
 }

@@ -43,21 +43,21 @@ import java.util.*;
 public class LineRecordReader implements RecordReader {
 
 
+    private ListIterator<String> iter;
     private URI[] locations;
     private int currIndex = 0;
-    private Iterator<String> iter;
     protected Configuration conf;
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
         if(split instanceof StringSplit) {
             StringSplit stringSplit = (StringSplit) split;
-            iter = Arrays.asList(stringSplit.getData()).iterator();
+            iter = Arrays.asList(stringSplit.getData()).listIterator();
         }
         else {
             this.locations = split.locations();
             if (locations != null && locations.length > 0) {
-                iter = IOUtils.lineIterator(new InputStreamReader(locations[0].toURL().openStream()));
+                iter = (ListIterator) IOUtils.lineIterator(new InputStreamReader(locations[0].toURL().openStream()));
             }
         }
 
@@ -81,7 +81,7 @@ public class LineRecordReader implements RecordReader {
             currIndex++;
             try {
                 close();
-                iter = IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
+                iter = (ListIterator) IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -125,6 +125,9 @@ public class LineRecordReader implements RecordReader {
     public List<String> getLabels(){
         return null; }
 
-
-
+    @Override
+    public void reset() {
+        while (iter.hasPrevious())
+            iter.previous();
+    }
 }

@@ -84,6 +84,9 @@ public class CollectionRecordReader implements RecordReader {
     public List<String> getLabels(){
         return null; }
 
+    @Override
+    public void reset() {
+    }
 
 
 }

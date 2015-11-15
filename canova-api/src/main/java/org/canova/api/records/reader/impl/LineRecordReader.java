@@ -43,7 +43,7 @@ import java.util.*;
 public class LineRecordReader implements RecordReader {
 
 
-    private ListIterator<String> iter;
+    private Iterator<String> iter;
     private URI[] locations;
     private int currIndex = 0;
     protected Configuration conf;
@@ -57,7 +57,7 @@ public class LineRecordReader implements RecordReader {
         else {
             this.locations = split.locations();
             if (locations != null && locations.length > 0) {
-                iter = (ListIterator) IOUtils.lineIterator(new InputStreamReader(locations[0].toURL().openStream()));
+                iter =  IOUtils.lineIterator(new InputStreamReader(locations[0].toURL().openStream()));
             }
         }
 
@@ -127,7 +127,6 @@ public class LineRecordReader implements RecordReader {
 
     @Override
     public void reset() {
-        while (iter.hasPrevious())
-            iter.previous();
+
     }
 }

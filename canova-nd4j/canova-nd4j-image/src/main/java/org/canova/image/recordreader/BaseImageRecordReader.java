@@ -20,7 +20,6 @@
 
 package org.canova.image.recordreader;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
@@ -50,7 +49,7 @@ import java.util.*;
  * @author Adam Gibson
  */
 public abstract class BaseImageRecordReader implements RecordReader {
-    protected ListIterator<File> iter;
+    protected Iterator<File> iter;
     protected Configuration conf;
     protected File currentFile;
     protected List<String> labels  = new ArrayList<>();
@@ -157,7 +156,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
                     if(!curr.exists())
                         throw new IllegalArgumentException("Path " + curr.getAbsolutePath() + " does not exist!");
                     if(curr.isDirectory())
-                        iter = (ListIterator) FileUtils.iterateFiles(curr, null, true);
+                        iter =  FileUtils.iterateFiles(curr, null, true);
                     else
                         iter = Collections.singletonList(curr).listIterator();
 
@@ -302,7 +301,5 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
     @Override
     public void reset() {
-        while (iter.hasPrevious())
-            iter.previous();
     }
 }

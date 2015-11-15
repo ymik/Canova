@@ -36,7 +36,6 @@ public class CSVSequenceRecordReader extends FileRecordReader implements Sequenc
         this.delimiter = delimiter;
     }
 
-
     @Override
     @SuppressWarnings("unchecked")
     public Collection<Collection<Writable>> sequenceRecord() {
@@ -65,4 +64,6 @@ public class CSVSequenceRecordReader extends FileRecordReader implements Sequenc
 
         return out;
     }
+
+
 }

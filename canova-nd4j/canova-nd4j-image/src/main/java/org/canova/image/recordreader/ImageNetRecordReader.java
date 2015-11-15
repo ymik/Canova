@@ -1,32 +1,19 @@
 package org.canova.image.recordreader;
 
-import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
-import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.io.data.Text;
-import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
 import org.canova.api.split.InputStreamInputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
 import org.canova.image.loader.ImageLoader;
-import org.canova.image.mnist.MnistManager;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.util.ArrayUtil;
-import org.nd4j.linalg.util.FeatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Path;
@@ -40,21 +27,12 @@ import java.util.regex.Pattern;
  * Built to avoid changing api at this time. Api should change to track labels that are only referenced by id in filename
  * Creates a hashmap for label name to id and references that with filename to generate matching lables.
  */
-public class ImageNetRecordReader implements RecordReader {
+public class ImageNetRecordReader extends BaseImageRecordReader {
 
 	private static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
-
-    protected List<String> labels  = new ArrayList<>();
     protected Map<String,String> labelFileIdMap = new LinkedHashMap<>();
-
-    private Iterator<File> iter;
-    protected Collection<Writable> record;
-    protected boolean appendLabel = false;
     protected final List<String> allowedFormats = Arrays.asList("jpg", "jpeg", "JPG", "JPEG");
-    protected ImageLoader imageLoader;
-    protected boolean hitImage = false;
     private String labelPath; // "cls-loc-labels.csv"
-
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath) {
         imageLoader = new ImageLoader(width, height, channels);
@@ -106,16 +84,16 @@ public class ImageNetRecordReader implements RecordReader {
                         if(!iter.isDirectory() && containsFormat(iter.getAbsolutePath()))
                             allFiles.add(iter);
                     }
-                    iter = allFiles.iterator();
+                    iter =  allFiles.listIterator();
                 }
                 else {
                     File curr = new File(locations[0]);
                     if(!curr.exists())
                         throw new IllegalArgumentException("Path " + curr.getAbsolutePath() + " does not exist!");
                     if(curr.isDirectory())
-                        iter = FileUtils.iterateFiles(curr, null, true);
+                        iter = (ListIterator) FileUtils.iterateFiles(curr, null, true);
                     else
-                        iter = Collections.singletonList(curr).iterator();
+                        iter =  Collections.singletonList(curr).listIterator();
                 }
             }
             //remove the root directory
@@ -152,15 +130,10 @@ public class ImageNetRecordReader implements RecordReader {
     }
 
     @Override
-    public void initialize(Configuration conf, InputSplit split) {
-        //no op
-    }
-
-    @Override
     public Collection<Writable> next() {
         if(iter != null) {
             Collection<Writable> ret = new ArrayList<>();
-            File image = iter.next();
+            File image = (File) iter.next();
 
             if(image.isDirectory())
                 return next();
@@ -185,7 +158,7 @@ public class ImageNetRecordReader implements RecordReader {
             else {
                 if(iter.hasNext()) {
                     try {
-                        ret.add(new Text(FileUtils.readFileToString(iter.next())));
+                        ret.add(new Text(FileUtils.readFileToString((File) iter.next())));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -199,34 +172,11 @@ public class ImageNetRecordReader implements RecordReader {
         }
         throw new IllegalStateException("No more elements");
     }
-    
 
     @Override
-    public boolean hasNext() {
-        if(iter != null) {
-            return iter.hasNext();
-        }
-        else if(record != null) {
-            return !hitImage;
-        }
-        throw new IllegalStateException("Indeterminant state: record must not be null, or a file iterator must exist");
-    }
-
-    @Override
-    public void close() {
-
-    }
-
-    @Override
-    public void setConf(Configuration conf) {
-
-    }
-
-    @Override
-    public Configuration getConf() {
+    protected String getLabel(String path) {
         return null;
     }
-
 
 
 }

@@ -77,6 +77,11 @@ public class ComposableRecordReader implements RecordReader {
     }
 
     @Override
+    public List<String> getLabels() {
+        return null;
+    }
+
+    @Override
     public void close() throws IOException {
        for(RecordReader reader : readers)
            reader.close();
@@ -84,18 +89,25 @@ public class ComposableRecordReader implements RecordReader {
 
     @Override
     public void setConf(Configuration conf) {
-
+        for (RecordReader reader: readers) {
+            reader.setConf(conf);
+        }
     }
 
     @Override
     public Configuration getConf() {
+        for (RecordReader reader: readers) {
+            return reader.getConf();
+        }
         return null;
     }
 
     @Override
-    public List<String> getLabels(){
-        return null; }
-
+    public void reset() {
+        for (RecordReader reader: readers) {
+            reader.reset();
+        }
+    }
 
 
 }

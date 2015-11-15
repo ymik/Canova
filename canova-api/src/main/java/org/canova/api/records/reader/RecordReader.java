@@ -79,5 +79,10 @@ public interface RecordReader extends Closeable,Serializable,Configurable {
      */
     List<String> getLabels();
 
+    /**
+     * Reset record reader iterator
+     * @return
+     */
+    void reset();
 
 }

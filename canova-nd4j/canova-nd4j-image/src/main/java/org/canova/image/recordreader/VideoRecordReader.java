@@ -286,5 +286,8 @@ public class VideoRecordReader implements SequenceRecordReader {
         return null; }
 
 
+    @Override
+    public void reset() {
+    }
 
 }

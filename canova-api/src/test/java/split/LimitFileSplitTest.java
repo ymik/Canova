@@ -20,9 +20,8 @@ public class LimitFileSplitTest {
 
     protected File file1, file2, file3, file4, file5, file6, newPath;
     protected String[] allForms = {"jpg", "jpeg", "JPG", "JPEG"};
-    private static String localPath = System.getProperty("java.io.tmpdir") + File.separator;
-    private static String testPath = localPath + "test" + File.separator;
-
+    protected static String localPath = System.getProperty("java.io.tmpdir") + File.separator;
+    protected static String testPath = localPath + "test" + File.separator;
 
     // These cannot run on TravisCI - uncomment when checking locally
 

@@ -20,6 +20,7 @@
 
 package org.canova.image.recordreader;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.io.FileUtils;
 import org.canova.api.conf.Configuration;
 import org.canova.api.io.data.DoubleWritable;
@@ -202,6 +203,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
         this.conf = conf;
         initialize(split);
     }
+
 
     @Override
     public Collection<Writable> next() {

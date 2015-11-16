@@ -20,7 +20,6 @@
 
 package org.canova.api.records.reader.impl;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.RecordReader;
@@ -52,7 +51,6 @@ public class LibSvmTest {
         RecordReader libSvmRecordReader = new LibSvmRecordReader();
         libSvmRecordReader.initialize(conf,new FileSplit(new ClassPathResource("iris.libsvm").getFile()));
 
-        List<String> assertion = IOUtils.readLines(new ClassPathResource("iris.libsvm").getInputStream());
         RecordWriter writer = new LibSvmRecordWriter();
         writer.setConf(conf);
         Collection<Collection<Writable>> data = new ArrayList<>();

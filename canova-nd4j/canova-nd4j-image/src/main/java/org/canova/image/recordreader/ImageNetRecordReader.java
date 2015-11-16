@@ -30,6 +30,7 @@ import java.util.regex.Pattern;
 public class ImageNetRecordReader extends BaseImageRecordReader {
 
 	private static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
+    protected ListIterator<File> iter;
     protected Map<String,String> labelFileIdMap = new LinkedHashMap<>();
     protected final List<String> allowedFormats = Arrays.asList("jpg", "jpeg", "JPG", "JPEG");
     private String labelPath; // "cls-loc-labels.csv"
@@ -178,5 +179,10 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         return null;
     }
 
+    @Override
+    public void reset() {
+        while (iter.hasPrevious())
+            iter.previous();
+    }
 
 }

@@ -29,11 +29,14 @@ import java.util.regex.Pattern;
  */
 public class ImageNetRecordReader extends BaseImageRecordReader {
 
-	private static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
+    protected static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
     protected ListIterator<File> iter;
     protected Map<String,String> labelFileIdMap = new LinkedHashMap<>();
+    protected Map<String,String> fileNameMap = new LinkedHashMap<>();
     protected final List<String> allowedFormats = Arrays.asList("jpg", "jpeg", "JPG", "JPEG");
-    private String labelPath; // "cls-loc-labels.csv"
+    protected String labelPath; // "cls-loc-labels.csv"
+    protected String fileNameMapPath = null;
+    protected boolean eval = false;
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath) {
         imageLoader = new ImageLoader(width, height, channels);
@@ -44,6 +47,14 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         imageLoader = new ImageLoader(width, height, channels);
         this.labelPath = labelPath;
         this.appendLabel = appendLabel;
+    }
+
+    public ImageNetRecordReader(int width, int height, int channels, boolean appendLabel, String labelPath, String fileNameMapPath) {
+        imageLoader = new ImageLoader(width, height, channels);
+        this.labelPath = labelPath;
+        this.appendLabel = appendLabel;
+        this.fileNameMapPath = fileNameMapPath;
+        this.eval = true;
     }
 
     @Override
@@ -59,22 +70,29 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         return false;
     }
 
-    private void defineLabels() throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(labelPath));
+    private Map<String, String> defineLabels(String path) throws IOException {
+        Map<String,String> tmpMap = new LinkedHashMap<>();
+        BufferedReader br = new BufferedReader(new FileReader(path));
         String line;
 
-        if (labelFileIdMap.isEmpty()) {
-            while ((line = br.readLine()) != null) {
-                String row[] = line.split(",");
-                labelFileIdMap.put(row[0], row[1]);
-            }
+        while ((line = br.readLine()) != null) {
+            String row[] = line.split(",");
+            tmpMap.put(row[0], row[1]);
         }
-        labels = new ArrayList<>(labelFileIdMap.values());
+        return tmpMap;
     }
 
     @Override
     public void initialize(InputSplit split) throws IOException {
-        defineLabels();
+        // creates hashmap with WNID (synset id) as key and first descriptive word in list as the string name
+        if (labelPath != null && labelFileIdMap.isEmpty()) {
+            labelFileIdMap = defineLabels(labelPath);
+            labels = new ArrayList<>(labelFileIdMap.values());
+        }
+        // creates hasmap with filename as key and WNID(synset id) as value
+        if (fileNameMapPath != null && fileNameMap.isEmpty()) {
+            fileNameMap = defineLabels(fileNameMapPath);
+        }
         if(split instanceof FileSplit) {
             URI[] locations = split.locations();
             if(locations != null && locations.length >= 1) {
@@ -97,59 +115,37 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
                         iter =  Collections.singletonList(curr).listIterator();
                 }
             }
-            //remove the root directory
-            FileSplit split1 = (FileSplit) split;
-            labels.remove(split1.getRootDir());
+        } else {
+            throw new UnsupportedClassVersionError("Split needs to be an instance of FileSplit for this record reader.");
         }
 
-
-        else if(split instanceof InputStreamInputSplit) {
-            InputStreamInputSplit split2 = (InputStreamInputSplit) split;
-            InputStream is =  split2.getIs();
-            URI[] locations = split2.locations();
-            INDArray load = imageLoader.asRowVector(is);
-            record = RecordConverter.toRecord(load);
-            for(int i = 0; i < load.length(); i++) {
-                if (appendLabel) {
-                    Path path = Paths.get(locations[0]);
-                    String imgName = path.getParent().toString();
-                    if (imgName.contains("/")) {
-                        imgName = imgName.substring(imgName.lastIndexOf('/') + 1);
-                    }
-
-                    imgName = imgName.split(Pattern.quote("_"))[0];
-                    // use file name WNID to find corresponding name in map and index in labels to add to list
-                    int labelId = labels.indexOf(labelFileIdMap.get(imgName));
-                    if (labelId >= 0)
-                        record.add(new DoubleWritable(labelId));
-                    else
-                        throw new IllegalStateException("Illegal label " + imgName);
-                }
-            }
-            is.close();
-        }
     }
 
     @Override
     public Collection<Writable> next() {
         if(iter != null) {
             Collection<Writable> ret = new ArrayList<>();
-            File image = (File) iter.next();
+            File image = iter.next();
 
             if(image.isDirectory())
                 return next();
 
             try {
+                int labelId = -1;
                 INDArray row = imageLoader.asRowVector(image);
                 ret = RecordConverter.toRecord(row);
-                if(appendLabel) {
-                    String imgName = FilenameUtils.getBaseName(image.getName()).split(Pattern.quote("_"))[0];
-                    int labelId = labels.indexOf(labelFileIdMap.get(imgName));
-                    if (labelId >= 0)
-                        ret.add(new DoubleWritable(labelId));
-                    else
-                        throw new IllegalStateException("Illegal label " + imgName);
+                if(appendLabel && fileNameMapPath == null) {
+                    String WNID = FilenameUtils.getBaseName(image.getName()).split(Pattern.quote("_"))[0];
+                    labelId = labels.indexOf(labelFileIdMap.get(WNID));
+                } else if (eval) {
+                    String fileName = FilenameUtils.getName(image.getName()); // currently expects file extension
+                    labelId = labels.indexOf(labelFileIdMap.get(fileNameMap.get(fileName)));
                 }
+                if (labelId >= 0)
+                    ret.add(new DoubleWritable(labelId));
+                else
+                    throw new IllegalStateException("Illegal label " + labelId);
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -172,6 +168,17 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
             return record;
         }
         throw new IllegalStateException("No more elements");
+    }
+
+    @Override
+    public boolean hasNext() {
+        if(iter != null) {
+            return iter.hasNext();
+        }
+        else if(record != null) {
+            return !hitImage;
+        }
+        throw new IllegalStateException("Indeterminant state: record must not be null, or a file iterator must exist");
     }
 
     @Override

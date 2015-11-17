@@ -325,7 +325,7 @@ public class TestVectorize {
     }
 
 
-    public static void setupLFWSampleLocally() throws IOException {
+    public static void setupLFWSampleLocally() throws Exception {
 
 
         String localUnzippedSubdir = "lfw";

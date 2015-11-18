@@ -175,6 +175,7 @@ public class TestVectorize {
 
     public static File download_LFW_AndUntar(String workingBaseDir) throws Exception {
         new LFWLoader().getIfNotExists();
+        FileUtils.copyDirectory(new File(System.getProperty("user.home"),"lfw"),new File("java.io.tmpdir","lfw"));
         File lfwDataSet = new File(System.getProperty("java.io.tmpdir"),"lfw");
         return lfwDataSet;
     }

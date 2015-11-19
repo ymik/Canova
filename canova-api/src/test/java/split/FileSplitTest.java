@@ -48,31 +48,31 @@ public class FileSplitTest {
         file6 = File.createTempFile("treehouse_6", ".jpg", newPath);
 
     }
-//
-//    @Test
-//    public void testInitializeLoadSingleFile(){
-//        InputSplit split = new FileSplit(file, allForms);
-//        assertEquals(split.locations()[0], file.toURI());
-//
-//    }
-//
-//    @Test
-//    public void testInitializeLoadMulFiles() throws IOException{
-//        InputSplit split = new FileSplit(newPath, allForms, true);
-//        assertEquals(3, split.locations().length);
-//        assertEquals(file1.toURI(), split.locations()[0]);
-//        assertEquals(file3.toURI(), split.locations()[1]);
-//    }
-//
-//    @Test
-//    public void testInitializeMulFilesShuffle() throws IOException{
-//        InputSplit split = new FileSplit(newPath, new Random(123));
-//        InputSplit split2 = new FileSplit(newPath, new Random(123));
-//        assertEquals(6, split.locations().length);
-//        assertEquals(6, split2.locations().length);
-//        assertEquals(split.locations()[3], split2.locations()[3]);
-//    }
-//
+
+    @Test
+    public void testInitializeLoadSingleFile(){
+        InputSplit split = new FileSplit(file, allForms);
+        assertEquals(split.locations()[0], file.toURI());
+
+    }
+
+    @Test
+    public void testInitializeLoadMulFiles() throws IOException{
+        InputSplit split = new FileSplit(newPath, allForms, true);
+        assertEquals(3, split.locations().length);
+        assertEquals(file1.toURI(), split.locations()[0]);
+        assertEquals(file3.toURI(), split.locations()[1]);
+    }
+
+    @Test
+    public void testInitializeMulFilesShuffle() throws IOException{
+        InputSplit split = new FileSplit(newPath, new Random(123));
+        InputSplit split2 = new FileSplit(newPath, new Random(123));
+        assertEquals(6, split.locations().length);
+        assertEquals(6, split2.locations().length);
+        assertEquals(split.locations()[3], split2.locations()[3]);
+    }
+
     @After
     public void doAfter(){
         mainFolder.delete();

@@ -22,4 +22,4 @@ before_install:
   - git clone https://github.com/deeplearning4j/nd4j && cd nd4j && mvn clean install -DskipTests -Dmaven.javadoc.skip=true && cd ..
 
 script:
-  - cd .. && chmod +x ./runtests.sh && ./runtests.sh
+  -  cd /home/travis/build/deeplearning4j/Canova && chmod +x ./runtests.sh && ./runtests.sh

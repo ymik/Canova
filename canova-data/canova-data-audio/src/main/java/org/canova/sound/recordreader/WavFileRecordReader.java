@@ -44,7 +44,7 @@ import java.util.*;
  * @author Adam Gibson
  */
 public class WavFileRecordReader implements RecordReader {
-    private ListIterator<File> iter;
+    private Iterator<File> iter;
     private Collection<Writable> record;
     private boolean hitImage = false;
     private boolean appendLabel = false;
@@ -87,14 +87,14 @@ public class WavFileRecordReader implements RecordReader {
                             allFiles.add(iter);
                     }
 
-                    iter = allFiles.listIterator();
+                    iter = allFiles.iterator();
                 }
                 else {
                     File curr = new File(locations[0]);
                     if(curr.isDirectory())
-                        iter = (ListIterator) FileUtils.iterateFiles(curr,null,true);
+                        iter = FileUtils.iterateFiles(curr,null,true);
                     else
-                        iter = Collections.singletonList(curr).listIterator();
+                        iter = Collections.singletonList(curr).iterator();
                 }
             }
         }
@@ -175,8 +175,6 @@ public class WavFileRecordReader implements RecordReader {
 
     @Override
     public void reset() {
-        while(iter.hasPrevious())
-            iter.previous();
     }
 
 

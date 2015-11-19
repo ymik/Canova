@@ -104,9 +104,6 @@ public class ComposableRecordReader implements RecordReader {
 
     @Override
     public void reset() {
-        for (RecordReader reader: readers) {
-            reader.reset();
-        }
     }
 
 

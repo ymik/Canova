@@ -4,6 +4,7 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.split.LimitFileSplit;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -25,19 +26,19 @@ public class LimitFileSplitTest {
 
     // These cannot run on TravisCI - uncomment when checking locally
 
-    @Before
-    public void doBefore() throws IOException {
-        newPath = new File(testPath);
-        newPath.mkdir();
-
-        file1 = File.createTempFile("myfile_1", ".jpg", newPath);
-        file2 = File.createTempFile("myfile_2", ".txt", newPath);
-        file3 = File.createTempFile("myfile_3", ".jpg", newPath);
-        file4 = File.createTempFile("treehouse_4", ".csv", newPath);
-        file5 = File.createTempFile("treehouse_5", ".csv", newPath);
-        file6 = File.createTempFile("treehouse_6", ".jpg", newPath);
-
-    }
+//    @Before
+//    public void doBefore() throws IOException {
+//        newPath = new File(testPath);
+//        newPath.mkdir();
+//
+//        file1 = File.createTempFile("myfile_1", ".jpg", newPath);
+//        file2 = File.createTempFile("myfile_2", ".txt", newPath);
+//        file3 = File.createTempFile("myfile_3", ".jpg", newPath);
+//        file4 = File.createTempFile("treehouse_4", ".csv", newPath);
+//        file5 = File.createTempFile("treehouse_5", ".csv", newPath);
+//        file6 = File.createTempFile("treehouse_6", ".jpg", newPath);
+//
+//    }
 //
 //    @Test
 //    public void testInitializeLimitedFiles() throws IOException{
@@ -99,18 +100,18 @@ public class LimitFileSplitTest {
 //        newPath2.deleteOnExit();
 //
 //    }
-//
-    @After
-    public void doAfter(){
-        file1.delete();
-        file2.delete();
-        file3.delete();
-        file4.delete();
-        file5.delete();
-        file6.delete();
-        newPath.delete();
 
-    }
+//    @After
+//    public void doAfter(){
+//        file1.delete();
+//        file2.delete();
+//        file3.delete();
+//        file4.delete();
+//        file5.delete();
+//        file6.delete();
+//        newPath.delete();
+//
+//    }
 
 
 }

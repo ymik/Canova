@@ -44,8 +44,8 @@ public class FileRecordReaderTest {
 //            reader.next();
 //        }
 //        assertFalse(reader.hasNext());
-//        reader.reset();
-//        assertTrue(reader.hasNext());
+//        reader.reset(); // reset shouldn't work on record readers
+//        assertFalse(reader.hasNext());
 //
 //    }
 //
@@ -57,5 +57,5 @@ public class FileRecordReaderTest {
 //        file4.delete();
 //        newPath.delete();
 //    }
-//
+
 }

@@ -42,7 +42,7 @@ import java.util.*;
  */
 public class FileRecordReader implements RecordReader {
 
-    protected ListIterator<File> iter;
+    protected Iterator<File> iter;
     protected Configuration conf;
     protected File currentFile;
     protected List<String> labels;
@@ -90,9 +90,9 @@ public class FileRecordReader implements RecordReader {
             else {
                 File curr = new File(locations[0]);
                 if(curr.isDirectory())
-                    iter = (ListIterator) FileUtils.iterateFiles(curr,null,true);
+                    iter = FileUtils.iterateFiles(curr,null,true);
                 else
-                    iter = Collections.singletonList(curr).listIterator();
+                    iter = Collections.singletonList(curr).iterator();
             }
         }
 
@@ -173,8 +173,6 @@ public class FileRecordReader implements RecordReader {
 
     @Override
     public void reset() {
-        while (iter.hasPrevious())
-            iter.previous();
     }
 
 }

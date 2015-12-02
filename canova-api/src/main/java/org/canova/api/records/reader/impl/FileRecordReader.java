@@ -47,12 +47,14 @@ public class FileRecordReader implements RecordReader {
     protected File currentFile;
     protected List<String> labels;
     protected boolean appendLabel = false;
+    protected InputSplit inputSplit;
 
     public FileRecordReader() {}
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
         doInitialize(split);
+        this.inputSplit = split;
     }
 
 
@@ -102,6 +104,7 @@ public class FileRecordReader implements RecordReader {
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
         appendLabel = conf.getBoolean(APPEND_LABEL,true);
         doInitialize(split);
+        this.inputSplit = split;
     }
 
     @Override
@@ -173,6 +176,8 @@ public class FileRecordReader implements RecordReader {
 
     @Override
     public void reset() {
+        if(inputSplit == null) throw new UnsupportedOperationException("Cannot reset without first initializing");
+        doInitialize(inputSplit);
     }
 
 }

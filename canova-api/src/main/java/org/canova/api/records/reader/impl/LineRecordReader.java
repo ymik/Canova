@@ -47,6 +47,7 @@ public class LineRecordReader implements RecordReader {
     private URI[] locations;
     private int currIndex = 0;
     protected Configuration conf;
+    protected InputSplit inputSplit;
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
@@ -60,8 +61,7 @@ public class LineRecordReader implements RecordReader {
                 iter =  IOUtils.lineIterator(new InputStreamReader(locations[0].toURL().openStream()));
             }
         }
-
-
+        this.inputSplit = split;
     }
 
     @Override
@@ -127,6 +127,11 @@ public class LineRecordReader implements RecordReader {
 
     @Override
     public void reset() {
-
+        if(inputSplit == null) throw new UnsupportedOperationException("Cannot reset without first initializing");
+        try{
+            initialize(inputSplit);
+        }catch(Exception e){
+            throw new RuntimeException("Error during LineRecordReader reset",e);
+        }
     }
 }

@@ -46,6 +46,33 @@ public class CSVSequenceRecordReaderTest {
         }
     }
 
+    @Test
+    public void testReset() throws Exception {
+        CSVSequenceRecordReader seqReader = new CSVSequenceRecordReader(1,",");
+        seqReader.initialize(new TestInputSplit());
+
+        int nTests = 5;
+        for( int i=0; i<nTests; i++ ) {
+            seqReader.reset();
+
+            int sequenceCount = 0;
+            while (seqReader.hasNext()) {
+                Collection<Collection<Writable>> sequence = seqReader.sequenceRecord();
+                assertEquals(4, sequence.size());    //4 lines, plus 1 header line
+
+                Iterator<Collection<Writable>> timeStepIter = sequence.iterator();
+                int lineCount = 0;
+                while (timeStepIter.hasNext()) {
+                    timeStepIter.next();
+                    lineCount++;
+                }
+                sequenceCount++;
+                assertEquals(4,lineCount);
+            }
+            assertEquals(3,sequenceCount);
+        }
+    }
+
     private static class TestInputSplit implements InputSplit {
 
         @Override

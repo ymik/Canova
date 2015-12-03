@@ -21,11 +21,19 @@ public class ClassPathResourceTest {
     }
 
     @Test
-    public void testGetFile() throws Exception {
+    public void testGetFile1() throws Exception {
         File intFile = new ClassPathResource("iris.dat").getFile();
 
         assertTrue(intFile.exists());
         assertEquals(2700, intFile.length());
+    }
+
+    @Test
+    public void testGetFileWithSpace1() throws Exception {
+        File intFile = new ClassPathResource("csvsequence test.txt").getFile();
+
+        assertTrue(intFile.exists());
+        assertEquals(60, intFile.length());
     }
 
     @Test

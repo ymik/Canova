@@ -90,7 +90,6 @@ public class ClassPathResource {
 
             try {
                 URI uri = new URI(url.toString().replaceAll(" ", "%20"));
-                log.info("URI: " + uri);
                 return new File(uri.getSchemeSpecificPart());
             } catch (URISyntaxException e) {
                 return new File(url.getFile());

@@ -1,7 +1,5 @@
 package org.canova.api.util;
 
-import com.sun.istack.internal.NotNull;
-
 import java.io.File;
 import java.io.InputStream;
 
@@ -16,7 +14,8 @@ public class ClassPathResource {
 
     private String resourceName;
 
-    public ClassPathResource(@NotNull String resourceName) {
+    public ClassPathResource(String resourceName) {
+        if (resourceName == null) throw new IllegalStateException("Resource name can't be null");
         this.resourceName = resourceName;
     }
 

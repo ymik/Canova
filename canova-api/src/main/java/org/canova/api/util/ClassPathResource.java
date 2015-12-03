@@ -1,5 +1,8 @@
 package org.canova.api.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -19,6 +22,8 @@ public class ClassPathResource {
 
     private String resourceName;
 
+    private static Logger log = LoggerFactory.getLogger(ClassPathResource.class);
+
     public ClassPathResource(String resourceName) {
         if (resourceName == null) throw new IllegalStateException("Resource name can't be null");
         this.resourceName = resourceName;
@@ -37,11 +42,12 @@ public class ClassPathResource {
         }
 
         URL url = loader.getResource(this.resourceName);
+
         if (url == null) {
             throw new FileNotFoundException("File '" + this.resourceName + "' cannot be found.");
         }
         try {
-            return new File(new URI(url.toString()).getSchemeSpecificPart());
+            return new File(new URI(url.toString().replaceAll(" ","%20")).getSchemeSpecificPart());
         } catch (URISyntaxException e) {
             return new File(url.getFile());
         }

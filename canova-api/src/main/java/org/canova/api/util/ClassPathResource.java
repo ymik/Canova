@@ -12,8 +12,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
- * Simple utility class used to get access to files bundled into jar.
- * Based on Spring ClassPathResource implementation
+ * Simple utility class used to get access to files at the classpath, or packed into jar.
+ * Based on Spring ClassPathResource implementation + jar internals access implemented.
  *
  *
  * @author raver119@gmail.com
@@ -24,11 +24,21 @@ public class ClassPathResource {
 
     private static Logger log = LoggerFactory.getLogger(ClassPathResource.class);
 
+    /**
+     * Builds new ClassPathResource object
+     *
+     * @param resourceName String name of resource, to be retrieved
+     */
     public ClassPathResource(String resourceName) {
         if (resourceName == null) throw new IllegalStateException("Resource name can't be null");
         this.resourceName = resourceName;
     }
 
+    /**
+     *  Returns URL of the requested resource
+     *
+     * @return URL of the resource, if it's available in current Jar
+     */
     private URL getUrl() {
         ClassLoader loader = null;
         try {
@@ -48,6 +58,14 @@ public class ClassPathResource {
         return url;
     }
 
+    /**
+     * Returns requested ClassPathResource as File object
+     *
+     * Please note: if this method called from compiled jar, temporary file will be created to provide File access
+     *
+     * @return File requested at constructor call
+     * @throws FileNotFoundException
+     */
     public File getFile() throws FileNotFoundException {
         URL url = this.getUrl();
 
@@ -97,11 +115,24 @@ public class ClassPathResource {
         }
     }
 
+    /**
+     * Checks, if proposed URL is packed into archive.
+     *
+     * @param url URL to be checked
+     * @return True, if URL is archive entry, False otherwise
+     */
     private boolean isJarURL(URL url) {
         String protocol = url.getProtocol();
         return "jar".equals(protocol) || "zip".equals(protocol) || "wsjar".equals(protocol) || "code-source".equals(protocol) && url.getPath().contains("!/");
     }
 
+    /**
+     * Extracts parent Jar URL from original ClassPath entry URL.
+     *
+     * @param jarUrl Original URL of the resource
+     * @return URL of the Jar file, containing requested resource
+     * @throws MalformedURLException
+     */
     private URL extractActualUrl(URL jarUrl) throws MalformedURLException {
         String urlFile = jarUrl.getFile();
         int separatorIndex = urlFile.indexOf("!/");
@@ -122,6 +153,12 @@ public class ClassPathResource {
         }
     }
 
+    /**
+     * Returns requested ClassPathResource as InputStream object
+     *
+     * @return File requested at constructor call
+     * @throws FileNotFoundException
+     */
     public InputStream getInputStream() throws FileNotFoundException {
         URL url = this.getUrl();
         if (isJarURL(url)) {

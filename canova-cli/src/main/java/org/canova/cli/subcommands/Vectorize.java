@@ -43,7 +43,6 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.core.io.ClassPathResource;
 
 /**
  * Vectorize Command.

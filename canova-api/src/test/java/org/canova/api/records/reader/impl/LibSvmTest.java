@@ -20,21 +20,19 @@
 
 package org.canova.api.records.reader.impl;
 
-import org.apache.commons.io.IOUtils;
 import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.records.writer.impl.FileRecordWriter;
 import org.canova.api.records.writer.impl.LibSvmRecordWriter;
 import org.canova.api.split.FileSplit;
+import org.canova.api.util.ClassPathResource;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import static org.junit.Assert.*;
 

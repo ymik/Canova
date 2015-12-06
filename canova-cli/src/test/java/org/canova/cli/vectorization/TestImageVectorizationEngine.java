@@ -1,26 +1,5 @@
 package org.canova.cli.vectorization;
 
-import static org.junit.Assert.*;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import org.canova.api.formats.input.InputFormat;
-import org.canova.api.records.reader.RecordReader;
-import org.canova.api.records.writer.RecordWriter;
-import org.canova.api.records.writer.impl.SVMLightRecordWriter;
-import org.canova.api.split.FileSplit;
-import org.canova.api.split.InputSplit;
-import org.canova.api.split.InputStreamInputSplit;
-import org.canova.image.mnist.MnistFetcher;
-import org.canova.image.recordreader.ImageRecordReader;
-import org.canova.image.recordreader.MNISTRecordReader;
-
-import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
-
 public class TestImageVectorizationEngine {
 
 	

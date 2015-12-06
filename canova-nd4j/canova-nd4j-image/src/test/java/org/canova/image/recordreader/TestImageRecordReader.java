@@ -26,7 +26,6 @@ import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.InputStreamInputSplit;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

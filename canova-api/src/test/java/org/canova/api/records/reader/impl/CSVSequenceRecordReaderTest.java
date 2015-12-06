@@ -1,9 +1,9 @@
 package org.canova.api.records.reader.impl;
 
 import org.canova.api.split.InputSplit;
+import org.canova.api.util.ClassPathResource;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -84,9 +84,9 @@ public class CSVSequenceRecordReaderTest {
         public URI[] locations() {
             URI[] arr = new URI[3];
             try {
-                arr[0] = new ClassPathResource("csvsequence_0.txt").getURI();
-                arr[1] = new ClassPathResource("csvsequence_1.txt").getURI();
-                arr[2] = new ClassPathResource("csvsequence_2.txt").getURI();
+                arr[0] = new ClassPathResource("csvsequence_0.txt").getFile().toURI();
+                arr[1] = new ClassPathResource("csvsequence_1.txt").getFile().toURI();
+                arr[2] = new ClassPathResource("csvsequence_2.txt").getFile().toURI();
             } catch(Exception e ){
                 throw new RuntimeException(e);
             }

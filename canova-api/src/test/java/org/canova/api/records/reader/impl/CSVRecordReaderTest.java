@@ -3,9 +3,9 @@ package org.canova.api.records.reader.impl;
 import org.canova.api.io.data.Text;
 import org.canova.api.split.FileSplit;
 import org.canova.api.split.StringSplit;
+import org.canova.api.util.ClassPathResource;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 import java.util.ArrayList;
 import java.util.Collection;

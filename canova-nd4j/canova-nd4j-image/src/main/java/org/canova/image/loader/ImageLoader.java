@@ -183,14 +183,23 @@ public class ImageLoader implements Serializable {
     public INDArray toBgr(InputStream inputStream) {
         try {
             BufferedImage image = ImageIO.read(inputStream);
-            if(image == null)
-                throw new IllegalStateException("Unable to load image");
-            image = scalingIfNeed(image, false);
-            return toINDArrayBGR(image);
-
+            return toBgr(image);
         } catch (IOException e) {
             throw new RuntimeException("Unable to load image", e);
         }
+    }
+
+    /**
+     * Convert an BufferedImage to an bgr spectrum image
+     *
+     * @param image the BufferedImage to convert
+     * @return the input stream to convert
+     */
+    public INDArray toBgr(BufferedImage image) {
+        if(image == null)
+            throw new IllegalStateException("Unable to load image");
+        image = scalingIfNeed(image, false);
+        return toINDArrayBGR(image);
     }
 
     /**
@@ -214,6 +223,21 @@ public class ImageLoader implements Serializable {
            return toBgr(inputStream);
         try {
             BufferedImage image  = ImageIO.read(inputStream);
+            return asMatrix(image);
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load image",e);
+        }
+    }
+
+    /**
+     * Convert an BufferedImage to a matrix
+     * @param image the BufferedImage to convert
+     * @return the input stream to convert
+     */
+    public INDArray asMatrix(BufferedImage image) {
+        if (channels == 3) {
+            return toBgr(image);
+        } else {
             image = scalingIfNeed(image, true);
             int w = image.getWidth();
             int h = image.getHeight();
@@ -225,8 +249,6 @@ public class ImageLoader implements Serializable {
                 }
             }
             return ret;
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to load image",e);
         }
     }
 

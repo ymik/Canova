@@ -42,18 +42,19 @@ public class CSVRecordReaderTest {
     public void testReset() throws Exception {
         CSVRecordReader rr = new CSVRecordReader(0,",");
         rr.initialize(new FileSplit(new ClassPathResource("iris.dat").getFile()));
+
         int nResets = 5;
-        for( int i=0; i<nResets; i++ ){
-            rr.reset();
+        for( int i=0; i < nResets; i++ ){
 
             int lineCount = 0;
             while(rr.hasNext()){
                 Collection<Writable> line = rr.next();
-                assertEquals(5,line.size());
+                assertEquals(5, line.size());
                 lineCount++;
             }
-
-            assertEquals(150,lineCount);
+            assertFalse(rr.hasNext());
+            assertEquals(150, lineCount);
+            rr.reset();
         }
     }
 }

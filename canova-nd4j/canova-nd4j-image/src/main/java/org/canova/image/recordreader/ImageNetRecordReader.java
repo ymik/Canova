@@ -84,6 +84,7 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
 
     @Override
     public void initialize(InputSplit split) throws IOException {
+        inputSplit = split;
         // creates hashmap with WNID (synset id) as key and first descriptive word in list as the string name
         if (labelPath != null && labelFileIdMap.isEmpty()) {
             labelFileIdMap = defineLabels(labelPath);
@@ -186,10 +187,5 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         return null;
     }
 
-    @Override
-    public void reset() {
-        while (iter.hasPrevious())
-            iter.previous();
-    }
 
 }

@@ -92,8 +92,9 @@ public class MNISTRecordReader implements RecordReader {
     private static final String MNIST_ROOT = TEMP_ROOT + File.separator + "MNIST" + File.separator;
     
     // for now we always want to binarize
-    private boolean binarize = true;    
-	
+    private boolean binarize = true;
+    protected InputSplit inputSplit;
+
     public MNISTRecordReader() throws IOException {
     	
 		this.man = new MnistManager(MNIST_ROOT + trainingFilesFilename_unzipped, MNIST_ROOT + trainingFileLabelsFilename_unzipped);
@@ -117,7 +118,7 @@ public class MNISTRecordReader implements RecordReader {
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
-
+        inputSplit = split;
     	this.locations = split.locations();
         if (locations != null && locations.length > 0) {
             iter = IOUtils.lineIterator(new InputStreamReader(locations[0].toURL().openStream()));

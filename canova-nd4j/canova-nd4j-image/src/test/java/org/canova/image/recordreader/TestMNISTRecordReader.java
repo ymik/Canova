@@ -17,7 +17,6 @@ import org.canova.image.mnist.MnistManager;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.ClassPathResource;
 
 public class TestMNISTRecordReader {
 

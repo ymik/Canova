@@ -50,6 +50,7 @@ public class WavFileRecordReader implements RecordReader {
     private boolean appendLabel = false;
     private List<String> labels = new ArrayList<>();
     private Configuration conf;
+    protected InputSplit inputSplit;
 
     public WavFileRecordReader() {
     }
@@ -69,7 +70,7 @@ public class WavFileRecordReader implements RecordReader {
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
-
+        inputSplit = split;
         if(split instanceof FileSplit) {
             URI[] locations = split.locations();
             if(locations != null && locations.length >= 1) {
@@ -175,6 +176,13 @@ public class WavFileRecordReader implements RecordReader {
 
     @Override
     public void reset() {
+        if(inputSplit == null) throw new UnsupportedOperationException("Cannot reset without first initializing");
+        try{
+            initialize(inputSplit);
+        }catch(Exception e){
+            throw new RuntimeException("Error during LineRecordReader reset",e);
+        }
+
     }
 
 

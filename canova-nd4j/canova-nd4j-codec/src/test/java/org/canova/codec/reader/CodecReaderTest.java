@@ -27,7 +27,7 @@ import org.canova.api.records.reader.SequenceRecordReader;
 import org.canova.api.split.FileSplit;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
+import org.canova.api.util.ClassPathResource;
 
 import java.io.File;
 import java.util.Collection;

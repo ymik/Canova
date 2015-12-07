@@ -58,6 +58,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
     protected final List<String> allowedFormats = Arrays.asList("tif", "jpg", "png", "jpeg", "bmp", "JPEG", "JPG", "TIF", "PNG");
     protected boolean hitImage = false;
     protected ImageLoader imageLoader;
+    protected InputSplit inputSplit;
 
     public final static String WIDTH = NAME_SPACE + ".width";
     public final static String HEIGHT = NAME_SPACE + ".height";
@@ -133,6 +134,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
+        inputSplit = split;
         if(split instanceof FileSplit) {
             URI[] locations = split.locations();
             if(locations != null && locations.length >= 1) {
@@ -301,5 +303,12 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
     @Override
     public void reset() {
+        if(inputSplit == null) throw new UnsupportedOperationException("Cannot reset without first initializing");
+        try{
+            initialize(inputSplit);
+        }catch(Exception e){
+            throw new RuntimeException("Error during LineRecordReader reset",e);
+        }
+
     }
 }

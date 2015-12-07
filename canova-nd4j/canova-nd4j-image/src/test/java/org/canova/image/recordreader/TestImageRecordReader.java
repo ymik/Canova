@@ -23,11 +23,15 @@ package org.canova.image.recordreader;
 import java.util.Collection;
 
 import org.canova.api.records.reader.RecordReader;
+import org.canova.api.records.reader.impl.FileRecordReader;
+import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputStreamInputSplit;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
+import org.canova.api.util.ClassPathResource;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 
@@ -35,7 +39,6 @@ import static org.junit.Assert.assertTrue;
  * @author Adam Gibson
  */
 public class TestImageRecordReader {
-
 
     // TODO fix tests and fix for TravisCI
 //    @Test

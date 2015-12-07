@@ -69,7 +69,7 @@ public class ImageByteBuffer extends BaseDataBuffer {
 
     @Override
     public int getInt(int i) {
-        return ((int)wrappedBuffer.get(i)) & 0xff;
+        return ((int) wrappedBuffer.get(i)) & 0xff;
     }
 
     @Override

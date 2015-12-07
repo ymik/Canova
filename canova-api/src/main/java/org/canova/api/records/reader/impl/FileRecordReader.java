@@ -177,7 +177,11 @@ public class FileRecordReader implements RecordReader {
     @Override
     public void reset() {
         if(inputSplit == null) throw new UnsupportedOperationException("Cannot reset without first initializing");
-        doInitialize(inputSplit);
+        try{
+            doInitialize(inputSplit);
+        }catch(Exception e){
+            throw new RuntimeException("Error during LineRecordReader reset",e);
+        }
     }
 
 }

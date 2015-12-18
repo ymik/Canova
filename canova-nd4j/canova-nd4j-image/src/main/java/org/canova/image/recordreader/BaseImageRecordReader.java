@@ -30,11 +30,11 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.split.InputStreamInputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
-import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +59,9 @@ public abstract class BaseImageRecordReader implements RecordReader {
     protected boolean hitImage = false;
     protected ImageLoader imageLoader;
     protected InputSplit inputSplit;
+    protected Map<String,String> fileNameMap = new LinkedHashMap<>();
+    protected String pattern; // Pattern to split and segment file name, pass in regex
+    protected int patternPosition = 0;
 
     public final static String WIDTH = NAME_SPACE + ".width";
     public final static String HEIGHT = NAME_SPACE + ".height";
@@ -77,54 +80,35 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public BaseImageRecordReader() {
     }
 
-    /**
-     * Load the record reader with the given width and height
-     * @param width the width load
-     * @param height the height to load
-     */
-    public BaseImageRecordReader(int width, int height,int channels) {
-        this(width, height,channels,false);
-
-    }
-
-    public BaseImageRecordReader(int width, int height,int channels,List<String> labels) {
+    public BaseImageRecordReader(int width, int height,int channels, List<String> labels) {
         this(width, height,channels,false);
         this.labels = labels;
     }
 
-    public BaseImageRecordReader(int width, int height,int channels,boolean appendLabel,List<String> labels) {
-        this(width,height,channels,appendLabel);
-        this.labels = labels;
-    }
-
-    public BaseImageRecordReader(int width, int height,int channels,boolean appendLabel) {
+    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel) {
         this.appendLabel = appendLabel;
         imageLoader = new ImageLoader(width,height,channels);
     }
 
-    public BaseImageRecordReader(int width, int height,List<String> labels) {
-        this(width, height,false);
+
+    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel, List<String> labels) {
+        this(width,height,channels,appendLabel);
         this.labels = labels;
     }
 
-    public BaseImageRecordReader(int width, int height,boolean appendLabel,List<String> labels) {
-        this.appendLabel = appendLabel;
-        imageLoader = new ImageLoader(width,height);
-        this.labels = labels;
+    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel, String pattern, int patternPosition) {
+        this(width,height,channels,appendLabel);
+        this.pattern = pattern;
+        this.patternPosition = patternPosition;
     }
 
-    public BaseImageRecordReader(int width, int height) {
-        this(width, height,false);
-
+    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel, List<String> labels, String pattern, int patternPosition) {
+        this(width,height,channels,appendLabel, labels);
+        this.pattern = pattern;
+        this.patternPosition = patternPosition;
     }
 
-    public BaseImageRecordReader(int width, int height,boolean appendLabel) {
-        this.appendLabel = appendLabel;
-        imageLoader = new ImageLoader(width,height);
-
-    }
-
-    private boolean containsFormat(String format) {
+    protected boolean containsFormat(String format) {
         for(String format2 : allowedFormats)
             if(format.endsWith("." + format2))
                 return true;
@@ -141,14 +125,18 @@ public abstract class BaseImageRecordReader implements RecordReader {
                 if(locations.length > 1) {
                     List<File> allFiles = new ArrayList<>();
                     for(URI location : locations) {
-                        File iter = new File(location);
-                        if(!iter.isDirectory() && containsFormat(iter.getAbsolutePath()))
-                            allFiles.add(iter);
+                        File imgFile = new File(location);
+                        if(!imgFile.isDirectory() && containsFormat(imgFile.getAbsolutePath()))
+                            allFiles.add(imgFile);
                         if(appendLabel){
-                            File parentDir = iter.getParentFile();
+                            File parentDir = imgFile.getParentFile();
                             String name = parentDir.getName();
                             if(!labels.contains(name))
                                 labels.add(name);
+                            if(pattern != null) {
+                                String label = name.split(pattern)[patternPosition];
+                                fileNameMap.put(imgFile.toString(), label);
+                            }
                         }
                     }
                     iter = allFiles.listIterator();
@@ -217,7 +205,8 @@ public abstract class BaseImageRecordReader implements RecordReader {
                 return next();
 
             try {
-                INDArray row = imageLoader.asRowVector(image);
+                BufferedImage bimg = ImageIO.read(image);
+                INDArray row = imageLoader.asRowVector(bimg);
                 ret = RecordConverter.toRecord(row);
                 if(appendLabel)
                     ret.add(new DoubleWritable(labels.indexOf(image.getParentFile().getName())));
@@ -277,7 +266,9 @@ public abstract class BaseImageRecordReader implements RecordReader {
      * @param path the path to get the label from
      * @return the label for the given path
      */
-    protected abstract String getLabel(String path);
+    public String getLabel(String path) {
+        return fileNameMap.get(path);
+    }
 
     /**
      * Accumulate the label from the path
@@ -299,7 +290,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
     @Override
     public List<String> getLabels(){
-        return null; }
+        return labels; }
 
     @Override
     public void reset() {
@@ -309,6 +300,8 @@ public abstract class BaseImageRecordReader implements RecordReader {
         }catch(Exception e){
             throw new RuntimeException("Error during LineRecordReader reset",e);
         }
-
     }
+
+    public int numLabels() { return labels.size(); }
+
 }

@@ -49,7 +49,7 @@ public class ImageRecordReader extends BaseImageRecordReader {
     }
 
     public ImageRecordReader(int width, int height, int channels) {
-        super(width, height, channels);
+        super(width, height, channels, false);
     }
 
     public ImageRecordReader(int width, int height, int channels, boolean appendLabel) {
@@ -57,19 +57,24 @@ public class ImageRecordReader extends BaseImageRecordReader {
     }
 
     public ImageRecordReader(int width, int height, List<String> labels) {
-        super(width, height, labels);
+        super(width, height, 1, labels);
     }
 
     public ImageRecordReader(int width, int height, boolean appendLabel, List<String> labels) {
-        super(width, height, appendLabel, labels);
+        super(width, height, 1, appendLabel, labels);
     }
 
     public ImageRecordReader(int width, int height) {
-        super(width, height);
+        super(width, height, 1, false);
     }
 
     public ImageRecordReader(int width, int height, boolean appendLabel) {
-        super(width, height, appendLabel);
+        super(width, height, 1, appendLabel);
+    }
+
+
+    public ImageRecordReader(int width, int height, int channels, boolean appendLabel, String pattern) {
+        super(width, height, channels, appendLabel, pattern, 0);
     }
 
 

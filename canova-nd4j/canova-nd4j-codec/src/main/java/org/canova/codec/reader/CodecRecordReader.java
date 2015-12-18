@@ -26,7 +26,7 @@ import org.canova.api.records.reader.impl.FileRecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
-import org.canova.image.loader.ImageLoader;
+import org.canova.image.recordreader.ImageLoader;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.NIOUtils;
@@ -34,7 +34,6 @@ import org.jcodec.common.NIOUtils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;

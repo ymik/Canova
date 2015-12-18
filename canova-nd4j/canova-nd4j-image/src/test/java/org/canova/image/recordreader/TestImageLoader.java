@@ -1,5 +1,6 @@
-package org.canova.image.loader;
+package org.canova.image.recordreader;
 
+import org.canova.image.recordreader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.awt.image.BufferedImage;

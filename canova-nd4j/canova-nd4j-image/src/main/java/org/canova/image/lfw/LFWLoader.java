@@ -24,7 +24,7 @@ package org.canova.image.lfw;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.canova.api.util.ArchiveUtils;
-import org.canova.image.loader.ImageLoader;
+import org.canova.image.recordreader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;

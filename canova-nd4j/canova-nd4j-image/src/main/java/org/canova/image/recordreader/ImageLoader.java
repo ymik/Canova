@@ -18,10 +18,11 @@
  *
  */
 
-package org.canova.image.loader;
+package org.canova.image.recordreader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
+import org.canova.image.loader.ImageByteBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -112,6 +113,9 @@ public class ImageLoader implements Serializable {
      */
     public INDArray asRowVector(BufferedImage image) {
         image = scalingIfNeed(image, true);
+        if(channels == 3) {
+            return toINDArrayBGR(image).ravel();
+        }
         int[][] ret = toIntArrayArray(image);
         return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
     }
@@ -412,6 +416,24 @@ public class ImageLoader implements Serializable {
         int[] shape = new int[]{height, width, bands};
         INDArray ret = Nd4j.create(new ImageByteBuffer(pixels, pixels.length), shape);
         return ret.permute(2, 0, 1);
+    }
+
+    // TODO build flexibility on where to crop the image
+    public BufferedImage centerCropIfNeeded(BufferedImage img) {
+        int x = 0;
+        int y = 0;
+        int width = img.getWidth();
+        int height = img.getHeight();
+        int diff = Math.abs(width - height) / 2;
+
+        if (width > height) {
+            x = diff;
+            width = width - diff;
+        } else if (height > width) {
+            y = diff;
+            height = height - diff;
+        }
+        return img.getSubimage(x, y, width, height);
     }
 
     protected BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {

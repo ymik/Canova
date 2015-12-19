@@ -67,7 +67,7 @@ public class ArrayRankDouble {
 	 * @param array
 	 * @param n
 	 * @param ascending	is ascending order or not
-	 * @return
+	 * @return Nth value in array
 	 */
 	public double getNthOrderedValue(double[] array, int n, boolean ascending) {
 

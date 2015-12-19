@@ -30,6 +30,7 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.split.InputStreamInputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
+import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import javax.imageio.ImageIO;
@@ -52,7 +53,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
     protected Iterator<File> iter;
     protected Configuration conf;
     protected File currentFile;
-    protected List<String> labels  = new ArrayList<>();
+    public List<String> labels  = new ArrayList<>();
     protected boolean appendLabel = false;
     protected Collection<Writable> record;
     protected final List<String> allowedFormats = Arrays.asList("tif", "jpg", "png", "jpeg", "bmp", "JPEG", "JPG", "TIF", "PNG");
@@ -117,72 +118,73 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
 
     @Override
-    public void initialize(InputSplit split) throws IOException, InterruptedException {
-        inputSplit = split;
-        if(split instanceof FileSplit) {
-            URI[] locations = split.locations();
-            if(locations != null && locations.length >= 1) {
-                if(locations.length > 1) {
-                    List<File> allFiles = new ArrayList<>();
-                    for(URI location : locations) {
-                        File imgFile = new File(location);
-                        if(!imgFile.isDirectory() && containsFormat(imgFile.getAbsolutePath()))
-                            allFiles.add(imgFile);
-                        if(appendLabel){
-                            File parentDir = imgFile.getParentFile();
-                            String name = parentDir.getName();
-                            if(!labels.contains(name))
-                                labels.add(name);
-                            if(pattern != null) {
-                                String label = name.split(pattern)[patternPosition];
-                                fileNameMap.put(imgFile.toString(), label);
+    public void initialize(InputSplit split) throws IOException{
+            inputSplit = split;
+            if(split instanceof FileSplit) {
+                URI[] locations = split.locations();
+                if(locations != null && locations.length >= 1) {
+                    if(locations.length > 1) {
+                        List<File> allFiles = new ArrayList<>();
+                        for(URI location : locations) {
+                            File imgFile = new File(location);
+                            if(!imgFile.isDirectory() && containsFormat(imgFile.getAbsolutePath()))
+                                allFiles.add(imgFile);
+                            if(appendLabel){
+                                File parentDir = imgFile.getParentFile();
+                                String name = parentDir.getName();
+                                if(!labels.contains(name))
+                                    labels.add(name);
+                                if(pattern != null) {
+                                    String label = name.split(pattern)[patternPosition];
+                                    fileNameMap.put(imgFile.toString(), label);
+                                }
                             }
                         }
+                        iter = allFiles.listIterator();
                     }
-                    iter = allFiles.listIterator();
-                }
-                else {
-                    File curr = new File(locations[0]);
-                    if(!curr.exists())
-                        throw new IllegalArgumentException("Path " + curr.getAbsolutePath() + " does not exist!");
-                    if(curr.isDirectory())
-                        iter =  FileUtils.iterateFiles(curr, null, true);
-                    else
-                        iter = Collections.singletonList(curr).listIterator();
+                    else {
+                        File curr = new File(locations[0]);
+                        if(!curr.exists())
+                            throw new IllegalArgumentException("Path " + curr.getAbsolutePath() + " does not exist!");
+                        if(curr.isDirectory())
+                            iter =  FileUtils.iterateFiles(curr, null, true);
+                        else
+                            iter = Collections.singletonList(curr).listIterator();
 
-                }
-            }
-            //remove the root directory
-            FileSplit split1 = (FileSplit) split;
-            labels.remove(split1.getRootDir());
-        }
-
-
-        else if(split instanceof InputStreamInputSplit) {
-            InputStreamInputSplit split2 = (InputStreamInputSplit) split;
-            InputStream is =  split2.getIs();
-            URI[] locations = split2.locations();
-            INDArray load = imageLoader.asRowVector(is);
-            record = RecordConverter.toRecord(load);
-            for(int i = 0; i < load.length(); i++) {
-                if (appendLabel) {
-                    Path path = Paths.get(locations[0]);
-                    String parent = path.getParent().toString();
-                    //could have been a uri
-                    if (parent.contains("/")) {
-                        parent = parent.substring(parent.lastIndexOf('/') + 1);
                     }
-                    int label = labels.indexOf(parent);
-                    if (label >= 0)
-                        record.add(new DoubleWritable(labels.indexOf(parent)));
-                    else
-                        throw new IllegalStateException("Illegal label " + parent);
                 }
+                //remove the root directory
+                FileSplit split1 = (FileSplit) split;
+                labels.remove(split1.getRootDir());
             }
-            is.close();
-        }
 
+
+            else if(split instanceof InputStreamInputSplit) {
+                InputStreamInputSplit split2 = (InputStreamInputSplit) split;
+                InputStream is = split2.getIs();
+                URI[] locations = split2.locations();
+                INDArray load = imageLoader.asRowVector(is);
+                record = RecordConverter.toRecord(load);
+                for (int i = 0; i < load.length(); i++) {
+                    if (appendLabel) {
+                        Path path = Paths.get(locations[0]);
+                        String parent = path.getParent().toString();
+                        //could have been a uri
+                        if (parent.contains("/")) {
+                            parent = parent.substring(parent.lastIndexOf('/') + 1);
+                        }
+                        int label = labels.indexOf(parent);
+                        if (label >= 0)
+                            record.add(new DoubleWritable(labels.indexOf(parent)));
+                        else
+                            throw new IllegalStateException("Illegal label " + parent);
+                    }
+                }
+                is.close();
+            }
     }
+
+
 
     @Override
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {

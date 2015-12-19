@@ -18,11 +18,10 @@
  *
  */
 
-package org.canova.image.recordreader;
+package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
-import org.canova.image.loader.ImageByteBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -444,19 +443,19 @@ public class ImageLoader implements Serializable {
         if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
             Image scaled = image.getScaledInstance(dstWidth, dstHeight, Image.SCALE_SMOOTH);
 
-            if (needAlpha && image.getColorModel().hasAlpha()) {
+            if (needAlpha && image.getColorModel().hasAlpha() && channels == BufferedImage.TYPE_4BYTE_ABGR) {
                 return toBufferedImage(scaled, BufferedImage.TYPE_4BYTE_ABGR);
             } else {
-                if(image.getRaster().getNumDataElements() == 1 ) return toBufferedImage(scaled, BufferedImage.TYPE_BYTE_GRAY);
+                if(channels == BufferedImage.TYPE_BYTE_GRAY) return toBufferedImage(scaled, BufferedImage.TYPE_BYTE_GRAY);
                 else return toBufferedImage(scaled, BufferedImage.TYPE_3BYTE_BGR);
             }
         } else {
             if (image.getType() == BufferedImage.TYPE_4BYTE_ABGR || image.getType() == BufferedImage.TYPE_3BYTE_BGR) {
                 return image;
-            } else if (needAlpha && image.getColorModel().hasAlpha()) {
+            } else if (needAlpha && image.getColorModel().hasAlpha() && channels == BufferedImage.TYPE_4BYTE_ABGR) {
                 return toBufferedImage(image, BufferedImage.TYPE_4BYTE_ABGR);
             } else {
-                if(image.getRaster().getNumDataElements() == 1 ) return toBufferedImage(image, BufferedImage.TYPE_BYTE_GRAY);
+                if(channels == BufferedImage.TYPE_BYTE_GRAY) return toBufferedImage(image, BufferedImage.TYPE_BYTE_GRAY);
                 else return toBufferedImage(image, BufferedImage.TYPE_3BYTE_BGR);
             }
         }

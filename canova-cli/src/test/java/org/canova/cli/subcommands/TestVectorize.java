@@ -37,7 +37,7 @@ import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
 import org.canova.api.util.ArchiveUtils;
 import org.canova.api.writable.Writable;
-import org.canova.image.lfw.LFWLoader;
+import org.canova.image.loader.LFWLoader;
 import org.canova.image.recordreader.MNISTRecordReader;
 import org.junit.Test;
 
@@ -161,7 +161,7 @@ public class TestVectorize {
     }
 
     public static File download_LFW_AndUntar(String workingBaseDir) throws Exception {
-        new LFWLoader().getIfNotExists();
+        new LFWLoader().load();
         FileUtils.copyDirectory(new File(System.getProperty("user.home"),"lfw"),new File(System.getProperty("java.io.tmpdir"),"lfw"));
         File lfwDataSet = new File(System.getProperty("java.io.tmpdir"),"lfw");
         return lfwDataSet;

@@ -8,6 +8,7 @@ import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
+import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
 
     protected static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
     protected Map<String,String> labelFileIdMap = new LinkedHashMap<>();
-    protected String labelPath; // "cls-loc-labels.csv"
+    protected String labelPath;
     protected String fileNameMapPath = null;
     protected boolean eval = false;
 

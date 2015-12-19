@@ -26,7 +26,7 @@ import org.canova.api.records.reader.impl.FileRecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
-import org.canova.image.recordreader.ImageLoader;
+import org.canova.image.loader.ImageLoader;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
 import org.jcodec.common.NIOUtils;

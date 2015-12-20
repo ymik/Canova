@@ -72,6 +72,7 @@ public class LFWLoader extends BaseImageLoader{
             this.numExamples = SUB_NUM_IMAGES;
             this.numLabels = SUB_NUM_LABELS;
         }
+        generateLfwMaps();
         if (!imageFilesExist()) load();
     }
 
@@ -82,6 +83,7 @@ public class LFWLoader extends BaseImageLoader{
             this.numExamples = SUB_NUM_IMAGES;
             this.numLabels = SUB_NUM_LABELS;
         }
+        generateLfwMaps();
         if (!imageFilesExist()) load();
     }
 
@@ -113,7 +115,6 @@ public class LFWLoader extends BaseImageLoader{
 
     public void load()  {
         if (!fullDir.exists()) {
-            generateLfwMaps();
             fullDir.mkdir();
 
             if (useSubset) {
@@ -164,6 +165,12 @@ public class LFWLoader extends BaseImageLoader{
 
     public RecordReader getRecordReader(int width, int height, int channels, int numExamples) {
         this.numExamples = numExamples;
+        return getRecordReader(width, height, channels, true, regexPattern);
+    }
+
+    public RecordReader getRecordReader(int width, int height, int channels, int numExamples, Random rng) {
+        this.numExamples = numExamples;
+        this.rng = rng;
         return getRecordReader(width, height, channels, true, regexPattern);
     }
 

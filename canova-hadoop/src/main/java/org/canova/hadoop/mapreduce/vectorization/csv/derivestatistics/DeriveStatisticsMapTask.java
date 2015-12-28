@@ -1,4 +1,4 @@
-package org.canova.hadoop.mapreduce.vectorization.collectstatistics.csv;
+package org.canova.hadoop.mapreduce.vectorization.csv.derivestatistics;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,22 +10,16 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Mapper.Context;
 import org.canova.hadoop.csv.schema.CSVInputSchema;
 import org.canova.hadoop.csv.schema.CSVSchemaColumn;
+import org.canova.hadoop.mapreduce.vectorization.csv.collectstatistics.CollectStatisticsMapReduceJob;
 import org.canova.hadoop.utils.CanovaUtils;
 import org.canova.hadoop.utils.ConfTools;
 
 
-public class CollectStatisticsMapTask extends Mapper<LongWritable, Text, Text, Text> {
+public class DeriveStatisticsMapTask extends Mapper<LongWritable, Text, Text, Text> {
 
     //private Matcher logRecordMatcher;
     private Text outputKey = new Text();
     private Text outputValue = new Text();
-
-    // where is the text of the schema loaded?
-    //CSVInputSchema schema = null;
-    
-    //private Text outputValue = new Text();
-    //Schema[] schemas = null; // new Schema[];
-    //Map<String, Schema> inputDirectoryToSchemaMap = new LinkedHashMap<String, Schema>();
 
     String delimiter = ",";
     CSVInputSchema csvSchema = null;
@@ -45,6 +39,13 @@ public class CollectStatisticsMapTask extends Mapper<LongWritable, Text, Text, T
     	System.out.println( "Map::setup() method -----" );
     	
     	
+
+    	/**
+    	 * TECHNICAL DEBT HERE
+    	 * 
+    	 * had to do this because of oozie's poor DCache handling
+    	 * 
+    	 */
     	String wfConfVal = conf.get("oozie.action.id" );
     	if ( null != wfConfVal ) {
     		    		
@@ -71,8 +72,7 @@ public class CollectStatisticsMapTask extends Mapper<LongWritable, Text, Text, T
     		}    		
     		
     		
-    	}
-    	
+    	}    	
     	
     	
 		String contents = conf.get( CanovaUtils.CONF_VECTOR_SCHEMA_CONTENTS_KEY );
@@ -169,5 +169,4 @@ public class CollectStatisticsMapTask extends Mapper<LongWritable, Text, Text, T
 		System.out.println( "Mapper > Records Seen: " + this.recordsSeen );
 		
     }	
-    
 }

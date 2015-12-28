@@ -1,4 +1,4 @@
-package org.canova.hadoop.mapreduce.vectorization.collectstatistics.csv;
+package org.canova.hadoop.mapreduce.vectorization.csv.collectstatistics;
 
 import java.io.IOException;
 

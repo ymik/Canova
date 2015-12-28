@@ -1,10 +1,9 @@
-package org.canova.hadoop.mapreduce.vectorization.collectstatistics.csv;
+package org.canova.hadoop.mapreduce.vectorization.csv.derivestatistics;
 
 import java.io.IOException;
-import java.util.Map;
 
-import org.apache.commons.math3.util.Pair;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
@@ -12,20 +11,22 @@ import org.apache.hadoop.mapreduce.Reducer.Context;
 import org.apache.hadoop.mapreduce.lib.output.MultipleOutputs;
 import org.canova.hadoop.csv.schema.CSVInputSchema;
 import org.canova.hadoop.csv.schema.CSVSchemaColumn;
+import org.canova.hadoop.mapreduce.vectorization.csv.collectstatistics.CollectStatisticsMapReduceJob;
+import org.canova.hadoop.mapreduce.vectorization.csv.vectorize.VectorizeMapReduceJob;
 import org.canova.hadoop.utils.CanovaUtils;
 import org.canova.hadoop.utils.ConfTools;
 
-//import com.pattersonconsultingtn.ranger.phalanx.conf.ConfTools;
 
-public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritable, Text> {
+public class DeriveStatisticsReduceTask extends Reducer<Text, Text, NullWritable, Text> {
 	
-	private String outputBasePath = "schema/stats/";
+	private String outputBasePath = "schema/derived_stats/";
 	private String outputErrorPath = "schema/errors/";
 	
 	private Text result = new Text();
 	private MultipleOutputs<NullWritable, Text> multipleOutputWriter;
 	
 	CSVInputSchema csvSchema = null;
+	private boolean skipHeader = false;
 	
 	@Override
     protected void setup(Context context) throws IOException, InterruptedException {
@@ -35,6 +36,13 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 		Configuration conf = context.getConfiguration();
 		System.out.println( "Reduce::setup() method -----" );
 
+
+		/**
+		 * 
+		 * TECHNICAL DEBT HERE
+		 * because of oozie issues w dcache
+		 * 
+		 */
     	String wfConfVal = conf.get("oozie.action.id" );
     	if ( null != wfConfVal ) {
     		    		
@@ -61,7 +69,7 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
     		}    		
     		
     		
-    	}		
+    	}			
 		
 		// setup multiple output format
 		
@@ -80,6 +88,50 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 			e.printStackTrace();
 		}
 		
+		//String contents = conf.get( CanovaUtils.CONF_VECTOR_SCHEMA_CONTENTS_KEY );
+		//String schemaStatisticsBasePath = conf.get( CSVVectorizeMapReduceJob.VECTOR_SCHEMA_STATS_INPUT_KEY ) + "schema/stats/";
+		
+        String stats_job_output_path = conf.get( VectorizeMapReduceJob.VECTOR_SCHEMA_STATS_INPUT_KEY );
+        if (!stats_job_output_path.endsWith("/")) {
+      	  stats_job_output_path += "/";
+        }
+        
+        String vectorSchemaStatsFileBasePath = stats_job_output_path + "schema/stats/";
+		
+		
+    	String skipHeaderValue = conf.get( CollectStatisticsMapReduceJob.SKIP_HEADER_KEY, "false" );
+    	if ("true".equals(skipHeaderValue.trim().toLowerCase())) {
+    		this.skipHeader = true;
+    	}
+    	
+    	System.out.println("Skip Header? " + this.skipHeader);
+		
+/*	
+		this.csvSchema = new CSVInputSchema();
+		try {
+			this.csvSchema.parseSchemaFromRawText(contents);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		
+		Path[] localPaths = context.getLocalCacheFiles();
+		/*
+		for ( int x = 0; x < localPaths.length; x++ ) {
+			
+			System.out.println( "DCache Path: " + localPaths[ x ].toString() );
+			//this.loadDCacheFileLinesIntoConf( conf, localPaths[x] );
+			
+			
+		}
+		*/
+		
+		
+		this.csvSchema.loadSchemaStatisticsFromDistributedCache( conf, localPaths, vectorSchemaStatsFileBasePath );
+		this.csvSchema.computeDatasetStatistics();		
+		
+		
 		super.setup(context);
 		
 		
@@ -87,12 +139,13 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 	
 	public void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
 		
-		String columnName = key.toString().trim();
+		String columnName = key.toString().trim(); // + "_derived";
 		
-	//	System.out.println( "col name: " + columnName );
+		System.out.println( "col name: " + columnName );
 		
 		CSVSchemaColumn colSchemaEntry = this.csvSchema.getColumnSchemaByName( columnName );
 		
+		//System.out.println( "col avg: " + colSchemaEntry.avg );
 		
 		for (Text value : values) {
 			
@@ -101,7 +154,7 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 		    String columnValue = value.toString().replaceAll("\"", "");
 		    
 		    try {
-				colSchemaEntry.evaluateColumnValue( columnValue );
+				colSchemaEntry.evaluateColumnValueDerivedStatistics( columnValue );
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -112,6 +165,10 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 		    
 		}
 		
+		colSchemaEntry.computeDerivedStatistics();
+		
+		//colSchemaEntry.
+		
 		if (colSchemaEntry.columnType == CSVSchemaColumn.ColumnType.NUMERIC) {
 
 			
@@ -120,31 +177,15 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 			
 		//	context.write(new Text( CSVCollectStatisticsMapReduceJob.COLUMN_NOMINAL_MIN_KEY ), new Text(Double.toString( colSchemaEntry.minValue)) );
 			
-			Text output_min = new Text( CollectStatisticsMapReduceJob.COLUMN_NOMINAL_MIN_KEY + "." + columnName + "=" + Double.toString( colSchemaEntry.minValue ) );
+			Text output_variance = new Text( CollectStatisticsMapReduceJob.COLUMN_NOMINAL_VARIANCE_KEY + "." + columnName + "=" + Double.toString( colSchemaEntry.variance ) );
+			this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_variance, outputBasePath + columnName + "_derived.txt" );
 			
-			System.out.println( "Writing: " + output_min.toString() );
-			
-			//this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_min , outputBasePath + columnName + ".txt" );
-			this.multipleOutputWriter.write( NullWritable.get(), output_min , outputBasePath + columnName + ".txt" );
-		
-			// write out max value
-
-//			context.write(new Text( CSVCollectStatisticsMapReduceJob.COLUMN_NOMINAL_MAX_KEY ), new Text(Double.toString( colSchemaEntry.maxValue)) );
-			
-			Text output_max = new Text( CollectStatisticsMapReduceJob.COLUMN_NOMINAL_MAX_KEY + "." + columnName + "=" + Double.toString( colSchemaEntry.maxValue ) );
-			
-			//this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_max, "column_statistics/" + columnName + "_stats");
-			this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_max, outputBasePath + columnName + ".txt" );
-
-			Text output_sum = new Text( CollectStatisticsMapReduceJob.COLUMN_NOMINAL_SUM_KEY + "." + columnName + "=" + Double.toString( colSchemaEntry.sum ) );
-			this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_sum, outputBasePath + columnName + ".txt" );
-			
-			Text output_count = new Text( CollectStatisticsMapReduceJob.COLUMN_NOMINAL_COUNT_KEY + "." + columnName + "=" + Integer.toString( colSchemaEntry.count ) );
-			this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_count, outputBasePath + columnName + ".txt" );
+			Text output_stddev = new Text( CollectStatisticsMapReduceJob.COLUMN_NOMINAL_STDDEV_KEY + "." + columnName + "=" + Double.toString( colSchemaEntry.stddev ) );
+			this.multipleOutputWriter.write("ColumnStats", NullWritable.get(), output_stddev, outputBasePath + columnName + "_derived.txt" );
 
 			
 		} else if (colSchemaEntry.columnType == CSVSchemaColumn.ColumnType.NOMINAL) {
-		
+/*		
 			Text output_label = new Text();
 			
 			// write out labels 
@@ -191,7 +232,7 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 			
 			
 //			this.multipleOutputWriter.write(namedOutput, key, value, baseOutputPath)
-			
+			*/
 		} else {
 			
 			Text output_error = new Text();
@@ -209,5 +250,5 @@ public class CollectStatisticsReduceTask extends Reducer<Text, Text, NullWritabl
 	@Override
     protected void cleanup(Context context) throws IOException, InterruptedException {
 		this.multipleOutputWriter.close();
-    }	
+    }
 }

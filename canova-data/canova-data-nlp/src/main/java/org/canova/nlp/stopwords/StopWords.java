@@ -21,7 +21,6 @@
 package org.canova.nlp.stopwords;
 
 import org.apache.commons.io.IOUtils;
-import org.canova.api.util.ClassPathResource;
 
 import java.io.IOException;
 import java.util.List;
@@ -40,7 +39,7 @@ public class StopWords {
 
 		try {
 			if(stopWords == null)
-				stopWords =  IOUtils.readLines(new ClassPathResource("/stopwords").getInputStream());
+				stopWords =  IOUtils.readLines(StopWords.class.getResourceAsStream("/stopwords"));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}

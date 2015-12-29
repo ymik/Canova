@@ -24,35 +24,22 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.canova.api.conf.Configuration;
-import org.canova.api.exceptions.CanovaException;
 import org.canova.api.formats.input.InputFormat;
-import org.canova.api.formats.output.OutputFormat;
-import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.records.reader.RecordReader;
-import org.canova.api.records.reader.impl.LineRecordReader;
-import org.canova.api.records.writer.RecordWriter;
-import org.canova.api.records.writer.impl.SVMLightRecordWriter;
 import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
 import org.canova.api.util.ArchiveUtils;
 import org.canova.api.writable.Writable;
-import org.canova.image.lfw.LFWLoader;
-import org.canova.image.mnist.MnistFetcher;
+import org.canova.image.loader.LFWLoader;
 import org.canova.image.recordreader.MNISTRecordReader;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
 
 public class TestVectorize {
 
@@ -174,7 +161,7 @@ public class TestVectorize {
     }
 
     public static File download_LFW_AndUntar(String workingBaseDir) throws Exception {
-        new LFWLoader().getIfNotExists();
+        new LFWLoader().load();
         FileUtils.copyDirectory(new File(System.getProperty("user.home"),"lfw"),new File(System.getProperty("java.io.tmpdir"),"lfw"));
         File lfwDataSet = new File(System.getProperty("java.io.tmpdir"),"lfw");
         return lfwDataSet;

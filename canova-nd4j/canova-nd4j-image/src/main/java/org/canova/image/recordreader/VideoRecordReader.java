@@ -61,7 +61,7 @@ public class VideoRecordReader implements SequenceRecordReader {
     private Configuration conf;
     public final static String WIDTH = NAME_SPACE + ".video.width";
     public final static String HEIGHT = NAME_SPACE + ".video.height";
-
+    protected InputSplit inputSplit;
 
     public VideoRecordReader() {
     }
@@ -288,6 +288,13 @@ public class VideoRecordReader implements SequenceRecordReader {
 
     @Override
     public void reset() {
+        if(inputSplit == null) throw new UnsupportedOperationException("Cannot reset without first initializing");
+        try{
+            initialize(inputSplit);
+        }catch(Exception e){
+            throw new RuntimeException("Error during LineRecordReader reset",e);
+        }
+
     }
 
 }

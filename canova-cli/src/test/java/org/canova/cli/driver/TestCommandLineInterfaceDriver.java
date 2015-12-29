@@ -32,8 +32,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.canova.api.util.ClassPathResource;
 import org.junit.Test;
-import org.springframework.core.io.ClassPathResource;
+
 
 public class TestCommandLineInterfaceDriver {
 

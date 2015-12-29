@@ -1,7 +1,9 @@
 package org.canova.api.records.reader.impl;
 
 import org.canova.api.io.data.Text;
+import org.canova.api.split.FileSplit;
 import org.canova.api.split.StringSplit;
+import org.canova.api.util.ClassPathResource;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
 
@@ -33,6 +35,26 @@ public class CSVRecordReaderTest {
         while (reader.hasNext()) {
             Collection<Writable> vals = reader.next();
             assertEquals("Entry count", 23, vals.size());
+        }
+    }
+
+    @Test
+    public void testReset() throws Exception {
+        CSVRecordReader rr = new CSVRecordReader(0,",");
+        rr.initialize(new FileSplit(new ClassPathResource("iris.dat").getFile()));
+
+        int nResets = 5;
+        for( int i=0; i < nResets; i++ ){
+
+            int lineCount = 0;
+            while(rr.hasNext()){
+                Collection<Writable> line = rr.next();
+                assertEquals(5, line.size());
+                lineCount++;
+            }
+            assertFalse(rr.hasNext());
+            assertEquals(150, lineCount);
+            rr.reset();
         }
     }
 }

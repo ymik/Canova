@@ -21,7 +21,7 @@
 package org.canova.nlp.stopwords;
 
 import org.apache.commons.io.IOUtils;
-import org.springframework.core.io.ClassPathResource;
+import org.canova.api.util.ClassPathResource;
 
 import java.io.IOException;
 import java.util.List;

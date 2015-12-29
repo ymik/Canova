@@ -179,9 +179,7 @@ public class LFWLoader extends BaseImageLoader{
         RecordReader recordReader = new ImageRecordReader(width, height, channels, appendLabel, regexPattern);
         try {
             recordReader.initialize(new LimitFileSplit(fullDir, ALLOWED_FORMATS, numExamples, numLabels, regexPattern, rng));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return recordReader;

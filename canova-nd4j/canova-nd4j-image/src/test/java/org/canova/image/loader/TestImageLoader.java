@@ -1,6 +1,5 @@
 package org.canova.image.loader;
 
-import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
 import java.awt.image.BufferedImage;
@@ -33,7 +32,6 @@ public class TestImageLoader {
             }
         }
     }
-
 
     @Test
     public void testToINDArrayBGR() throws Exception {
@@ -69,7 +67,7 @@ public class TestImageLoader {
         BufferedImage img1 = makeRandomBufferedImage(true);
         BufferedImage img2 = makeRandomBufferedImage(false);
 
-        int w1 = 60, h1 = 110, ch1 = 3;
+        int w1 = 60, h1 = 110, ch1 = 6;
         ImageLoader loader1 = new ImageLoader(w1, h1, ch1);
 
         BufferedImage scaled1 = loader1.scalingIfNeed(img1, true);
@@ -96,7 +94,7 @@ public class TestImageLoader {
         assertEquals(BufferedImage.TYPE_3BYTE_BGR, scaled4.getType());
         assertEquals(3,                            scaled4.getSampleModel().getNumBands());
 
-        int w2 = 70, h2 = 120, ch2 = 4;
+        int w2 = 70, h2 = 120, ch2 = 6;
         ImageLoader loader2 = new ImageLoader(w2, h2, ch2);
 
         BufferedImage scaled5 = loader2.scalingIfNeed(img1, true);

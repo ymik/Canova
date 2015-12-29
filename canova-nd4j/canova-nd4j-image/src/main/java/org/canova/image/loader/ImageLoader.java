@@ -318,7 +318,7 @@ public class ImageLoader implements Serializable {
     /**
      * Convert a matrix in to a buffereed image
      * @param matrix the
-     * @return
+     * @return {@link java.awt.image.BufferedImage}
      */
     public static BufferedImage toImage(INDArray matrix) {
         BufferedImage img = new BufferedImage(matrix.rows(), matrix.columns(), BufferedImage.TYPE_INT_ARGB);
@@ -343,7 +343,7 @@ public class ImageLoader implements Serializable {
     /**
      * Convert the given image to an rgb image
      * @param arr the array to use
-     * @param image the iamge to set
+     * @param image the image to set
      */
     public void toBufferedImageRGB(INDArray arr,BufferedImage image) {
         if(arr.rank() < 3)

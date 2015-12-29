@@ -163,8 +163,7 @@ public class TestVectorize {
     public static File download_LFW_AndUntar(String workingBaseDir) throws Exception {
         new LFWLoader().load();
         FileUtils.copyDirectory(new File(System.getProperty("user.home"),"lfw"),new File(System.getProperty("java.io.tmpdir"),"lfw"));
-        File lfwDataSet = new File(System.getProperty("java.io.tmpdir"),"lfw");
-        return lfwDataSet;
+        return new File(System.getProperty("java.io.tmpdir"),"lfw");
     }
 
     /**
@@ -173,17 +172,8 @@ public class TestVectorize {
      * @return
      */
     public static InputFormat createInputFormat(String inputFormat) {
-
-        //System.out.println( "> Loading Input Format: " + (String) this.configProps.get( INPUT_FORMAT ) );
-
-        String clazz = inputFormat; //(String) this.configProps.get(INPUT_FORMAT);
-/*
-        if (null == clazz) {
-            clazz = DEFAULT_INPUT_FORMAT_CLASSNAME;
-        }
-*/
         try {
-            Class<? extends InputFormat> inputFormatClazz = (Class<? extends InputFormat>) Class.forName(clazz);
+            Class<? extends InputFormat> inputFormatClazz = (Class<? extends InputFormat>) Class.forName(inputFormat);
             return inputFormatClazz.newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -297,24 +287,11 @@ public class TestVectorize {
     }
 
     public static String getLabelFromSVMLightVector(Collection<Writable> vector) {
-
-        //Iterator<Writable> iter = vector.iterator();
-
-        String label = (String)(vector.toArray()[ vector.size() - 1 ]).toString();
-
-        //while (iter.hasNext()) {
-
-        //	String firstLabel = (String) iter.next().toString();
-
-        //}
-
-        return label;
-
+        return vector.toArray()[ vector.size() - 1 ].toString();
     }
 
 
     public static void setupLFWSampleLocally() throws Exception {
-
 
         String localUnzippedSubdir = "lfw";
         String workingDir = "/tmp/canova/image/"; // + localUnzippedSubdir;
@@ -324,7 +301,6 @@ public class TestVectorize {
         download_LFW_AndUntar( workingDir );
 
         // let's only get a few images in 2 labels
-
 
     }
 

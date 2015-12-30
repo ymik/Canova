@@ -91,6 +91,14 @@ public class ClassPathResource {
 
                 ZipFile zipFile = new ZipFile(url.getFile());
                 ZipEntry entry = zipFile.getEntry(this.resourceName);
+                if (entry == null) {
+                    if (this.resourceName.startsWith("/")) {
+                        entry = zipFile.getEntry(this.resourceName.replaceFirst("/",""));
+                        if (entry == null) {
+                            throw new FileNotFoundException("Resource " + this.resourceName + " not found");
+                        }
+                    } else throw new FileNotFoundException("Resource " + this.resourceName + " not found");
+                }
 
                 InputStream stream = zipFile.getInputStream(entry);
                 FileOutputStream outputStream = new FileOutputStream(file);

@@ -53,6 +53,11 @@ public class ClassPathResource {
 
         URL url = loader.getResource(this.resourceName);
         if (url == null) {
+            // try to check for mis-used starting slash
+            if (this.resourceName.startsWith("/")) {
+                url = loader.getResource(this.resourceName.replaceFirst("[\\\\/]",""));
+                if (url != null) return url;
+            }
             throw new IllegalStateException("Resource '" + this.resourceName + "' cannot be found.");
         }
         return url;

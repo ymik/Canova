@@ -199,7 +199,7 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
         public FixedByteBufferSeekableByteChannel(ByteBuffer backing) {
             super(backing);
             try{
-                Field f = this.getClass().getSuperclass().getDeclaredField("contentLength");
+                Field f = this.getClass().getSuperclass().getDeclaredField("maxPos");
                 f.setAccessible(true);
                 f.set(this,backing.limit());
             }catch(Exception e){

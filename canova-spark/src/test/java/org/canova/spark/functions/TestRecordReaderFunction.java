@@ -24,23 +24,17 @@ public class TestRecordReaderFunction extends BaseSparkTest {
 
     @Test
     public void testRecordReaderFunction() throws Exception {
-
-//        SparkConf sparkConf = new SparkConf();
-//        sparkConf.setAppName("test");
-//        sparkConf.setMaster("local[*]");
-//        JavaSparkContext sc = new JavaSparkContext(sparkConf);
         JavaSparkContext sc = getContext();
 
         ClassPathResource cpr = new ClassPathResource("/imagetest/0/a.bmp");
-        List<String> labelsList = Arrays.asList("0","1");   //Need this for Spark...
+        List<String> labelsList = Arrays.asList("0", "1");   //Need this for Spark: can't infer without init call
 
         String path = cpr.getFile().getAbsolutePath();
-        String folder = path.substring(0,path.length()-7);
+        String folder = path.substring(0, path.length() - 7);
         path = folder + "*";
 
         JavaPairRDD<String,PortableDataStream> origData = sc.binaryFiles(path);
-        Map<String,PortableDataStream> temp = origData.collectAsMap();
-        assertEquals(4,temp.size());    //4 images
+        assertEquals(4,origData.count());    //4 images
 
         RecordReaderFunction rrf = new RecordReaderFunction(new ImageRecordReader(28,28,1,true,labelsList));
         JavaRDD<Collection<Writable>> rdd = origData.map(rrf);
@@ -51,10 +45,9 @@ public class TestRecordReaderFunction extends BaseSparkTest {
             assertEquals(28*28+1, listSpark.get(i).size());
         }
 
-        //Load normally, and check that we get the same results (order not withstanding)
+        //Load normally (i.e., not via Spark), and check that we get the same results (order not withstanding)
         InputSplit is = new FileSplit(new File(folder),new String[]{"bmp"}, true);
-        System.out.println("Locations:");
-        System.out.println(Arrays.toString(is.locations()));
+//        System.out.println("Locations: " + Arrays.toString(is.locations()));
         ImageRecordReader irr = new ImageRecordReader(28,28,1,true);
         irr.initialize(is);
 
@@ -69,7 +62,7 @@ public class TestRecordReaderFunction extends BaseSparkTest {
 //        System.out.println("Local list:");
 //        for(Collection<Writable> c : list ) System.out.println(c);
 
-        //Check that each of the values from Spark equals exactly one of the values doing it normally
+        //Check that each of the values from Spark equals exactly one of the values doing it locally
         boolean[] found = new boolean[4];
         for( int i=0; i<4; i++ ){
             int foundIndex = -1;

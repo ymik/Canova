@@ -7,14 +7,14 @@ import org.junit.Before;
 
 import java.io.Serializable;
 
-public abstract class BaseSparkTest  implements Serializable
-{
+public abstract class BaseSparkTest  implements Serializable {
     protected transient JavaSparkContext sc;
 
     @Before
     public void before() {
         sc = getContext();
     }
+
     @After
     public void after() {
         sc.close();
@@ -34,5 +34,4 @@ public abstract class BaseSparkTest  implements Serializable
 
         return sc;
     }
-
 }

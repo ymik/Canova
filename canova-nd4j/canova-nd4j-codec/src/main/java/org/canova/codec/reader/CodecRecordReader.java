@@ -117,7 +117,7 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
 
             for(int i = startFrame; i < startFrame+numFrames; i++) {
                 try {
-                    BufferedImage grab = AWTUtil.toBufferedImage(fg.getNativeFrame());
+                    BufferedImage grab = fg.getFrame();
                     if(ravel)
                         record.add(RecordConverter.toRecord(imageLoader.toRaveledTensor(grab)));
                     else
@@ -135,7 +135,7 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
             else {
                 for(double i = 0; i < videoLength; i += framesPerSecond) {
                     try {
-                        BufferedImage grab = AWTUtil.toBufferedImage(FrameGrab.getNativeFrame(seekableByteChannel, i));
+                        BufferedImage grab = FrameGrab.getFrame(seekableByteChannel, i);
                         if(ravel)
                             record.add(RecordConverter.toRecord(imageLoader.toRaveledTensor(grab)));
                         else

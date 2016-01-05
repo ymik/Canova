@@ -27,11 +27,12 @@ import org.canova.api.io.data.Text;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.util.*;
 
 /**
  * Simple csv record reader.
@@ -93,6 +94,12 @@ public class CSVRecordReader extends LineRecordReader {
             ret.add(new Text(s));
         return ret;
 
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        //Here: we are reading a single line from the DataInputStream. How to handle skipLines???
+        throw new UnsupportedOperationException("Reading CSV data from DataInputStream not yet implemented");
     }
 
 }

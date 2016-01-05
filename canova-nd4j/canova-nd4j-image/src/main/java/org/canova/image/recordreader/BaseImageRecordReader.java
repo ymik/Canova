@@ -36,6 +36,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
 import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,18 +216,6 @@ public abstract class BaseImageRecordReader implements RecordReader {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(iter.hasNext()) {
-                return ret;
-            }
-            else {
-                if(iter.hasNext()) {
-                    try {
-                        ret.add(new Text(FileUtils.readFileToString((File) iter.next())));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
             return ret;
         }
         else if(record != null) {
@@ -269,7 +258,8 @@ public abstract class BaseImageRecordReader implements RecordReader {
      * @return the label for the given path
      */
     public String getLabel(String path) {
-        return fileNameMap.get(path);
+        if(fileNameMap != null && fileNameMap.containsKey(path)) return fileNameMap.get(path);
+        return (new File(path)).getParentFile().getName();
     }
 
     /**
@@ -305,5 +295,14 @@ public abstract class BaseImageRecordReader implements RecordReader {
     }
 
     public int numLabels() { return labels.size(); }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream ) throws IOException {
+        BufferedImage bimg = ImageIO.read(dataInputStream);
+        INDArray row = imageLoader.asRowVector(bimg);
+        Collection<Writable> ret = RecordConverter.toRecord(row);
+        if(appendLabel) ret.add(new DoubleWritable(labels.indexOf(getLabel(uri.getPath()))));
+        return ret;
+    }
 
 }

@@ -29,7 +29,9 @@ import org.canova.api.writable.Writable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
@@ -140,5 +142,11 @@ public class SVMLightRecordReader extends LineRecordReader {
         super.setConf(conf);
         if(conf.get(NUM_ATTRIBUTES) != null)
             numAttributes = conf.getInt(NUM_ATTRIBUTES,-1);
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        //Here: we are reading a single line from the DataInputStream. How to handle headers?
+        throw new UnsupportedOperationException("Reading SVMLightRecordReader data from DataInputStream not yet implemented");
     }
 }

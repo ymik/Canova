@@ -22,13 +22,12 @@ package org.canova.api.records.reader.impl;
 
 
 import org.canova.api.io.data.DoubleWritable;
+import org.canova.api.io.data.Text;
 import org.canova.api.writable.Writable;
 
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.io.*;
+import java.net.URI;
+import java.util.*;
 
 /**
  * Matlab record reader
@@ -115,5 +114,10 @@ public class MatlabRecordReader extends FileRecordReader {
       throw new IllegalStateException("Unable to determine structure as Matlab ASCII file: " + ex);
     }
     throw new IllegalStateException("Strange state detected");
+  }
+
+  @Override
+  public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+    throw new UnsupportedOperationException("Reading Matlab data from DataInputStream: not yet implemented");
   }
 }

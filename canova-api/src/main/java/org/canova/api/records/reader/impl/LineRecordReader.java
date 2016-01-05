@@ -30,6 +30,8 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.split.StringSplit;
 import org.canova.api.writable.Writable;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
@@ -133,5 +135,13 @@ public class LineRecordReader implements RecordReader {
         }catch(Exception e){
             throw new RuntimeException("Error during LineRecordReader reset",e);
         }
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        //Here: we are reading a single line from the DataInputStream
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
+        String line = br.readLine();
+        return Collections.singletonList((Writable)new Text(line));
     }
 }

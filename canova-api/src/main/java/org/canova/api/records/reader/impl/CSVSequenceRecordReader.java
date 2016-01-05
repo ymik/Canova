@@ -1,14 +1,13 @@
 package org.canova.api.records.reader.impl;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.LineIterator;
 import org.canova.api.io.data.Text;
 import org.canova.api.records.reader.SequenceRecordReader;
 import org.canova.api.writable.Writable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -48,6 +47,27 @@ public class CSVSequenceRecordReader extends FileRecordReader implements Sequenc
             throw new RuntimeException(e);
         }
 
+        if (skipNumLines > 0) {
+            int count = 0;
+            while (count++ < skipNumLines && lineIter.hasNext()) lineIter.next();
+        }
+
+        Collection<Collection<Writable>> out = new ArrayList<>();
+        while (lineIter.hasNext()) {
+            String line = lineIter.next();
+            String[] split = line.split(delimiter);
+            ArrayList<Writable> list = new ArrayList<>();
+            for (String s : split) list.add(new Text(s));
+            out.add(list);
+        }
+
+        return out;
+    }
+
+    @Override
+    public Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
+        @SuppressWarnings("unchecked")
+        Iterator<String> lineIter = IOUtils.lineIterator(new InputStreamReader(dataInputStream));
         if (skipNumLines > 0) {
             int count = 0;
             while (count++ < skipNumLines && lineIter.hasNext()) lineIter.next();

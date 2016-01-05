@@ -23,6 +23,7 @@ import org.nd4j.linalg.util.FeatureUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -243,8 +244,7 @@ public class MNISTRecordReader implements RecordReader {
      * 
      * The cursor logic here is broken.
      * 	-	we need to make sure we can get one example and advance the cursor
-     * 
-     * @param numExamples
+     *
      */
     public boolean fetchNext() { //int numExamples) {
     	
@@ -381,6 +381,11 @@ public class MNISTRecordReader implements RecordReader {
 
     @Override
     public void reset() {
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        throw new UnsupportedOperationException("Loading MNIST data via DataInputStream not supported.");
     }
 
 

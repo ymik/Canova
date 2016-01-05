@@ -20,6 +20,7 @@
 
 package org.canova.codec.reader;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.canova.api.conf.Configuration;
 import org.canova.api.records.reader.SequenceRecordReader;
 import org.canova.api.records.reader.impl.FileRecordReader;
@@ -29,12 +30,19 @@ import org.canova.common.RecordConverter;
 import org.canova.image.loader.ImageLoader;
 import org.jcodec.api.FrameGrab;
 import org.jcodec.api.JCodecException;
+import org.jcodec.common.ByteBufferSeekableByteChannel;
 import org.jcodec.common.NIOUtils;
+import org.jcodec.common.SeekableByteChannel;
+import org.jcodec.scale.AWTUtil;
 
 
 import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -77,33 +85,49 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
     @Override
     public Collection<Collection<Writable>> sequenceRecord() {
         File next = iter.next();
+
+        try{
+            return loadData(NIOUtils.readableFileChannel(next));
+        }catch(IOException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
+        //Reading video from DataInputStream: Need data from this stream in a SeekableByteChannel
+        //Approach used here: load entire video into memory -> ByteBufferSeekableByteChanel
+        byte[] data = IOUtils.toByteArray(dataInputStream);
+        ByteBuffer bb = ByteBuffer.wrap(data);
+        SeekableByteChannel sbc = new FixedByteBufferSeekableByteChannel(bb);
+        return loadData(sbc);
+    }
+
+    private Collection<Collection<Writable>> loadData( SeekableByteChannel seekableByteChannel ) throws IOException {
         Collection<Collection<Writable>> record = new ArrayList<>();
+
         if(numFrames >= 1) {
             FrameGrab fg;
             try{
-                fg = new FrameGrab(NIOUtils.readableFileChannel(next));
+                fg = new FrameGrab(seekableByteChannel);
                 if(startFrame != 0) fg.seekToFramePrecise(startFrame);
-            } catch(IOException | JCodecException e){
+            } catch(JCodecException e){
                 throw new RuntimeException(e);
             }
 
-
             for(int i = startFrame; i < startFrame+numFrames; i++) {
                 try {
-                    BufferedImage grab = fg.getFrame();
+                    BufferedImage grab = AWTUtil.toBufferedImage(fg.getNativeFrame());
                     if(ravel)
                         record.add(RecordConverter.toRecord(imageLoader.toRaveledTensor(grab)));
-
                     else
                         record.add(RecordConverter.toRecord(imageLoader.asRowVector(grab)));
 
                 } catch (Exception e) {
-                   throw new RuntimeException(e);
+                    throw new RuntimeException(e);
                 }
             }
-
-        }
-        else {
+        } else {
             if(framesPerSecond < 1)
                 throw new IllegalStateException("No frames or frame time intervals specified");
 
@@ -111,19 +135,16 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
             else {
                 for(double i = 0; i < videoLength; i += framesPerSecond) {
                     try {
-                        BufferedImage grab = FrameGrab.getFrame(next,i);
+                        BufferedImage grab = AWTUtil.toBufferedImage(FrameGrab.getNativeFrame(seekableByteChannel, i));
                         if(ravel)
                             record.add(RecordConverter.toRecord(imageLoader.toRaveledTensor(grab)));
-
                         else
                             record.add(RecordConverter.toRecord(imageLoader.asRowVector(grab)));
 
                     } catch (Exception e) {
-                       throw new RuntimeException(e);
+                        throw new RuntimeException(e);
                     }
                 }
-
-
             }
         }
 
@@ -138,8 +159,13 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
     }
 
     @Override
-    public Collection<Writable> next() {
-        throw new UnsupportedOperationException();
+    public Collection<Writable> next(){
+        throw new UnsupportedOperationException("next() not supported for CodecRecordReader (use: sequenceRecord)");
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        throw new UnsupportedOperationException("record(URI,DataInputStream) not supported for CodecRecordReader");
     }
 
     @Override
@@ -159,13 +185,34 @@ public class CodecRecordReader extends FileRecordReader implements SequenceRecor
         videoLength = conf.getFloat(VIDEO_DURATION,-1);
         ravel = conf.getBoolean(RAVEL, false);
         totalFrames = conf.getInt(TOTAL_FRAMES, -1);
-
-
-
     }
 
     @Override
     public Configuration getConf() {
         return super.getConf();
     }
+
+
+    /** Ugly workaround to a bug in JCodec: https://github.com/jcodec/jcodec/issues/24 */
+    private static class FixedByteBufferSeekableByteChannel extends ByteBufferSeekableByteChannel {
+        private ByteBuffer backing;
+        public FixedByteBufferSeekableByteChannel(ByteBuffer backing) {
+            super(backing);
+            try{
+                Field f = this.getClass().getSuperclass().getDeclaredField("contentLength");
+                f.setAccessible(true);
+                f.set(this,backing.limit());
+            }catch(Exception e){
+                throw new RuntimeException(e);
+            }
+            this.backing = backing;
+        }
+
+        @Override
+        public int read(ByteBuffer dst) throws IOException {
+            if(!backing.hasRemaining()) return -1;
+            return super.read(dst);
+        }
+    }
+
 }

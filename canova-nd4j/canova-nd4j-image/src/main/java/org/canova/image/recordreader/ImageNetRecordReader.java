@@ -2,6 +2,7 @@ package org.canova.image.recordreader;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.canova.api.berkeley.Pair;
 import org.canova.api.io.data.DoubleWritable;
 import org.canova.api.io.data.Text;
 import org.canova.api.split.FileSplit;
@@ -132,32 +133,18 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
     @Override
     public Collection<Writable> next() {
         if(iter != null) {
-            Collection<Writable> ret = new ArrayList<>();
             File image = iter.next();
 
             if(image.isDirectory())
                 return next();
 
             try {
-                int labelId = -1;
-                BufferedImage bimg = imageLoader.centerCropIfNeeded(ImageIO.read(image));
-                INDArray row = imageLoader.asRowVector(bimg);
-                ret = RecordConverter.toRecord(row);
-                if(appendLabel && fileNameMapPath == null) {
-                    String WNID = FilenameUtils.getBaseName(image.getName()).split(pattern)[patternPosition];
-                    labelId = labels.indexOf(labelFileIdMap.get(WNID));
-                } else if (eval) {
-                    String fileName = FilenameUtils.getName(image.getName()); // currently expects file extension
-                    labelId = labels.indexOf(labelFileIdMap.get(fileNameMap.get(fileName)));
-                }
-                if (labelId >= 0)
-                    ret.add(new DoubleWritable(labelId));
-                else
-                    throw new IllegalStateException("Illegal label " + labelId);
-
+                return load(ImageIO.read(image), image.getName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            Collection<Writable> ret = new ArrayList<>();
             if(iter.hasNext()) {
                 return ret;
             }
@@ -179,5 +166,28 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         throw new IllegalStateException("No more elements");
     }
 
+    private Collection<Writable> load(BufferedImage image, String filename){
+        int labelId = -1;
+        BufferedImage bimg = imageLoader.centerCropIfNeeded(image);
+        INDArray row = imageLoader.asRowVector(bimg);
+        Collection<Writable> ret = RecordConverter.toRecord(row);
+        if(appendLabel && fileNameMapPath == null) {
+            String WNID = FilenameUtils.getBaseName(filename).split(pattern)[patternPosition];
+            labelId = labels.indexOf(labelFileIdMap.get(WNID));
+        } else if (eval) {
+            String fileName = FilenameUtils.getName(filename); // currently expects file extension
+            labelId = labels.indexOf(labelFileIdMap.get(fileNameMap.get(fileName)));
+        }
+        if (labelId >= 0)
+            ret.add(new DoubleWritable(labelId));
+        else
+            throw new IllegalStateException("Illegal label " + labelId);
+        return ret;
+    }
 
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream ) throws IOException {
+        BufferedImage bimg = ImageIO.read(dataInputStream);
+        return load(bimg,FilenameUtils.getName(uri.getPath()));
+    }
 }

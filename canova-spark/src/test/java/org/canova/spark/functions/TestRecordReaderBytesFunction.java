@@ -20,12 +20,8 @@ import org.canova.spark.BaseSparkTest;
 import org.canova.spark.functions.data.FilesAsBytesFunction;
 import org.canova.spark.functions.data.RecordReaderBytesFunction;
 import org.junit.Test;
-import scala.Tuple2;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.File;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;

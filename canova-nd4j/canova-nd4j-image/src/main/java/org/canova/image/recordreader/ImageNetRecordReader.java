@@ -90,9 +90,7 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         return tmpMap;
     }
 
-    @Override
-    public void initialize(InputSplit split) throws IOException {
-        inputSplit = split;
+    private void imgNetLabelSetup() throws IOException {
         // creates hashmap with WNID (synset id) as key and first descriptive word in list as the string name
         if (labelPath != null && labelFileIdMap.isEmpty()) {
             labelFileIdMap = defineLabels(labelPath);
@@ -102,6 +100,13 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         if (fileNameMapPath != null && fileNameMap.isEmpty()) {
             fileNameMap = defineLabels(fileNameMapPath);
         }
+    }
+
+    @Override
+    public void initialize(InputSplit split) throws IOException {
+        inputSplit = split;
+        imgNetLabelSetup();
+
         if(split instanceof FileSplit) {
             URI[] locations = split.locations();
             if(locations != null && locations.length >= 1) {
@@ -188,6 +193,7 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
     @Override
     public Collection<Writable> record(URI uri, DataInputStream dataInputStream ) throws IOException {
         BufferedImage bimg = ImageIO.read(dataInputStream);
+        imgNetLabelSetup();
         return load(bimg,FilenameUtils.getName(uri.getPath()));
     }
 }

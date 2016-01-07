@@ -26,7 +26,9 @@ import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -86,6 +88,11 @@ public class CollectionRecordReader implements RecordReader {
 
     @Override
     public void reset() {
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        throw new UnsupportedOperationException("Generating records from DataInputStream not supported for CollectionRecordReader");
     }
 
 

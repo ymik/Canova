@@ -31,6 +31,7 @@ import org.canova.api.util.RecordUtils;
 import org.canova.api.writable.Writable;
 import org.canova.sound.musicg.Wave;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -138,8 +139,6 @@ public class WavFileRecordReader implements RecordReader {
         }
 
         throw new IllegalStateException("Indeterminant state: record must not be null, or a file iterator must exist");
-
-
     }
 
     @Override
@@ -185,5 +184,9 @@ public class WavFileRecordReader implements RecordReader {
 
     }
 
-
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        Wave wave = new Wave(dataInputStream);
+        return RecordUtils.toRecord(wave.getNormalizedAmplitudes());
+    }
 }

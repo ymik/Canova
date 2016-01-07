@@ -70,14 +70,14 @@ public class ImageNameRecordReader extends BaseImageRecordReader {
         int startOfFormat = path.lastIndexOf('.');
         if(startOfFormat < 0)
             throw new IllegalStateException("Illegal path; no format found");
-        StringBuffer label = new StringBuffer();
+        StringBuilder label = new StringBuilder();
         while(path.charAt(startOfFormat) != '-') {
             label.append(path.charAt(startOfFormat));
             startOfFormat--;
         }
 
         if(startOfFormat < 0)
-            throw new IllegalStateException("Illegal path; no - found. A dash is used to inidicate a lbale.");
+            throw new IllegalStateException("Illegal path; no - found. A dash is used to inidicate a label.");
         return label.reverse().toString();
     }
 

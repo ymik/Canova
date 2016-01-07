@@ -29,9 +29,7 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.util.*;
 
@@ -182,6 +180,18 @@ public class FileRecordReader implements RecordReader {
         }catch(Exception e){
             throw new RuntimeException("Error during LineRecordReader reset",e);
         }
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        //Here: reading the entire file to a Text writable
+        BufferedReader br = new BufferedReader(new InputStreamReader(dataInputStream));
+        StringBuilder sb = new StringBuilder();
+        String line;
+        while((line = br.readLine()) != null){
+            sb.append(line).append("\n");
+        }
+        return Collections.singletonList((Writable)new Text(sb.toString()));
     }
 
 }

@@ -33,6 +33,7 @@ import org.canova.common.RecordConverter;
 import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 
+import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -292,9 +293,18 @@ public class VideoRecordReader implements SequenceRecordReader {
         try{
             initialize(inputSplit);
         }catch(Exception e){
-            throw new RuntimeException("Error during LineRecordReader reset",e);
+            throw new RuntimeException("Error during VideoRecordReader reset",e);
         }
+    }
 
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        throw new UnsupportedOperationException("Loading video data via VideoRecordReader + DataInputStream not supported.");
+    }
+
+    @Override
+    public Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
+        throw new UnsupportedOperationException("Loading video data via VideoRecordReader + DataInputStream not supported.");
     }
 
 }

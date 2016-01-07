@@ -29,7 +29,9 @@ import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -123,6 +125,12 @@ public class LibSvmRecordReader extends LineRecordReader implements LibSvm {
     @Override
     public Configuration getConf() {
         return super.getConf();
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        //Here: we are reading a single line from the DataInputStream. How to handle headers?
+        throw new UnsupportedOperationException("Reading LibSVM data from DataInputStream not yet implemented");
     }
 
 }

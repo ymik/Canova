@@ -29,7 +29,10 @@ import org.canova.api.util.ClassPathResource;
 import org.canova.api.writable.Writable;
 import org.junit.Test;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -39,7 +42,7 @@ import java.util.Iterator;
 public class CodecReaderTest {
     @Test
     public void testCodecReader() throws Exception {
-       File file = new ClassPathResource("fire_lowres.mp4").getFile();
+        File file = new ClassPathResource("fire_lowres.mp4").getFile();
         SequenceRecordReader reader = new CodecRecordReader();
         Configuration conf = new Configuration();
         conf.set(CodecRecordReader.RAVEL, "true");
@@ -59,6 +62,36 @@ public class CodecReaderTest {
 
         //Expected size: 80x46x3
         assertEquals(80 * 46 * 3, first.size());
+    }
+
+
+    @Test
+    public void testViaDataInputStream() throws Exception {
+
+        File file = new ClassPathResource("fire_lowres.mp4").getFile();
+        SequenceRecordReader reader = new CodecRecordReader();
+        Configuration conf = new Configuration();
+        conf.set(CodecRecordReader.RAVEL, "true");
+        conf.set(CodecRecordReader.START_FRAME, "160");
+        conf.set(CodecRecordReader.TOTAL_FRAMES, "500");
+        conf.set(CodecRecordReader.ROWS, "80");
+        conf.set(CodecRecordReader.COLUMNS, "46");
+
+        Configuration conf2 = new Configuration(conf);
+
+        reader.initialize(new FileSplit(file));
+        reader.setConf(conf);
+        assertTrue(reader.hasNext());
+        Collection<Collection<Writable>> expected = reader.sequenceRecord();
+
+
+        SequenceRecordReader reader2 = new CodecRecordReader();
+        reader2.setConf(conf2);
+
+        DataInputStream dataInputStream = new DataInputStream(new FileInputStream(file));
+        Collection<Collection<Writable>> actual = reader2.sequenceRecord(null, dataInputStream);
+
+        assertEquals(expected,actual);
     }
 
 }

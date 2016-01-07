@@ -19,7 +19,7 @@ public class CanovaSparkUtil {
         return combineFilesForSequenceFile(sc,path1,path2,converter,converter);
     }
 
-    /**This is a convenience method to create data (intended to write to a sequence file, using
+    /**This is a convenience method to combine data from separate files together (intended to write to a sequence file, using
      * {@link org.apache.spark.api.java.JavaPairRDD#saveAsNewAPIHadoopFile(String, Class, Class, Class) })<br>
      * A typical use case is to combine input and label data from different files, for later parsing by a RecordReader
      * or SequenceRecordReader.
@@ -28,8 +28,9 @@ public class CanovaSparkUtil {
      * Then, for each pair of files, convert the file contents into a {@link BytesPairWritable}, which also contains
      * the original file paths of the files.<br>
      * The assumptions are as follows:<br>
-     * - For every file in the first directory, there is an equivalent file in the second directory<br>
-     * - The pairing of files can be done based on the file names of the<br>
+     * - For every file in the first directory, there is an equivalent file in the second directory (i.e., same key)<br>
+     * - The pairing of files can be done based on the paths of the files; paths are mapped to a key using a {@link PathToKeyConverter};
+     *   keys are then matched to give pairs of files<br>
      * <br><br>
      * <b>Example usage</b>: to combine all files in directory {@code dir1} with equivalent files in {@code dir2}, by file name:
      * <pre>
@@ -37,7 +38,7 @@ public class CanovaSparkUtil {
      * String path1 = "/dir1";
      * String path2 = "/dir2";
      * PathToKeyConverter pathConverter = new PathToKeyConverterFilename();
-     * JavaPairRDD<Text,BytesPairWritable> toWrite = CanovaSparkUtil.combineFilesForSequenceFile(sc, path1, path2, pathConverter, pathConverter );
+     * JavaPairRDD&lt;Text,BytesPairWritable&gt; toWrite = CanovaSparkUtil.combineFilesForSequenceFile(sc, path1, path2, pathConverter, pathConverter );
      * String outputPath = "/my/output/path";
      * toWrite.saveAsNewAPIHadoopFile(outputPath, Text.class, BytesPairWritable.class, SequenceFileOutputFormat.class);
      * </code>

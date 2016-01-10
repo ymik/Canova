@@ -5,8 +5,7 @@ import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.LimitFileSplit;
 import org.canova.image.recordreader.ImageRecordReader;
 import org.junit.Test;
-
-import java.io.File;
+import java.io.*;
 import java.util.Random;
 
 import static org.junit.Assert.assertEquals;
@@ -37,17 +36,26 @@ public class LoaderTests {
     @Test
     public void testCifarLoader() {
         File dir = new File(FilenameUtils.concat(System.getProperty("user.home"), "cifar"));
-        new CifarLoader(dir.toString());
+        CifarLoader cifar = new CifarLoader(dir.toString());
         assertTrue(dir.exists());
+
+        cifar.load();
+        assertTrue(cifar.getLabels() != null);
+
     }
 
     @Test
-    public void testCifarReader() throws Exception {
-        String expected;
-        String subDir = "cifar/cifar-10-batches-bin";
+    public void testCifarInputStream() throws Exception {
+        String subDir = "cifar/cifar-10-batches-bin/test_batch.bin";
         String path = FilenameUtils.concat(System.getProperty("user.home"), subDir);
-//        RecordReader rr = new ImageRecordReader(...);
-//        rr.initialize(new LimitFileSplit(new File(path), null, 10, 5, null, new Random(123)));
-//        assertEquals(expected, rr.getLabels().get(0));
+        byte[] fullDataExpected = new byte[3073];
+        FileInputStream inExpected = new FileInputStream(new File(path));
+        inExpected.read(fullDataExpected);
+
+        byte[] fullDataActual = new byte[3073];
+        CifarLoader cifarLoad = new CifarLoader("TEST");
+        InputStream inActual = cifarLoad.getInputStream();
+        inActual.read(fullDataActual);
+        assertEquals(fullDataExpected[0], fullDataActual[0]);
     }
 }

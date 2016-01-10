@@ -130,7 +130,6 @@ public class LFWLoader extends BaseImageLoader{
     }
 
     public boolean imageFilesExist(){
-        //Check 4 files:
         if(useSubset){
             File f = new File(BASE_DIR, lfwSubsetData.get("filesFilenameUnzipped"));
             if (!f.exists()) return false;

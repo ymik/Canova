@@ -86,6 +86,7 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
         while ((line = br.readLine()) != null) {
             String row[] = line.split(",");
             tmpMap.put(row[0], row[1]);
+            labels.add(row[1]);
         }
         return tmpMap;
     }

@@ -19,18 +19,20 @@ public class CifarLoader extends BaseImageLoader {
     public final static int WIDTH = 32;
     public final static int HEIGHT = 32;
     public final static int CHANNELS = 3;
+    public final static int BYTEFILELEN = 3073;
     public String dataUrl = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"; // used for python version - similar structure to datBin structure
     public String dataFile = "cifar-10-python";
-    public String dataBinUrl = "https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz";
-    public String dataBinFile = "cifar-10-batches-bin";
-    protected String labelFileName = "batches.meta.txt";
+    public static String dataBinUrl = "https://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz";
+    public static String dataBinFile = "cifar-10-batches-bin";
+    protected static String labelFileName = "batches.meta.txt";
     protected List<String> labels = new ArrayList<>();
 
-    protected String[] trainFileNames = {"data_batch_1.bin", "data_batch_2.bin", "data_batch_3.bin", "data_batch_4.bin", "data_batch5.bin"};
-    protected String testFileName = "test_batch.bin";
+    protected static String[] trainFileNames = {"data_batch_1.bin", "data_batch_2.bin", "data_batch_3.bin", "data_batch_4.bin", "data_batch5.bin"};
+    protected static String testFileName = "test_batch.bin";
 
-    public String localDir = "cifar";
-    protected File fullDir = new File(BASE_DIR, localDir);
+    public static String localDir = "cifar";
+    protected static File fullDir = new File(BASE_DIR, localDir);
+
     protected String regexPattern;
     protected int numExamples = NUM_TRAIN_IMAGES;
     protected int numLabels = NUM_LABELS;
@@ -48,6 +50,10 @@ public class CifarLoader extends BaseImageLoader {
         this.fullDir = new File(localDir);
         load();
     }
+
+    public final static File TRAINPATH = new File(fullDir, "train");
+    public final static File TESTPATH = new File(fullDir, FilenameUtils.concat(dataBinFile, testFileName));
+    public final static File LABELPATH = new File(fullDir, FilenameUtils.concat(dataBinFile, labelFileName));
 
     public CifarLoader(){
         load();

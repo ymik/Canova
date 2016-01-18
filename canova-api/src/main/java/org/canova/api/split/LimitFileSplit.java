@@ -97,8 +97,11 @@ public class LimitFileSplit extends FileSplit {
             if(totalCount >= totalNumExamples) break;
             file = (File) iter.next();
             if (pattern != null) {
-                // Define filename to help track categories
+                // Label is in the filename
                 currName = FilenameUtils.getBaseName(file.getName()).split(pattern)[patternPosition];
+            } else {
+                // Label is in the directory
+                currName = FilenameUtils.getBaseName(file.getParent());
             }
 
             if (file.isFile()){

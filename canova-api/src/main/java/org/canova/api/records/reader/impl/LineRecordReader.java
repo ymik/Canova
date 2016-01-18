@@ -83,7 +83,7 @@ public class LineRecordReader implements RecordReader {
             currIndex++;
             try {
                 close();
-                iter = (ListIterator) IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
+                iter = IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

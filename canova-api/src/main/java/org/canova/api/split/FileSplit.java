@@ -76,7 +76,7 @@ public class FileSplit extends BaseInputSplit {
     protected void initialize() {
         Collection<File> subFiles;
 
-        if(rootDir == null && rootDir.exists())
+        if(rootDir == null)
             throw new IllegalArgumentException("File must not be null");
 
         if(rootDir.isDirectory()) {

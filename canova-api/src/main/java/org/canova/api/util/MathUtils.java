@@ -751,11 +751,11 @@ public class MathUtils {
    * @return the root means squared error for two data sets
    */
   public static double rootMeansSquaredError(double[] real, double[] predicted) {
-    double ret = 1 / real.length;
+    double ret = 0.0;
     for (int i = 0; i < real.length; i++) {
       ret += Math.pow((real[i] - predicted[i]), 2);
     }
-    return Math.sqrt(ret);
+    return Math.sqrt(ret / real.length);
   }//end rootMeansSquaredError
 
   /**

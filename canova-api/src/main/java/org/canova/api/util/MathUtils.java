@@ -798,7 +798,7 @@ public class MathUtils {
    * @return an adjusted r^2 for degrees of freedom
    */
   public static double adjustedrSquared(double rSquared, int numRegressors, int numDataPoints) {
-    double divide = (numDataPoints - 1) / (numDataPoints - numRegressors - 1);
+    double divide = (numDataPoints - 1.0) / (numDataPoints - numRegressors - 1.0);
     double rSquaredDiff = 1 - rSquared;
     return 1 - (rSquaredDiff * divide);
   }

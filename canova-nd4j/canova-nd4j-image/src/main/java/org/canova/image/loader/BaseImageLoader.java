@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.URL;
 import java.util.Map;
 import java.util.Random;
@@ -17,7 +18,7 @@ import java.util.Random;
 /**
  * Created by nyghtowl on 12/17/15.
  */
-public class BaseImageLoader {
+public class BaseImageLoader implements Serializable {
 
     protected static final Logger log = LoggerFactory.getLogger(BaseImageLoader.class);
 

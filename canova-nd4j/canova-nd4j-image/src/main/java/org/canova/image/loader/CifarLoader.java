@@ -11,7 +11,7 @@ import java.util.*;
  * Reference: Learning Multiple Layers of Features from Tiny Images, Alex Krizhevsky, 2009.
  * Created by nyghtowl on 12/17/15.
  */
-public class CifarLoader extends BaseImageLoader {
+public class CifarLoader extends BaseImageLoader implements Serializable {
 
     public final static int NUM_TRAIN_IMAGES = 50000;
     public final static int NUM_TEST_IMAGES = 10000;

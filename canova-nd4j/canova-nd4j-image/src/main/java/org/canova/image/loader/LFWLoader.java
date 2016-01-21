@@ -27,6 +27,7 @@ import org.canova.image.recordreader.ImageRecordReader;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -41,7 +42,7 @@ import java.util.*;
  *      most images are in color, although a few are grayscale
  *
  */
-public class LFWLoader extends BaseImageLoader{
+public class LFWLoader extends BaseImageLoader implements Serializable {
 
     public final static int NUM_IMAGES = 13233;
     public final static int NUM_LABELS = 1680;

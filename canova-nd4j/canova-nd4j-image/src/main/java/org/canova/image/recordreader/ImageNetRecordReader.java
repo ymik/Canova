@@ -9,6 +9,7 @@ import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 import org.canova.common.RecordConverter;
+import org.canova.image.loader.BaseImageLoader;
 import org.canova.image.loader.ImageLoader;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.slf4j.Logger;
@@ -31,40 +32,27 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
     protected static Logger log = LoggerFactory.getLogger(ImageNetRecordReader.class);
     protected Map<String,String> labelFileIdMap = new LinkedHashMap<>();
     protected String labelPath;
-    protected String fileNameMapPath = null;
-    protected boolean eval = false;
+    protected String fileNameMapPath = null; // use when the WNID is not in the filename (e.g. val labels)
+    protected boolean eval = false; // use to load label ids for validation data set
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath) {
-        imageLoader = new ImageLoader(width, height, channels);
-        this.labelPath = labelPath;
+        this(width, height, channels, labelPath, null, false, null, 0);
     }
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath, boolean appendLabel) {
-        imageLoader = new ImageLoader(width, height, channels);
-        this.labelPath = labelPath;
-        this.appendLabel = appendLabel;
+        this(width, height, channels, labelPath, null, appendLabel, null, 0);
     }
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath, boolean appendLabel, String pattern) {
-        imageLoader = new ImageLoader(width, height, channels);
-        this.labelPath = labelPath;
-        this.appendLabel = appendLabel;
-        this.pattern = pattern;
+        this(width, height, channels, labelPath, null, appendLabel, pattern, 0);
     }
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath, boolean appendLabel, String pattern, int patternPosition) {
-        imageLoader = new ImageLoader(width, height, channels);
-        this.labelPath = labelPath;
-        this.appendLabel = appendLabel;
-        this.pattern = pattern;
-        this.patternPosition = patternPosition;
+        this(width, height, channels, labelPath, null, appendLabel, pattern, patternPosition);
     }
 
     public ImageNetRecordReader(int width, int height, int channels, String labelPath, String fileNameMapPath, boolean appendLabel) {
-        imageLoader = new ImageLoader(width, height, channels);
-        this.labelPath = labelPath;
-        this.appendLabel = appendLabel;
-        this.fileNameMapPath = fileNameMapPath;
+        this(width, height, channels, labelPath, fileNameMapPath, appendLabel, null, 0);
         this.eval = true;
     }
 

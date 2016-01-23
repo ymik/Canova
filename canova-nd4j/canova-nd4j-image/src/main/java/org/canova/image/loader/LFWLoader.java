@@ -45,7 +45,7 @@ import java.util.*;
 public class LFWLoader extends BaseImageLoader implements Serializable {
 
     public final static int NUM_IMAGES = 13233;
-    public final static int NUM_LABELS = 1680;
+    public final static int NUM_LABELS = 5749;
     public final static int SUB_NUM_IMAGES = 1054;
     public final static int SUB_NUM_LABELS = 432;
     public final static int WIDTH = 250;

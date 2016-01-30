@@ -27,6 +27,7 @@ import org.canova.api.records.writer.RecordWriter;
 import org.canova.api.writable.Writable;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Collection;
 
 /**
@@ -42,11 +43,15 @@ import java.util.Collection;
  */
 public  class FileRecordWriter implements RecordWriter {
 
+    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+
     protected File writeTo;
     protected DataOutputStream out;
     public final static String NEW_LINE = "\n";
     private boolean append;
     public final static String PATH = "org.canova.api.records.writer.path";
+
+    protected Charset encoding = DEFAULT_CHARSET;
 
     protected Configuration conf;
 
@@ -54,14 +59,18 @@ public  class FileRecordWriter implements RecordWriter {
     }
 
     public FileRecordWriter(File path) throws FileNotFoundException {
-        this.writeTo = path;
-        out = new DataOutputStream(new FileOutputStream(writeTo,append));
+        this(path,false,DEFAULT_CHARSET);
     }
 
 
     public FileRecordWriter(File path,boolean append) throws FileNotFoundException {
+        this(path,append,DEFAULT_CHARSET);
+    }
+
+    public FileRecordWriter(File path, boolean append, Charset encoding) throws FileNotFoundException{
         this.writeTo = path;
         this.append = append;
+        this.encoding = encoding;
         out = new DataOutputStream(new FileOutputStream(writeTo,append));
     }
 

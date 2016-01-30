@@ -39,8 +39,13 @@ import java.util.Collection;
  * @author Adam Gibson
  */
 public class LibSvmRecordReader extends LineRecordReader implements LibSvm {
+
+    public static final String NAME_SPACE = LibSvmRecordReader.class.getName();
+    public static final String NUM_FEATURES = NAME_SPACE + ".numfeatures";
+
     private boolean appendLabel = false;
     private boolean classification = true;
+    private int numFeatures;
 
     @Override
     public void initialize(InputSplit split) throws IOException, InterruptedException {
@@ -52,6 +57,7 @@ public class LibSvmRecordReader extends LineRecordReader implements LibSvm {
         super.initialize(conf, split);
         appendLabel = conf.getBoolean(APPEND_LABEL,false);
         classification = conf.getBoolean(CLASSIFICATION,true);
+        numFeatures = conf.getInt(NUM_FEATURES, 0);
     }
 
     @Override
@@ -86,7 +92,7 @@ public class LibSvmRecordReader extends LineRecordReader implements LibSvm {
             }
 
             int j = Integer.valueOf(pair[0]) - 1;
-            if(j != read) {
+            while(j != read){
                 record.add(new DoubleWritable(0.0));
                 read++;
             }
@@ -97,6 +103,10 @@ public class LibSvmRecordReader extends LineRecordReader implements LibSvm {
                 double x = Double.valueOf(pair[1]);
                 record.add(new DoubleWritable(x));
             }
+            read++;
+        }
+        while( read < numFeatures ){
+            record.add(new DoubleWritable(0.0));
             read++;
         }
 

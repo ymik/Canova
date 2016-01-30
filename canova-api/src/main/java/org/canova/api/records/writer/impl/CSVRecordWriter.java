@@ -25,6 +25,7 @@ import org.canova.api.conf.Configuration;
 import org.canova.api.writable.Writable;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.Collection;
 
 /**
@@ -33,35 +34,51 @@ import java.util.Collection;
  * @author Adam Gibson
  */
 public class CSVRecordWriter extends FileRecordWriter {
+    public static final String DEFAULT_DELIMITER = ",";
+
+    private final byte[] delimBytes;
+    private boolean firstLine = true;
 
     public CSVRecordWriter() {
+        delimBytes = DEFAULT_DELIMITER.getBytes(encoding);
     }
 
     public CSVRecordWriter(File path) throws FileNotFoundException {
-        super(path);
+        this(path,false,DEFAULT_CHARSET,DEFAULT_DELIMITER);
     }
 
     public CSVRecordWriter(File path, boolean append) throws FileNotFoundException {
-        super(path, append);
+        this(path,append,DEFAULT_CHARSET,DEFAULT_DELIMITER);
     }
 
     public CSVRecordWriter(Configuration conf) throws FileNotFoundException {
         super(conf);
+        delimBytes = DEFAULT_DELIMITER.getBytes(encoding);
+    }
+
+    public CSVRecordWriter(File path, boolean append, Charset encoding, String delimiter) throws FileNotFoundException{
+        super(path,append,encoding);
+        this.delimBytes = delimiter.getBytes(encoding);
     }
 
     @Override
     public void write(Collection<Writable> record) throws IOException {
         if(!record.isEmpty()) {
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            DataOutputStream dos = new DataOutputStream(bos);
-            for(Writable w : record) {
-                w.write(dos);
-                dos.write(NEW_LINE.getBytes());
+            //Add new line before appending lines rather than after (avoids newline after last line)
+            if(!firstLine){
+                out.write(NEW_LINE.getBytes());
+            } else {
+                firstLine = false;
             }
 
-            dos.flush();
-            dos.close();
-        }
+            int count = 0;
+            int last = record.size()-1;
+            for(Writable w : record) {
+                out.write(w.toString().getBytes(encoding));
+                if(count++ != last) out.write(delimBytes);
+            }
 
+            out.flush();
+        }
     }
 }

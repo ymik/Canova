@@ -22,6 +22,7 @@ package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
+import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -35,6 +36,8 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Image loader for taking images
@@ -414,8 +417,12 @@ public class ImageLoader implements Serializable {
 
         byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
         int[] shape = new int[]{height, width, bands};
-        INDArray ret = Nd4j.create(new ImageByteBuffer(pixels, pixels.length), shape);
-        return ret.permute(2, 0, 1);
+
+        INDArray ret2 = Nd4j.create(1, pixels.length);
+        for(int i = 0; i < ret2.length(); i++) {
+            ret2.putScalar(i, ((int)pixels[i])& 0xFF);
+        }
+        return ret2.reshape(shape).permute(2, 0, 1);
     }
 
     // TODO build flexibility on where to crop the image

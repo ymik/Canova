@@ -4,6 +4,8 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import org.nd4j.linalg.api.buffer.BaseDataBuffer;
 import org.nd4j.linalg.api.buffer.DataBuffer;
+import org.nd4j.linalg.api.complex.IComplexDouble;
+import org.nd4j.linalg.api.complex.IComplexFloat;
 
 public class ImageByteBuffer extends BaseDataBuffer {
 
@@ -55,6 +57,16 @@ public class ImageByteBuffer extends BaseDataBuffer {
     @Override
     public DataBuffer create(ByteBuf byteBuf, int i) {
         return new ImageByteBuffer(byteBuf, i);
+    }
+
+    @Override
+    public IComplexFloat getComplexFloat(int i) {
+        return null;
+    }
+
+    @Override
+    public IComplexDouble getComplexDouble(int i) {
+        return null;
     }
 
     @Override

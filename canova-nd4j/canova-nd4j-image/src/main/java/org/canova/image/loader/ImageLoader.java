@@ -25,6 +25,7 @@ import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
+import org.nd4j.linalg.util.NDArrayUtil;
 
 import javax.imageio.ImageIO;
 import javax.imageio.spi.IIORegistry;
@@ -97,7 +98,7 @@ public class ImageLoader implements Serializable {
         if(channels == 3) {
             return toRaveledTensor(f);
         }
-        return ArrayUtil.toNDArray(flattenedImageFromFile(f));
+        return NDArrayUtil.toNDArray(flattenedImageFromFile(f));
     }
 
     public INDArray asRowVector(InputStream inputStream) {
@@ -116,7 +117,7 @@ public class ImageLoader implements Serializable {
             return toINDArrayBGR(image).ravel();
         }
         int[][] ret = toIntArrayArray(image);
-        return ArrayUtil.toNDArray(ArrayUtil.flatten(ret));
+        return NDArrayUtil.toNDArray(ArrayUtil.flatten(ret));
     }
 
     /**
@@ -213,7 +214,7 @@ public class ImageLoader implements Serializable {
      * @throws IOException
      */
     public INDArray asMatrix(File f) throws IOException {
-        return ArrayUtil.toNDArray(fromFile(f));
+        return NDArrayUtil.toNDArray(fromFile(f));
     }
 
     /**

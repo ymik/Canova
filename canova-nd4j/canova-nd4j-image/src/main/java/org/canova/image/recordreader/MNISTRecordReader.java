@@ -20,6 +20,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.util.ArrayUtil;
 import org.nd4j.linalg.util.FeatureUtil;
+import org.nd4j.linalg.util.NDArrayUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -276,7 +277,7 @@ public class MNISTRecordReader implements RecordReader {
             // pull the image and do some baseline transform
             //note data normalization
             try {
-                INDArray in = ArrayUtil.toNDArray(ArrayUtil.flatten(man.readImage()));
+                INDArray in = NDArrayUtil.toNDArray(ArrayUtil.flatten(man.readImage()));
                 if(binarize) {
                     for(int d = 0; d < in.length(); d++) {
                         if(binarize) {

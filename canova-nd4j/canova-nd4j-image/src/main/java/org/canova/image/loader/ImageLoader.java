@@ -416,14 +416,13 @@ public class ImageLoader implements Serializable {
         int bands = image.getSampleModel().getNumBands();
 
         byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
-        DataBuffer buff = Nd4j.createBuffer(ByteBuffer.wrap(pixels).order(ByteOrder.nativeOrder()), DataBuffer.Type.INT,(height * width * bands) / 4);
-        DataBuffer realBuffer = Nd4j.createBuffer(height * width * bands);
-        for(int i = 0; i < buff.length(); i++) {
-            realBuffer.put(i,buff.getDouble(i));
-        }
         int[] shape = new int[]{height, width, bands};
-        INDArray ret = Nd4j.create(buff, shape);
-        return ret.permute(2, 0, 1);
+
+        INDArray ret2 = Nd4j.create(1, pixels.length);
+        for(int i = 0; i < ret2.length(); i++) {
+            ret2.putScalar(i, ((int)pixels[i])& 0xFF);
+        }
+        return ret2.reshape(shape).permute(2, 0, 1);
     }
 
     // TODO build flexibility on where to crop the image

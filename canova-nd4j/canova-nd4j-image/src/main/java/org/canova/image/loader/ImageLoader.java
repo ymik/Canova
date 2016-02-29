@@ -22,6 +22,7 @@ package org.canova.image.loader;
 
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageReaderSpi;
 import com.github.jaiimageio.impl.plugins.tiff.TIFFImageWriterSpi;
+import org.nd4j.linalg.api.buffer.DataBuffer;
 import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.util.ArrayUtil;
@@ -35,6 +36,8 @@ import java.awt.image.DataBufferByte;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Image loader for taking images
@@ -413,8 +416,13 @@ public class ImageLoader implements Serializable {
         int bands = image.getSampleModel().getNumBands();
 
         byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
+        DataBuffer buff = Nd4j.createBuffer(ByteBuffer.wrap(pixels).order(ByteOrder.nativeOrder()), DataBuffer.Type.INT,(height * width * bands) / 4);
+        DataBuffer realBuffer = Nd4j.createBuffer(height * width * bands);
+        for(int i = 0; i < buff.length(); i++) {
+            realBuffer.put(i,buff.getDouble(i));
+        }
         int[] shape = new int[]{height, width, bands};
-        INDArray ret = Nd4j.create(new ImageByteBuffer(pixels, pixels.length), shape);
+        INDArray ret = Nd4j.create(buff, shape);
         return ret.permute(2, 0, 1);
     }
 

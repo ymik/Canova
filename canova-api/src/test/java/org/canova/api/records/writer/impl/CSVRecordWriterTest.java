@@ -50,5 +50,6 @@ public class CSVRecordWriterTest {
             assertEquals(14, line.get(2).toInt());
             cnt++;
         }
+        assertEquals(1, cnt);
     }
 }

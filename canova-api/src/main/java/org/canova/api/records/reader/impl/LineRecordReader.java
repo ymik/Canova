@@ -78,29 +78,45 @@ public class LineRecordReader implements RecordReader {
         if(iter.hasNext()) {
             ret.add(new Text(iter.next()));
             return ret;
-        }
-        else {
-            currIndex++;
-            try {
-                close();
-                iter = IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
-            } catch (IOException e) {
-                e.printStackTrace();
+        } else {
+            if ( !(inputSplit instanceof StringSplit) && currIndex < locations.length-1 ) {
+                currIndex++;
+                try {
+                    close();
+                    iter = IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if(iter.hasNext()) {
+                    ret.add(new Text(iter.next()));
+                    return ret;
+                }
             }
 
-            if(iter.hasNext()) {
-                ret.add(new Text(iter.next()));
-                return ret;
-            }
-
+            throw new NoSuchElementException("No more elements found!");
         }
-
-        throw new NoSuchElementException("No more elements found!");
     }
 
     @Override
     public boolean hasNext() {
-        return iter != null && iter.hasNext();
+        if ( iter != null && iter.hasNext() ) {
+            return true;
+        } else {
+            if ( !(inputSplit instanceof StringSplit) && currIndex < locations.length-1 ) {
+                currIndex++;
+                try {
+                    close();
+                    iter = IOUtils.lineIterator(new InputStreamReader(locations[currIndex].toURL().openStream()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                return iter.hasNext();
+            }
+
+            return false;
+        }
     }
 
     @Override

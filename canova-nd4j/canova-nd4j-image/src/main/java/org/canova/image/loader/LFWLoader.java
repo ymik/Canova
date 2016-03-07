@@ -122,7 +122,7 @@ public class LFWLoader extends BaseImageLoader implements Serializable {
     }
 
     public void load()  {
-        if (!fullDir.exists()) {
+        if (!fullDir.exists() || fullDir.listFiles() == null || fullDir.listFiles().length == 0) {
             fullDir.mkdir();
 
             if (useSubset) {

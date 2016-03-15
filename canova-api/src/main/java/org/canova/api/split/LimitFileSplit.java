@@ -92,8 +92,9 @@ public class LimitFileSplit extends FileSplit {
         Map<String, Integer> fileCount = new HashMap<>();
         String currName = "";
         int totalCount = 0;
+        int numCategoryCount = 0;
 
-        while (iter.hasNext()) {
+        while (iter.hasNext() && numCategoryCount < numCategories) {
             if(totalCount >= totalNumExamples) break;
             file = (File) iter.next();
             if (pattern != null) {
@@ -106,15 +107,17 @@ public class LimitFileSplit extends FileSplit {
 
             if (file.isFile()){
 
-                if (!fileCount.containsKey(currName))
+                if (!fileCount.containsKey(currName)) {
                     fileCount.put(currName, 0);
-
+                    numCategoryCount++;
+                }
                 int categoryCount = fileCount.get(currName);
 
                 if (categoryCount < numExamplesPerCategory) {
                     subFiles.add(file);
                     fileCount.put(currName, categoryCount + 1);
                     totalCount++;
+
                 }
             }
             if (numExamplesPerCategory == 0) log.info("{} number of categories were loaded", fileCount.keySet().size() );

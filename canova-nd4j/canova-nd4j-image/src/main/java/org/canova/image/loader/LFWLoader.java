@@ -181,6 +181,13 @@ public class LFWLoader extends BaseImageLoader implements Serializable {
         return getRecordReader(width, height, channels, true, regexPattern);
     }
 
+    public RecordReader getRecordReader(int width, int height, int channels, int numExamples, int numLabels, Random rng) {
+        this.numExamples = numExamples;
+        this.numLabels = numLabels;
+        this.rng = rng;
+        return getRecordReader(width, height, channels, true, regexPattern);
+    }
+
     public RecordReader getRecordReader(int width, int height, int channels, boolean appendLabel, String regexPattern) {
         if (!imageFilesExist()) load();
         RecordReader recordReader = new ImageRecordReader(width, height, channels, appendLabel, regexPattern);

@@ -102,4 +102,16 @@ public class CSVRecordReaderTest {
 
         assertEquals(expected,fileContents);
     }
+
+    @Test
+    public void testTabsAsSplit1() throws Exception {
+
+        CSVRecordReader reader = new CSVRecordReader(0,"\t");
+        reader.initialize(new FileSplit(new ClassPathResource("/tabbed.txt").getFile()));
+        while (reader.hasNext()) {
+            List<Writable> list = new ArrayList<>(reader.next());
+
+            assertEquals(2, list.size());
+        }
+    }
 }

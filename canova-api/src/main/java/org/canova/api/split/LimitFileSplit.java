@@ -94,7 +94,7 @@ public class LimitFileSplit extends FileSplit {
         int totalCount = 0;
         int numCategoryCount = 0;
 
-        while (iter.hasNext() && numCategoryCount < numCategories) {
+        while (iter.hasNext() && numCategoryCount <= numCategories) {
             if(totalCount >= totalNumExamples) break;
             file = (File) iter.next();
             if (pattern != null) {

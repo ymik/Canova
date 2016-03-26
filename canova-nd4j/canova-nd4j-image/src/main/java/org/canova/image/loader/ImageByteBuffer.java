@@ -14,6 +14,11 @@ public class ImageByteBuffer extends BaseDataBuffer {
         this.elementSize = 1;
     }
 
+    @Override
+    protected DataBuffer create(long length) {
+        return null;
+    }
+
     public ImageByteBuffer(int i) {
         super(i);
     }
@@ -34,10 +39,6 @@ public class ImageByteBuffer extends BaseDataBuffer {
         super(byteBuf, i);
     }
 
-    @Override
-    protected DataBuffer create(int i) {
-        return new ImageByteBuffer(i);
-    }
 
     @Override
     public DataBuffer create(double[] doubles) {
@@ -60,12 +61,12 @@ public class ImageByteBuffer extends BaseDataBuffer {
     }
 
     @Override
-    public IComplexFloat getComplexFloat(int i) {
+    public IComplexFloat getComplexFloat(long i) {
         return null;
     }
 
     @Override
-    public IComplexDouble getComplexDouble(int i) {
+    public IComplexDouble getComplexDouble(long i) {
         return null;
     }
 
@@ -80,22 +81,22 @@ public class ImageByteBuffer extends BaseDataBuffer {
     }
 
     @Override
-    public int getInt(int i) {
-        return ((int) wrappedBuffer.get(i)) & 0xff;
+    public int getInt(long i) {
+        return ((int) wrappedBuffer.get((int) i)) & 0xff;
     }
 
     @Override
-    public float getFloat(int i) {
+    public float getFloat(long i) {
         return (float)getInt(i);
     }
 
     @Override
-    public Number getNumber(int i) {
+    public Number getNumber(long i) {
         return getInt(i);
     }
 
     @Override
-    public double getDouble(int i) {
+    public double getDouble(long i) {
         return (double)getInt(i);
     }
 }

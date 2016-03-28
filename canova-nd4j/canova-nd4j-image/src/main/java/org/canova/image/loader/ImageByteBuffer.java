@@ -14,6 +14,8 @@ public class ImageByteBuffer extends BaseDataBuffer {
         this.elementSize = 1;
     }
 
+    // TODO add back override when nd4j updated with method signatures
+    
     @Override
     protected DataBuffer create(long length) {
         return null;
@@ -39,6 +41,7 @@ public class ImageByteBuffer extends BaseDataBuffer {
         super(byteBuf, i);
     }
 
+    public DataBuffer create(int i) { return new ImageByteBuffer(i);}
 
     @Override
     public DataBuffer create(double[] doubles) {
@@ -70,6 +73,14 @@ public class ImageByteBuffer extends BaseDataBuffer {
         return null;
     }
 
+    public IComplexFloat getComplexFloat(int i) {
+        return null;
+    }
+
+    public IComplexDouble getComplexDouble(int i) {
+        return null;
+    }
+
     @Override
     public int getElementSize() {
         return this.elementSize;
@@ -82,6 +93,10 @@ public class ImageByteBuffer extends BaseDataBuffer {
 
     @Override
     public int getInt(long i) {
+        return ((int) wrappedBuffer.get((int) i)) & 0xff;
+    }
+
+    public int getInt(int i) {
         return ((int) wrappedBuffer.get((int) i)) & 0xff;
     }
 
@@ -99,4 +114,17 @@ public class ImageByteBuffer extends BaseDataBuffer {
     public double getDouble(long i) {
         return (double)getInt(i);
     }
+
+    public float getFloat(int i) {
+        return (float)getInt(i);
+    }
+
+    public Number getNumber(int i) {
+        return getInt(i);
+    }
+
+    public double getDouble(int i) {
+        return (double)getInt(i);
+    }
+
 }

@@ -16,8 +16,8 @@ public class CifarLoader extends BaseImageLoader implements Serializable {
     public final static int NUM_TRAIN_IMAGES = 50000;
     public final static int NUM_TEST_IMAGES = 10000;
     public final static int NUM_LABELS = 10; // 6000 imgs per class
-    public final static int WIDTH = 32;
     public final static int HEIGHT = 32;
+    public final static int WIDTH = 32;
     public final static int CHANNELS = 3;
     public final static int BYTEFILELEN = 3073;
     public String dataUrl = "https://www.cs.toronto.edu/~kriz/cifar-10-python.tar.gz"; // used for python version - similar structure to datBin structure

@@ -48,9 +48,9 @@ public class LFWLoader extends BaseImageLoader implements Serializable {
     public final static int NUM_LABELS = 5749;
     public final static int SUB_NUM_IMAGES = 1054;
     public final static int SUB_NUM_LABELS = 432;
-    public final static int WIDTH = 250;
-    public final static int HEIGHT = 250;
     public final static int CHANNELS = 3;
+    public final static int HEIGHT = 250;
+    public final static int WIDTH = 250;
     public final static String DATA_URL = "http://vis-www.cs.umass.edu/lfw/lfw.tgz";
     public final static String LABEL_URL =  "http://vis-www.cs.umass.edu/lfw/lfw-names.txt";
     public final static String SUBSET_URL = "http://vis-www.cs.umass.edu/lfw/lfw-a.tgz";
@@ -152,45 +152,45 @@ public class LFWLoader extends BaseImageLoader implements Serializable {
 
 
     public RecordReader getRecordReader() {
-        return getRecordReader(WIDTH, HEIGHT, CHANNELS, true, regexPattern);
+        return getRecordReader(HEIGHT, WIDTH, CHANNELS, true, regexPattern);
     }
 
-    public RecordReader getRecordReader(int width, int height, int channels) {
-        return getRecordReader(width, height, channels, true, regexPattern);
+    public RecordReader getRecordReader(int height, int width, int channels) {
+        return getRecordReader(height, width,  channels, true, regexPattern);
     }
 
     public RecordReader getRecordReader(int numExamples) {
         this.numExamples = numExamples;
-        return getRecordReader(WIDTH, HEIGHT, CHANNELS, true, regexPattern);
+        return getRecordReader(HEIGHT, WIDTH, CHANNELS, true, regexPattern);
     }
 
     public RecordReader getRecordReader(int numExamples, int numCategories) {
         this.numExamples = numExamples;
         this.numLabels = numCategories;
-        return getRecordReader(WIDTH, HEIGHT, CHANNELS, true, regexPattern);
+        return getRecordReader(HEIGHT, WIDTH, CHANNELS, true, regexPattern);
     }
 
-    public RecordReader getRecordReader(int width, int height, int channels, int numExamples) {
+    public RecordReader getRecordReader(int numExamples, int height, int width, int channels) {
         this.numExamples = numExamples;
-        return getRecordReader(width, height, channels, true, regexPattern);
+        return getRecordReader(height, width, channels, true, regexPattern);
     }
 
-    public RecordReader getRecordReader(int width, int height, int channels, int numExamples, Random rng) {
+    public RecordReader getRecordReader(int numExamples, int height, int width, int channels, Random rng) {
         this.numExamples = numExamples;
         this.rng = rng;
-        return getRecordReader(width, height, channels, true, regexPattern);
+        return getRecordReader(height, width, channels, true, regexPattern);
     }
 
-    public RecordReader getRecordReader(int width, int height, int channels, int numExamples, int numLabels, Random rng) {
+    public RecordReader getRecordReader(int numExamples, int height, int width, int channels, int numLabels, Random rng) {
         this.numExamples = numExamples;
         this.numLabels = numLabels;
         this.rng = rng;
-        return getRecordReader(width, height, channels, true, regexPattern);
+        return getRecordReader(height, width, channels,  true, regexPattern);
     }
 
-    public RecordReader getRecordReader(int width, int height, int channels, boolean appendLabel, String regexPattern) {
+    public RecordReader getRecordReader(int height, int width, int channels, boolean appendLabel, String regexPattern) {
         if (!imageFilesExist()) load();
-        RecordReader recordReader = new ImageRecordReader(width, height, channels, appendLabel, regexPattern);
+        RecordReader recordReader = new ImageRecordReader(height, width, channels, appendLabel, regexPattern);
         try {
             recordReader.initialize(new LimitFileSplit(fullDir, ALLOWED_FORMATS, numExamples, numLabels, regexPattern, rng));
         } catch (IOException | InterruptedException e) {

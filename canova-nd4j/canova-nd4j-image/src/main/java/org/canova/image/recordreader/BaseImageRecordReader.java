@@ -65,9 +65,10 @@ public abstract class BaseImageRecordReader implements RecordReader {
     protected String pattern; // Pattern to split and segment file name, pass in regex
     protected int patternPosition = 0;
 
-    public final static String WIDTH = NAME_SPACE + ".width";
     public final static String HEIGHT = NAME_SPACE + ".height";
+    public final static String WIDTH = NAME_SPACE + ".width";
     public final static String CHANNELS = NAME_SPACE + ".channels";
+
 
     static {
         ImageIO.scanForPlugins();
@@ -82,30 +83,30 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public BaseImageRecordReader() {
     }
 
-    public BaseImageRecordReader(int width, int height,int channels, List<String> labels) {
-        this(width, height,channels,false);
+    public BaseImageRecordReader(int height, int width, int channels, List<String> labels) {
+        this(height, width, channels, false);
         this.labels = labels;
     }
 
-    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel) {
+    public BaseImageRecordReader(int height, int width, int channels, boolean appendLabel) {
         this.appendLabel = appendLabel;
-        imageLoader = new ImageLoader(width,height,channels);
+        imageLoader = new ImageLoader(height, width, channels);
     }
 
 
-    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel, List<String> labels) {
-        this(width,height,channels,appendLabel);
+    public BaseImageRecordReader(int height, int width, int channels, boolean appendLabel, List<String> labels) {
+        this(height, width, channels, appendLabel);
         this.labels = labels;
     }
 
-    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel, String pattern, int patternPosition) {
-        this(width,height,channels,appendLabel);
+    public BaseImageRecordReader(int height, int width, int channels, boolean appendLabel, String pattern, int patternPosition) {
+        this(height, width, channels, appendLabel);
         this.pattern = pattern;
         this.patternPosition = patternPosition;
     }
 
-    public BaseImageRecordReader(int width, int height,int channels, boolean appendLabel, List<String> labels, String pattern, int patternPosition) {
-        this(width,height,channels,appendLabel, labels);
+    public BaseImageRecordReader(int height, int width, int channels, boolean appendLabel, List<String> labels, String pattern, int patternPosition) {
+        this(height, width, channels, appendLabel, labels);
         this.pattern = pattern;
         this.patternPosition = patternPosition;
     }
@@ -191,7 +192,7 @@ public abstract class BaseImageRecordReader implements RecordReader {
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
         this.appendLabel = conf.getBoolean(APPEND_LABEL,false);
         this.labels = new ArrayList<>(conf.getStringCollection(LABELS));
-        imageLoader = new ImageLoader(conf.getInt(WIDTH,28),conf.getInt(HEIGHT,28),conf.getInt(CHANNELS,1));
+        imageLoader = new ImageLoader(conf.getInt(HEIGHT,28), conf.getInt(WIDTH,28),conf.getInt(CHANNELS,1));
         this.conf = conf;
         initialize(split);
     }
@@ -206,7 +207,6 @@ public abstract class BaseImageRecordReader implements RecordReader {
 
             if(image.isDirectory())
                 return next();
-
             try {
                 BufferedImage bimg = ImageIO.read(image);
                 INDArray row = imageLoader.asRowVector(bimg);

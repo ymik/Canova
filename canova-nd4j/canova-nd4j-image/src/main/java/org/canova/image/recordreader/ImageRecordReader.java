@@ -40,40 +40,40 @@ public class ImageRecordReader extends BaseImageRecordReader {
         super();
     }
 
-    public ImageRecordReader(int width, int height, int channels, List<String> labels) {
-        super(width, height, channels, labels);
+    public ImageRecordReader(int height, int width, int channels, List<String> labels) {
+        super(height, width, channels,labels);
     }
 
-    public ImageRecordReader(int width, int height, int channels, boolean appendLabel, List<String> labels) {
-        super(width, height, channels, appendLabel, labels);
+    public ImageRecordReader(int height, int width, int channels, boolean appendLabel, List<String> labels) {
+        super(height, width, channels,appendLabel, labels);
     }
 
-    public ImageRecordReader(int width, int height, int channels) {
-        super(width, height, channels, false);
+    public ImageRecordReader(int height, int width, int channels) {
+        super(height, width, channels,false);
     }
 
-    public ImageRecordReader(int width, int height, int channels, boolean appendLabel) {
-        super(width, height, channels, appendLabel);
+    public ImageRecordReader(int height, int width, int channels, boolean appendLabel) {
+        super(height, width, channels,appendLabel);
     }
 
-    public ImageRecordReader(int width, int height, List<String> labels) {
-        super(width, height, 1, labels);
+    public ImageRecordReader(int height, int width,  List<String> labels) {
+        super(height, width,  1, labels);
     }
 
-    public ImageRecordReader(int width, int height, boolean appendLabel, List<String> labels) {
-        super(width, height, 1, appendLabel, labels);
+    public ImageRecordReader(int height, int width,  boolean appendLabel, List<String> labels) {
+        super(height, width,  1, appendLabel, labels);
     }
 
-    public ImageRecordReader(int width, int height) {
-        super(width, height, 1, false);
+    public ImageRecordReader(int height, int width) {
+        super(height, width,  1, false);
     }
 
-    public ImageRecordReader(int width, int height, boolean appendLabel) {
-        super(width, height, 1, appendLabel);
+    public ImageRecordReader(int height, int width, boolean appendLabel) {
+        super(height, width, 1, appendLabel);
     }
 
 
-    public ImageRecordReader(int width, int height, int channels, boolean appendLabel, String pattern) {
+    public ImageRecordReader(int height, int width, int channels, boolean appendLabel, String pattern) {
         super(width, height, channels, appendLabel, pattern, 0);
     }
 

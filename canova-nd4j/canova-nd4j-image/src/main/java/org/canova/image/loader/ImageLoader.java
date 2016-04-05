@@ -47,8 +47,8 @@ import java.nio.ByteOrder;
  */
 public class ImageLoader implements Serializable {
 
-    private int width = -1;
     private int height = -1;
+    private int width = -1;
     private int channels = -1;
 
     static {
@@ -63,30 +63,29 @@ public class ImageLoader implements Serializable {
 
     /**
      * Instantiate an image with the given
-     * width and height
-     *
+     * height and width
+     * @param height the height to load*
      * @param width  the width to load
-     * @param height the height to load
+
      */
-    public ImageLoader(int width, int height) {
+    public ImageLoader(int height,int width) {
         super();
-        this.width = width;
         this.height = height;
+        this.width = width;
     }
 
 
     /**
      * Instantiate an image with the given
-     * width and height
-     *
-     * @param width  the width to load
+     * height and width
      * @param height the height to load
-     * @param channels the number of channels for the image
+     * @param width  the width to load
+     * @param channels the number of channels for the image*
      */
-    public ImageLoader(int width, int height,int channels) {
+    public ImageLoader(int height, int width, int channels) {
         super();
-        this.width = width;
         this.height = height;
+        this.width = width;
         this.channels = channels;
     }
 
@@ -411,8 +410,8 @@ public class ImageLoader implements Serializable {
     }
 
     protected INDArray toINDArrayBGR(BufferedImage image) {
-        int width = image.getWidth();
         int height = image.getHeight();
+        int width = image.getWidth();
         int bands = image.getSampleModel().getNumBands();
 
         byte[] pixels = ((DataBufferByte)image.getRaster().getDataBuffer()).getData();
@@ -429,8 +428,8 @@ public class ImageLoader implements Serializable {
     public BufferedImage centerCropIfNeeded(BufferedImage img) {
         int x = 0;
         int y = 0;
-        int width = img.getWidth();
         int height = img.getHeight();
+        int width = img.getWidth();
         int diff = Math.abs(width - height) / 2;
 
         if (width > height) {
@@ -444,10 +443,10 @@ public class ImageLoader implements Serializable {
     }
 
     protected BufferedImage scalingIfNeed(BufferedImage image, boolean needAlpha) {
-        return scalingIfNeed(image, width, height, needAlpha);
+        return scalingIfNeed(image, height, width, needAlpha);
     }
 
-    protected BufferedImage scalingIfNeed(BufferedImage image, int dstWidth, int dstHeight, boolean needAlpha) {
+    protected BufferedImage scalingIfNeed(BufferedImage image, int dstHeight, int dstWidth, boolean needAlpha) {
         if (dstHeight > 0 && dstWidth > 0 && (image.getHeight() != dstHeight || image.getWidth() != dstWidth)) {
             Image scaled = image.getScaledInstance(dstWidth, dstHeight, Image.SCALE_SMOOTH);
 

@@ -35,29 +35,29 @@ public class ImageNetRecordReader extends BaseImageRecordReader {
     protected String fileNameMapPath = null; // use when the WNID is not in the filename (e.g. val labels)
     protected boolean eval = false; // use to load label ids for validation data set
 
-    public ImageNetRecordReader(int width, int height, int channels, String labelPath) {
-        this(width, height, channels, labelPath, null, false, null, 0);
+    public ImageNetRecordReader(int height, int width, int channels, String labelPath) {
+        this(height, width, channels,  labelPath, null, false, null, 0);
     }
 
-    public ImageNetRecordReader(int width, int height, int channels, String labelPath, boolean appendLabel) {
-        this(width, height, channels, labelPath, null, appendLabel, null, 0);
+    public ImageNetRecordReader(int height, int width, int channels, String labelPath, boolean appendLabel) {
+        this(height, width, channels, labelPath, null, appendLabel, null, 0);
+}
+
+    public ImageNetRecordReader(int height, int width, int channels, String labelPath, boolean appendLabel, String pattern) {
+        this(height, width, channels, labelPath, null, appendLabel, pattern, 0);
     }
 
-    public ImageNetRecordReader(int width, int height, int channels, String labelPath, boolean appendLabel, String pattern) {
-        this(width, height, channels, labelPath, null, appendLabel, pattern, 0);
+    public ImageNetRecordReader(int height, int width, int channels, String labelPath, boolean appendLabel, String pattern, int patternPosition) {
+        this(height, width,  channels, labelPath, null, appendLabel, pattern, patternPosition);
     }
 
-    public ImageNetRecordReader(int width, int height, int channels, String labelPath, boolean appendLabel, String pattern, int patternPosition) {
-        this(width, height, channels, labelPath, null, appendLabel, pattern, patternPosition);
-    }
-
-    public ImageNetRecordReader(int width, int height, int channels, String labelPath, String fileNameMapPath, boolean appendLabel) {
-        this(width, height, channels, labelPath, fileNameMapPath, appendLabel, null, 0);
+    public ImageNetRecordReader(int height, int width, int channels, String labelPath, String fileNameMapPath, boolean appendLabel) {
+        this(height, width, channels, labelPath, fileNameMapPath, appendLabel, null, 0);
         this.eval = true;
     }
 
-    public ImageNetRecordReader(int width, int height, int channels, String labelPath, String fileNameMapPath, boolean appendLabel, String pattern, int patternPosition) {
-        imageLoader = new ImageLoader(width, height, channels);
+    public ImageNetRecordReader(int height, int width, int channels,  String labelPath, String fileNameMapPath, boolean appendLabel, String pattern, int patternPosition) {
+        imageLoader = new ImageLoader(height, width, channels);
         this.labelPath = labelPath;
         this.appendLabel = appendLabel;
         this.fileNameMapPath = fileNameMapPath;

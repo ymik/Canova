@@ -27,7 +27,7 @@ import java.util.*;
 /**
  * Image record reader.
  * Reads a local file system and parses images of a given
- * width and height.
+ * height and width.
  *
  * Also appends the label if specified
  * (one of k encoding based on the directory structure where each subdir of the root is an indexed label)
@@ -74,7 +74,7 @@ public class ImageRecordReader extends BaseImageRecordReader {
 
 
     public ImageRecordReader(int height, int width, int channels, boolean appendLabel, String pattern) {
-        super(width, height, channels, appendLabel, pattern, 0);
+        super(height, width, channels, appendLabel, pattern, 0);
     }
 
 

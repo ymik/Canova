@@ -18,20 +18,25 @@ import java.util.*;
 /**
  * RecordReader using Jackson.<br>
  * <b>Design for this record reader</b>:<br>
- * - Support for JSON, XML and YAML: <i>one record per file only</i><br>
+ * - Support for JSON, XML and YAML: <i>one record per file only</i>, via Jackson ObjectMapper:<br>
  * <ul style="list-style-type:none">
- * <li>- Note: For standard cases, use the provided JSONRecordReader, YAMLRecordReader and XMLRecordReader classes</li>
- * <li>- User provides a list of fields to load. This complicates configuration (user has to specify every field to load),
- *     however this allows us to parse files where:</li>
- *     <ul style="list-style-type:none">
- *         <li>- The fields in the json/xml/yaml is not in a consistent order (order does not matter here)</li>
- *         <li>- Fields may be missing in some files (output will include a specified writable for the missing value)</li>
- *         <li>- The fields have arbitrary nested structure</li>
-*      </ul>
+ * <li>- JSON: new ObjectMapper(new JsonFactory())</li>
+ * <li>- YAML: new ObjectMapper(new YAMLFactory()) (requires jackson-dataformat-yaml dependency)</li>
+ * <li>- XML: new ObjectMapper(new XmlFactory()) (requires jackson-dataformat-xml dependency)</li>
+ * </ul>
+ * - User provides a list of fields to load, using {@link FieldSelection}. This complicates configuration for simple structures
+ * (user has to specify every field to load), however this allows us to parse files where:
+ * <ul style="list-style-type:none">
+ * <li>- The fields in the json/xml/yaml is not in a consistent order (for example, JSON makes no guarantees about order).
+ *     The order of output fields is provided via the FieldSelection object.</li>
+ * <li>- Fields may be missing in some files (output will include an (optionally) specified writable for the missing value,
+ *     defined again in FieldSelection)</li>
+ * <li>- The fields in the json/yaml/xml files may have arbitrary nested structure: For example, {@code a: b: c: d: someValue}</li>
  * </ul>
  * - Optional support for appending a label based on the path of the file, using {@link PathLabelGenerator}<br>
  * - Support for shuffling of records (with an optional RNG seed)<br>
  *
+ * @author Alex Black
  */
 public class JacksonRecordReader implements RecordReader {
 

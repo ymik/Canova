@@ -41,7 +41,7 @@ public class FieldSelection {
         return fieldPaths.size();
     }
 
-    public class Builder {
+    public static class Builder {
 
         private List<String[]> fieldPaths = new ArrayList<>();
         private List<Writable> valueIfMissing = new ArrayList<>();

@@ -186,8 +186,10 @@ public class JacksonRecordReader implements RecordReader {
                     Object o = currMap.get(currPath[j]);
                     if(j == currPath.length -1){
                         //Expect to get the final value
-                        if(o instanceof String){
-                            value = (String)o;
+                        if(o instanceof String) {
+                            value = (String) o;
+                        } else if(o instanceof Number){
+                            value = o.toString();
                         } else {
                             throw new IllegalStateException("Expected to find String on path " + Arrays.toString(currPath)
                                     + ", found " + o.getClass() + " with value " + o);

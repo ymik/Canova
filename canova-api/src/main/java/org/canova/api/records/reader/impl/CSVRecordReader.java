@@ -71,7 +71,7 @@ public class CSVRecordReader extends LineRecordReader {
     @Override
     public void initialize(Configuration conf, InputSplit split) throws IOException, InterruptedException {
         super.initialize(conf, split);
-        this.skipNumLines = conf.getInt(SKIP_NUM_LINES,0);
+        this.skipNumLines = conf.getInt(SKIP_NUM_LINES,this.skipNumLines);
         this.delimiter = conf.get(DELIMITER, ","); 
     }
 

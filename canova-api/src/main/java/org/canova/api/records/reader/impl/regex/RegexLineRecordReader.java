@@ -6,7 +6,9 @@ import org.canova.api.records.reader.impl.LineRecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
 
+import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -15,7 +17,12 @@ import java.util.regex.Pattern;
 
 /**
  * RegexLineRecordReader: Read a file, one line at a time, and split it into fields using a regex.
- * Specifically, we are using {@link java.util.regex.Pattern} and {@link java.util.regex.Matcher}
+ * Specifically, we are using {@link java.util.regex.Pattern} and {@link java.util.regex.Matcher}.<br>
+ * To load an entire file using a
+ *
+ * Example: Data in format "2016-01-01 23:59:59.001 1 DEBUG First entry message!"<br>
+ * using regex String "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) (\\d+) ([A-Z]+) (.*)"<br>
+ * would be split into 4 Text writables: ["2016-01-01 23:59:59.001", "1", "DEBUG", "First entry message!"]
  *
  * @author Alex Black
  */
@@ -52,7 +59,17 @@ public class RegexLineRecordReader extends LineRecordReader {
         }
         Text t =  (Text) super.next().iterator().next();
         String val = t.toString();
-        Matcher m = pattern.matcher(val);
+        return getRecord(val);
+    }
+
+    @Override
+    public Collection<Writable> record(URI uri, DataInputStream dataInputStream) throws IOException {
+        Writable w = ((List<Writable>)super.record(uri,dataInputStream)).get(0);
+        return getRecord(w.toString());
+    }
+
+    private Collection<Writable> getRecord(String line){
+        Matcher m = pattern.matcher(line);
 
         List<Writable> ret;
         if(m.matches()){
@@ -62,7 +79,7 @@ public class RegexLineRecordReader extends LineRecordReader {
                 ret.add(new Text(m.group(i)));
             }
         } else {
-            throw new IllegalStateException("Invalid line: line does not match regex \"" + regex + "\"; line=\"" + val + "\"");
+            throw new IllegalStateException("Invalid line: line does not match regex \"" + regex + "\"; line=\"" + line + "\"");
         }
 
         return ret;

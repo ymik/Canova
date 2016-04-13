@@ -58,6 +58,7 @@ public class RegexRecordReaderTest {
         InputSplit is = new NumberedFileInputSplit(path,0,1);
 
         SequenceRecordReader rr = new RegexSequenceRecordReader(regex,1);
+        rr.initialize(is);
 
         Collection<Collection<Writable>> exp0 = new ArrayList<>();
         exp0.add(Arrays.asList((Writable) new Text("2016-01-01 23:59:59.001"), new Text("1"), new Text("DEBUG"), new Text("First entry message!")));
@@ -70,14 +71,14 @@ public class RegexRecordReaderTest {
         exp1.add(Arrays.asList((Writable) new Text("2016-01-01 23:59:59.012"), new Text("12"), new Text("INFO"), new Text("Second entry message!")));
         exp1.add(Arrays.asList((Writable) new Text("2016-01-01 23:59:59.013"), new Text("13"), new Text("WARN"), new Text("Third entry message!")));
 
-        assertEquals(exp0,rr.next());
-        assertEquals(exp1,rr.next());
+        assertEquals(exp0,rr.sequenceRecord());
+        assertEquals(exp1,rr.sequenceRecord());
         assertFalse(rr.hasNext());
 
         //Test resetting:
         rr.reset();
-        assertEquals(exp0,rr.next());
-        assertEquals(exp1,rr.next());
+        assertEquals(exp0,rr.sequenceRecord());
+        assertEquals(exp1,rr.sequenceRecord());
         assertFalse(rr.hasNext());
     }
 

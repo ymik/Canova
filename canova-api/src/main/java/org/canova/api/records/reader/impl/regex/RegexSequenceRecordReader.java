@@ -26,6 +26,12 @@ import java.util.regex.Pattern;
  * split each line into fields using a regex.
  * Specifically, we are using {@link Pattern} and {@link Matcher} to do the splitting into groups
  *
+ * Example: Data in format "2016-01-01 23:59:59.001 1 DEBUG First entry message!"<br>
+ * using regex String "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) (\\d+) ([A-Z]+) (.*)"<br>
+ * would be split into 4 Text writables: ["2016-01-01 23:59:59.001", "1", "DEBUG", "First entry message!"]<br>
+ *
+ *
+ *
  * @author Alex Black
  */
 public class RegexSequenceRecordReader extends FileRecordReader implements SequenceRecordReader {
@@ -34,7 +40,6 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
     private String regex;
     private int skipNumLines;
     private Pattern pattern;
-    private int numLinesSkipped;
 
     public RegexSequenceRecordReader(String regex, int skipNumLines){
         this.regex = regex;
@@ -57,20 +62,26 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
         } catch(IOException e){
             throw new RuntimeException(e);
         }
-        return loadSequence(fileContents,next.toURI());
+        return loadSequence(fileContents);
     }
 
     @Override
     public
     Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
         String fileContents = null; //TODO
-        return loadSequence(fileContents, uri);
+        return loadSequence(fileContents);
     }
-    private Collection<Collection<Writable>> loadSequence(String fileContents, URI uri){
-        String[] lines = fileContents.split("\n");  //TODO this won't work if regex allows for a newline
 
+    private Collection<Collection<Writable>> loadSequence(String fileContents){
+        String[] lines = fileContents.split("(\r\n)|\n");  //TODO this won't work if regex allows for a newline
+
+        int numLinesSkipped = 0;
         Collection<Collection<Writable>> out = new ArrayList<>();
         for(String line : lines){
+            if(numLinesSkipped < skipNumLines){
+                numLinesSkipped++;
+                continue;
+            }
             //Split line using regex matcher
             Matcher m = pattern.matcher(line);
             List<Writable> timeStep;
@@ -87,42 +98,11 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
         }
 
         return out;
-
-    }
-
-    @Override
-    public Collection<Writable> next() {
-
-        if(numLinesSkipped < skipNumLines) {
-            for(int i = numLinesSkipped; i < skipNumLines; i++, numLinesSkipped++) {
-                if(!hasNext()) {
-                    return new ArrayList<>();
-                }
-                super.next();
-            }
-        }
-        Text t =  (Text) super.next().iterator().next();
-        String val = t.toString();
-        Matcher m = pattern.matcher(val);
-
-        List<Writable> ret;
-        if(m.matches()){
-            int count = m.groupCount();
-            ret = new ArrayList<>(count);
-            for( int i=1; i<=count; i++){    //Note: Matcher.group(0) is the entire sequence; we only care about groups 1 onward
-                ret.add(new Text(m.group(i)));
-            }
-        } else {
-            throw new IllegalStateException("Invalid line: line does not match regex \"" + regex + "\"; line=\"" + val + "\"");
-        }
-
-        return ret;
     }
 
     @Override
     public void reset(){
         super.reset();
-        numLinesSkipped = 0;
     }
 
 }

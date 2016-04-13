@@ -36,17 +36,9 @@ public class CSVSequenceRecordReader extends FileRecordReader implements Sequenc
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public Collection<Collection<Writable>> sequenceRecord() {
-        File next = iter.next();
-
-        Iterator<String> lineIter;
-        try {
-            lineIter = IOUtils.lineIterator(new InputStreamReader(new FileInputStream(next)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    public Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
+        @SuppressWarnings("unchecked")
+        Iterator<String> lineIter = IOUtils.lineIterator(new InputStreamReader(dataInputStream));
         if (skipNumLines > 0) {
             int count = 0;
             while (count++ < skipNumLines && lineIter.hasNext()) lineIter.next();
@@ -65,9 +57,17 @@ public class CSVSequenceRecordReader extends FileRecordReader implements Sequenc
     }
 
     @Override
-    public Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
-        @SuppressWarnings("unchecked")
-        Iterator<String> lineIter = IOUtils.lineIterator(new InputStreamReader(dataInputStream));
+    @SuppressWarnings("unchecked")
+    public Collection<Collection<Writable>> sequenceRecord() {
+        File next = iter.next();
+
+        Iterator<String> lineIter;
+        try {
+            lineIter = IOUtils.lineIterator(new InputStreamReader(new FileInputStream(next)));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         if (skipNumLines > 0) {
             int count = 0;
             while (count++ < skipNumLines && lineIter.hasNext()) lineIter.next();

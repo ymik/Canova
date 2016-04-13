@@ -14,6 +14,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -35,16 +36,23 @@ import java.util.regex.Pattern;
  * @author Alex Black
  */
 public class RegexSequenceRecordReader extends FileRecordReader implements SequenceRecordReader {
-    public final static String SKIP_NUM_LINES = NAME_SPACE + ".skipnumlines";
+    public static final String SKIP_NUM_LINES = NAME_SPACE + ".skipnumlines";
+    public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 
     private String regex;
     private int skipNumLines;
     private Pattern pattern;
+    private Charset charset;
 
     public RegexSequenceRecordReader(String regex, int skipNumLines){
+        this(regex, skipNumLines, DEFAULT_CHARSET);
+    }
+
+    public RegexSequenceRecordReader(String regex, int skipNumLines, Charset encoding){
         this.regex = regex;
         this.skipNumLines = skipNumLines;
         this.pattern = Pattern.compile(regex);
+        this.charset = encoding;
     }
 
     @Override
@@ -58,28 +66,30 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
 
         String fileContents;
         try {
-            fileContents = FileUtils.readFileToString(next);
+            fileContents = FileUtils.readFileToString(next, charset.name());
         } catch(IOException e){
             throw new RuntimeException(e);
         }
-        return loadSequence(fileContents);
+        return loadSequence(fileContents, next.toURI());
     }
 
     @Override
     public
     Collection<Collection<Writable>> sequenceRecord(URI uri, DataInputStream dataInputStream) throws IOException {
-        String fileContents = null; //TODO
-        return loadSequence(fileContents);
+        String fileContents = org.apache.commons.io.IOUtils.toString(dataInputStream,charset.name());
+        return loadSequence(fileContents, uri);
     }
 
-    private Collection<Collection<Writable>> loadSequence(String fileContents){
+    private Collection<Collection<Writable>> loadSequence(String fileContents, URI uri){
         String[] lines = fileContents.split("(\r\n)|\n");  //TODO this won't work if regex allows for a newline
 
         int numLinesSkipped = 0;
         Collection<Collection<Writable>> out = new ArrayList<>();
+        int lineCount = 0;
         for(String line : lines){
             if(numLinesSkipped < skipNumLines){
                 numLinesSkipped++;
+                lineCount++;
                 continue;
             }
             //Split line using regex matcher
@@ -92,9 +102,11 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
                     timeStep.add(new Text(m.group(i)));
                 }
             } else {
-                throw new IllegalStateException("Invalid line: line does not match regex \"" + regex + "\"; line=\"" + line + "\"");
+                throw new IllegalStateException("Invalid line: line does not match regex (line #" + lineCount + ", uri=\"" +
+                        uri + "\"), " + "\", regex=" + regex + "\"; line=\"" + line + "\"");
             }
             out.add(timeStep);
+            lineCount++;
         }
 
         return out;

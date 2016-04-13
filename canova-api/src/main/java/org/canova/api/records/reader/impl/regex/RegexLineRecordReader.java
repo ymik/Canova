@@ -33,6 +33,7 @@ public class RegexLineRecordReader extends LineRecordReader {
     private int skipNumLines;
     private Pattern pattern;
     private int numLinesSkipped;
+    private int currLine = 0;
 
     public RegexLineRecordReader(String regex, int skipNumLines){
         this.regex = regex;
@@ -79,7 +80,8 @@ public class RegexLineRecordReader extends LineRecordReader {
                 ret.add(new Text(m.group(i)));
             }
         } else {
-            throw new IllegalStateException("Invalid line: line does not match regex \"" + regex + "\"; line=\"" + line + "\"");
+            throw new IllegalStateException("Invalid line: line does not match regex (line #" + currLine  +", regex=\""
+                    + regex + "\"; line=\"" + line + "\"");
         }
 
         return ret;

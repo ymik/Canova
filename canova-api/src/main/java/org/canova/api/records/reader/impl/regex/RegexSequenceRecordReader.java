@@ -8,6 +8,8 @@ import org.canova.api.records.reader.impl.FileRecordReader;
 import org.canova.api.records.reader.impl.LineRecordReader;
 import org.canova.api.split.InputSplit;
 import org.canova.api.writable.Writable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import sun.misc.IOUtils;
 
 import java.io.DataInputStream;
@@ -31,28 +33,42 @@ import java.util.regex.Pattern;
  * using regex String "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}\\.\\d{3}) (\\d+) ([A-Z]+) (.*)"<br>
  * would be split into 4 Text writables: ["2016-01-01 23:59:59.001", "1", "DEBUG", "First entry message!"]<br>
  *
- *
+ * Note: RegexSequenceRecordReader supports multiple error handling modes, via {@link LineErrorHandling}. Invalid
+ * lines that don't match the provided regex can result in an exception (FailOnInvalid), can be skipped silently (SkipInvalid),
+ * or skip invalid but log a warning (SkipInvalidWithWarning)
  *
  * @author Alex Black
  */
 public class RegexSequenceRecordReader extends FileRecordReader implements SequenceRecordReader {
     public static final String SKIP_NUM_LINES = NAME_SPACE + ".skipnumlines";
     public static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
+    public static final LineErrorHandling DEFAULT_ERROR_HANDLING = LineErrorHandling.FailOnInvalid;
+
+    /**Error handling mode: How should invalid lines (i.e., those that don't match the provided regex) be handled?<br>
+     * FailOnInvalid: Throw an IllegalStateException when an invalid line is found<br>
+     * SkipInvalid: Skip invalid lines (quietly, with no warning)<br>
+     * SkipInvalidWithWarning: Skip invalid lines, but log a warning<br>
+     */
+    public enum LineErrorHandling {FailOnInvalid, SkipInvalid, SkipInvalidWithWarning};
+
+    public static final Logger LOG = LoggerFactory.getLogger(RegexSequenceRecordReader.class);
 
     private String regex;
     private int skipNumLines;
     private Pattern pattern;
     private Charset charset;
+    private LineErrorHandling errorHandling;
 
     public RegexSequenceRecordReader(String regex, int skipNumLines){
-        this(regex, skipNumLines, DEFAULT_CHARSET);
+        this(regex, skipNumLines, DEFAULT_CHARSET, DEFAULT_ERROR_HANDLING);
     }
 
-    public RegexSequenceRecordReader(String regex, int skipNumLines, Charset encoding){
+    public RegexSequenceRecordReader(String regex, int skipNumLines, Charset encoding, LineErrorHandling errorHandling){
         this.regex = regex;
         this.skipNumLines = skipNumLines;
         this.pattern = Pattern.compile(regex);
         this.charset = encoding;
+        this.errorHandling = errorHandling;
     }
 
     @Override
@@ -87,9 +103,9 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
         Collection<Collection<Writable>> out = new ArrayList<>();
         int lineCount = 0;
         for(String line : lines){
+            lineCount++;
             if(numLinesSkipped < skipNumLines){
                 numLinesSkipped++;
-                lineCount++;
                 continue;
             }
             //Split line using regex matcher
@@ -102,11 +118,22 @@ public class RegexSequenceRecordReader extends FileRecordReader implements Seque
                     timeStep.add(new Text(m.group(i)));
                 }
             } else {
-                throw new IllegalStateException("Invalid line: line does not match regex (line #" + lineCount + ", uri=\"" +
-                        uri + "\"), " + "\", regex=" + regex + "\"; line=\"" + line + "\"");
+                switch(errorHandling){
+                    case FailOnInvalid:
+                        throw new IllegalStateException("Invalid line: line does not match regex (line #" + lineCount + ", uri=\"" +
+                                uri + "\"), " + "\", regex=" + regex + "\"; line=\"" + line + "\"");
+                    case SkipInvalid:
+                        continue;
+                    case SkipInvalidWithWarning:
+                        String warnMsg = "Skipping invalid line: line does not match regex (line #" + lineCount + ", uri=\"" +
+                                uri + "\"), " + "\"; line=\"" + line + "\"";
+                        LOG.warn(warnMsg);
+                        continue;
+                    default:
+                        throw new RuntimeException("Unknown error handling mode: " + errorHandling);
+                }
             }
             out.add(timeStep);
-            lineCount++;
         }
 
         return out;

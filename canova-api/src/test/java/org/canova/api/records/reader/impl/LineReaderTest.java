@@ -23,16 +23,20 @@ package org.canova.api.records.reader.impl;
 import static org.junit.Assert.*;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.canova.api.records.reader.RecordReader;
 import org.canova.api.split.FileSplit;
 import org.canova.api.split.InputSplit;
+import org.canova.api.split.InputStreamInputSplit;
 import org.junit.Test;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
+import java.io.*;
 import java.util.Arrays;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Created by agibsonccc on 11/17/14.
@@ -62,6 +66,42 @@ public class LineReaderTest {
         int count = 0;
         while(reader.hasNext()) {
             assertEquals(1,reader.next().size());
+            count++;
+        }
+
+        assertEquals(9, count);
+
+        FileUtils.deleteDirectory(tmpdir);
+    }
+
+    private static PrintWriter makeGzippedPW(File file) throws IOException {
+        return new PrintWriter(
+                new GZIPOutputStream(
+                        new FileOutputStream(file, false)
+                )
+        );
+    }
+
+    @Test
+    public void testLineReaderWithInputStreamInputSplit() throws Exception {
+        File tmpdir = new File("tmpdir");
+        tmpdir.mkdir();
+
+        File tmp1 = new File("tmpdir/tmp1.txt.gz");
+
+        OutputStream os = new GZIPOutputStream(new FileOutputStream(tmp1, false));
+        IOUtils.writeLines(Arrays.asList("1","2","3","4","5","6","7","8","9"), null, os);
+        os.flush();
+        os.close();
+
+        InputSplit split = new InputStreamInputSplit(new GZIPInputStream(new FileInputStream(tmp1)));
+
+        RecordReader reader = new LineRecordReader();
+        reader.initialize(split);
+
+        int count = 0;
+        while(reader.hasNext()) {
+            assertEquals(1, reader.next().size());
             count++;
         }
 

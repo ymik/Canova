@@ -105,7 +105,7 @@ public class LineRecordReader implements RecordReader {
         if ( iter != null && iter.hasNext() ) {
             return true;
         } else {
-            if ( !(inputSplit instanceof StringSplit) && currIndex < locations.length-1 ) {
+            if (locations != null && !(inputSplit instanceof StringSplit) && currIndex < locations.length-1 ) {
                 currIndex++;
                 try {
                     close();

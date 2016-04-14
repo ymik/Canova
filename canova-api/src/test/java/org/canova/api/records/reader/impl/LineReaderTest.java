@@ -74,14 +74,6 @@ public class LineReaderTest {
         FileUtils.deleteDirectory(tmpdir);
     }
 
-    private static PrintWriter makeGzippedPW(File file) throws IOException {
-        return new PrintWriter(
-                new GZIPOutputStream(
-                        new FileOutputStream(file, false)
-                )
-        );
-    }
-
     @Test
     public void testLineReaderWithInputStreamInputSplit() throws Exception {
         File tmpdir = new File("tmpdir");
